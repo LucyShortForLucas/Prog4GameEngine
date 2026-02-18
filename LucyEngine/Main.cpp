@@ -46,6 +46,11 @@ static std::unique_ptr<eng::Actor> load()
 
 	root->AddComponent<eng::TextureRenderer>("background.png");
 
+	auto& logo{root->AddChildActor()};
+
+	logo.AddComponent<eng::TextureRenderer>("logo.png");
+	logo.GetComponent<eng::Transform>()->SetLocalPosition(358, 180);
+
 	return root;
 }
 
