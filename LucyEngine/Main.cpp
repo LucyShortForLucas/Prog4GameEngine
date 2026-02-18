@@ -56,7 +56,10 @@ static std::unique_ptr<eng::Actor> load()
 	auto& text{ root->AddChildActor() };
 
 	text.AddComponent<eng::TextRenderer>("Test Test I am text");
-	text.GetComponent<eng::Transform>()->SetLocalPosition(100, 180);
+	text.GetComponent<eng::Transform>()->SetLocalPosition(20, 20);
+
+	auto& tracker = text.AddComponent<eng::FpsTracker>();
+	tracker.OnEnable(); // <-- MANUAL ENABLE for now, will be fixed once scenegraph is built
 
 	return root;
 }

@@ -5,7 +5,9 @@ float eng::GameTime::DeltaTime() const {
 }
 
 void eng::GameTime::UpdateDeltaTime() {
-	m_DeltaTime = std::chrono::duration<float>(std::chrono::steady_clock::now() - m_PreviousTimePoint).count();
+	auto now{ std::chrono::steady_clock::now() };
+	m_DeltaTime = std::chrono::duration<float>(now - m_PreviousTimePoint).count();
+	m_PreviousTimePoint = now;
 }
 
 int eng::GameTime::MinMilliSecPerFrame() const {
