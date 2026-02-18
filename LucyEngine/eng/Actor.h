@@ -35,8 +35,15 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 	Actor(Actor&&) = default;
 	Actor& operator=(Actor&&) = default;
 
-public: //-------------- Component Methods -----------------------------
+public: //-------------- Child Actor Methods ------------------
+	Actor& AddChildActor();
 
+	std::vector<Actor*>	GetChildren() const;
+
+	std::vector<Actor*>	GetAllChildren() const;
+
+public: //-------------- Component Methods -----------------------------
+	 
 
 	/// <typeparam name="CompT">The Component type. Must derive from AbstractComponent. Must have valid copy/move constructors and assignment operators in order for the Actor to be able to be cloned</typeparam>
 	/// <returns>A reference to the newly added component</returns>
@@ -70,6 +77,12 @@ private: //----------------------- Component Fields ----------------------------
 	std::vector<std::unique_ptr<AbstractComponent>> m_CompUptrs;
 
 	Transform* m_TransformPtr;
+
+private: //-------------------- Child/Parent Actor Fields -----------------------------------
+
+	Actor* m_ParentPtr{};
+
+	std::vector < std::unique_ptr<Actor>> m_ChildUptrs{};
 
 }; // !Actor
 

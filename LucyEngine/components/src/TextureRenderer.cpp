@@ -6,7 +6,7 @@
 #include <filesystem>
 
 namespace eng {
-float TextureRenderer::s_GlobalScale{ 2.3f };
+float TextureRenderer::s_GlobalScale{ 1.f };
 
 void TextureRenderer::LoadTexture(const std::string& file) {
 	m_TexturePtr = eng::service::resources.Get().LoadTexture(file);
