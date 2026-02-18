@@ -112,6 +112,10 @@ void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> load) {
 }
 
 bool eng::Engine::RunOneFrame(eng::Actor& root, eng::service::IRenderer& renderer) {
+	// Fetch time
+	auto& gameTime{ service::gameTime.Get() };
+	gameTime.UpdateDeltaTime();
+		
 	root.Start();
 
 	bool doContinue{ dae::InputManager::GetInstance().ProcessInput() };

@@ -5,6 +5,7 @@
 #include "Utils.h"
 #include "Actor.h"
 #include "Font.h"
+#include <chrono>
 
 namespace eng::service {
 //---------------------------------------- Service class ---------------------------------------
@@ -57,5 +58,16 @@ public:
 };
 
 extern Service<IResourceLoader>  resources;
+
+class IGameTime {
+public:
+	virtual ~IGameTime() = default;
+
+	virtual float	DeltaTime() const = 0;
+	virtual void	UpdateDeltaTime() = 0;
+	virtual int		MinMilliSecPerFrame() const = 0;
+};
+
+extern Service<IGameTime> gameTime;
 
 }

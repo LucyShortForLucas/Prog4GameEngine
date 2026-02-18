@@ -14,12 +14,14 @@
 #include "LucyRenderer.h"
 #include "Actor.h"
 #include "TextureRenderer.h"
-#include "FpsCounter.h"
+#include "FpsTracker.h"
 #include "TextRenderer.h"
 #include "ResourceLoader.h"
 
 #include <filesystem>
 #include <memory>
+
+#include "GameTime.h"
 
 namespace fs = std::filesystem;
 
@@ -51,6 +53,11 @@ static std::unique_ptr<eng::Actor> load()
 	logo.AddComponent<eng::TextureRenderer>("logo.png");
 	logo.GetComponent<eng::Transform>()->SetLocalPosition(358, 180);
 
+	auto& text{ root->AddChildActor() };
+
+	text.AddComponent<eng::TextRenderer>("Test Test I am text");
+	text.GetComponent<eng::Transform>()->SetLocalPosition(100, 180);
+
 	return root;
 }
 
@@ -64,6 +71,7 @@ int main(int, char*[]) {
 #endif
 	// Set up services
 	eng::service::resources.Register(std::make_unique<eng::SdlResourceLoader>());
+	eng::service::gameTime.Register(std::make_unique<eng::GameTime>());
 
 	//dae::Minigin engine(data_location);
 	eng::Engine engine{data_location};

@@ -33,7 +33,7 @@ dae::Texture2D* eng::SdlResourceLoader::LoadTexture(const std::string& file) {
 }
 
 dae::Font* eng::SdlResourceLoader::LoadFont(const std::string& file, uint8_t size) {
-	const auto fullPath = "../Data/" + file;
+	const auto fullPath = "./Data/" + file;
 
 	const auto filename = std::filesystem::path(fullPath).filename().string();
 

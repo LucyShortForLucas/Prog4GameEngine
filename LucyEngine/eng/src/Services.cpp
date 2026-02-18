@@ -31,4 +31,15 @@ public:
 Service<IResourceLoader>  resources{ std::make_unique<NullResourceLoader>() };
 
 
+class NullGameTime : public IGameTime {
+public:
+	virtual ~NullGameTime() = default;
+
+	virtual float	DeltaTime() const { return 0.01f; };
+	virtual void	UpdateDeltaTime() {};
+	virtual int		MinMilliSecPerFrame() const { return 10; };
+};
+
+Service<IGameTime> gameTime{ std::make_unique<NullGameTime>() };
+
 }
