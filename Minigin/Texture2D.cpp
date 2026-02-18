@@ -3,6 +3,8 @@
 #include "Renderer.h"
 #include <stdexcept>
 
+#include "LucyRenderer.h"
+
 dae::Texture2D::~Texture2D()
 {
 	SDL_DestroyTexture(m_texture);
@@ -31,7 +33,8 @@ dae::Texture2D::Texture2D(const std::string &fullPath)
     }
 
     m_texture = SDL_CreateTextureFromSurface(
-        Renderer::GetInstance().GetSDLRenderer(),
+        //Renderer::GetInstance().GetSDLRenderer(),
+        eng::service::renderer.Get().GetSDLRenderer(),
         surface
     );
 

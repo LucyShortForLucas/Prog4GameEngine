@@ -79,6 +79,9 @@ eng::Engine::Engine(const fs::path&) {
 	if (g_window == nullptr) {
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
+
+	// Set up renderer from window as service
+	eng::service::renderer.Register(std::make_unique<eng::Renderer>(g_window));
 }
 
 eng::Engine::~Engine() {
@@ -87,13 +90,12 @@ eng::Engine::~Engine() {
 	SDL_Quit();
 }
 
-void eng::Engine::Run(std::function<void()>) {
+void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> load) {
 #ifndef __EMSCRIPTEN__
 	// Set up services
-	eng::service::renderer.Register(std::make_unique<eng::Renderer>(g_window));
 	auto& renderer = eng::service::renderer.Get(); //TODO: make service
 
-	eng::Actor f_Root{};
+	std::unique_ptr<eng::Actor> f_Root{std::move(load())};
 
 	// Set up time
 	auto lastTime = std::chrono::high_resolution_clock::now();
@@ -101,7 +103,7 @@ void eng::Engine::Run(std::function<void()>) {
 	bool doContinue = true;
 	while (doContinue) {
 		lastTime = std::chrono::high_resolution_clock::now();
-		doContinue = RunOneFrame(f_Root, renderer);
+		doContinue = RunOneFrame(*f_Root, renderer);
 		std::this_thread::sleep_for(lastTime + std::chrono::milliseconds(16) - std::chrono::high_resolution_clock::now());
 	}
 #else

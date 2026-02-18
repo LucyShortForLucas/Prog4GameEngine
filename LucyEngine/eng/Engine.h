@@ -23,7 +23,7 @@ public: //---------------|Constructor/destructor|---------------------------
 
 public: //---------------|Run methods|---------------------------
 
-	void Run(std::function<void()> loadGame);
+	void Run(std::function<std::unique_ptr<eng::Actor>()> loadGame);
 	bool RunOneFrame(eng::Actor& root, eng::service::IRenderer& renderer);
 };
 

@@ -1,5 +1,6 @@
 #include "Services.h"
 #include <SDL3/SDL_render.h>
+#include "Font.h"
 
 namespace eng::service {
 
@@ -20,6 +21,14 @@ private:
 };
 
 Service<IRenderer> renderer{ std::make_unique<NullRenderer>() };
+
+class NullResourceLoader final : public IResourceLoader {
+public:
+	virtual dae::Texture2D* LoadTexture(const std::string&) { return nullptr; };
+	virtual dae::Font* LoadFont(const std::string&, uint8_t) { return nullptr; }
+};
+
+Service<IResourceLoader>  resources{ std::make_unique<NullResourceLoader>() };
 
 
 }

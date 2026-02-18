@@ -16,6 +16,7 @@
 #include "TextureRenderer.h"
 #include "FpsCounter.h"
 #include "TextRenderer.h"
+#include "ResourceLoader.h"
 
 #include <filesystem>
 #include <memory>
@@ -43,7 +44,7 @@ static std::unique_ptr<eng::Actor> load()
 
 	auto root{std::make_unique<eng::Actor>()};
 
-	root->AddComponent<eng::Text>();
+	root->AddComponent<eng::TextureRenderer>("background.png");
 
 	return root;
 }
@@ -56,6 +57,9 @@ int main(int, char*[]) {
 	if(!fs::exists(data_location))
 		data_location = "../Data/";
 #endif
+	// Set up services
+	eng::service::resources.Register(std::make_unique<eng::SdlResourceLoader>());
+
 	//dae::Minigin engine(data_location);
 	eng::Engine engine{data_location};
 	engine.Run(load);

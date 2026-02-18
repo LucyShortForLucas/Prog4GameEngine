@@ -33,7 +33,10 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   LucyEngine/components/src/TextureRenderer.cpp
   LucyEngine/components/src/TextRenderer.cpp
   LucyEngine/components/src/Transform2d.cpp
-  LucyEngine/components/src/FpsCounter.cpp "LucyEngine/eng/src/Services.cpp" "LucyEngine/eng/src/LucyRenderer.cpp")
+  LucyEngine/components/src/FpsCounter.cpp
+  "LucyEngine/eng/src/Services.cpp" 
+  "LucyEngine/eng/src/LucyRenderer.cpp" 
+  "LucyEngine/eng/src/ResourceLoader.cpp")
 
 # Add top-level directories to includes
 target_include_directories(${TARGET_NAME} PRIVATE
