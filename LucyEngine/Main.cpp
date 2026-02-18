@@ -12,12 +12,17 @@
 #include "Scene.h"
 #include "Engine.h"
 #include "LucyRenderer.h"
-
+#include "Actor.h"
+#include "TextureRenderer.h"
+#include "FpsCounter.h"
+#include "TextRenderer.h"
 
 #include <filesystem>
+#include <memory>
+
 namespace fs = std::filesystem;
 
-static void load()
+static std::unique_ptr<eng::Actor> load()
 {
 	//auto& scene = dae::SceneManager::GetInstance().CreateScene();
 
@@ -35,6 +40,12 @@ static void load()
 	//to->SetColor({ 255, 255, 0, 255 });
 	//to->SetPosition(292, 20);
 	//scene.Add(std::move(to));
+
+	auto root{std::make_unique<eng::Actor>()};
+
+	root->AddComponent<eng::Text>();
+
+	return root;
 }
 
 int main(int, char*[]) {

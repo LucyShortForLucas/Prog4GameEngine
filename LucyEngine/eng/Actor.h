@@ -37,32 +37,23 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 
 public: //-------------- Component Methods -----------------------------
 
-	/// <summary>
-	/// Alternative AddComponent which calls the default constructor of the component type.
-	/// </summary>
-	/// <typeparam name="CompT">The Component type. Must derive from cpt::AbstractComponent. Must be have valid copy/move constructors and assignment operators in order for the Actor to be able to be cloned</typeparam>
+
+	/// <typeparam name="CompT">The Component type. Must derive from AbstractComponent. Must have valid copy/move constructors and assignment operators in order for the Actor to be able to be cloned</typeparam>
 	/// <returns>A reference to the newly added component</returns>
 	template <std::derived_from<AbstractComponent> CompT, typename... ArgsT>
 	CompT& AddComponent(ArgsT... args);
 
 	/// <returns>
-	/// An (optional) reference to this Actor's component of type CompT. Return value is empty if no such component exists.
+	/// A pointer to this Actor's component of type CompT. Return value is empty if no such component exists.
 	/// </returns>
 	template <std::derived_from<AbstractComponent> CompT>
 	CompT* GetComponent();
 
-	/// <returns>
-	/// A list of all components attached to this Actor.
-	/// </returns>
 	std::vector<AbstractComponent*> GetAbstractComponents();
-
-	///
+	
 	template <std::derived_from<AbstractComponent> CompT>
 	void RemoveComponent();
 
-	/// <summary>
-	/// A helper method to easily get the transform of an actor
-	/// </summary>
 	Transform& GetTransform();
 
 public: //-------------------- Gameloop Methods --------------------------------
