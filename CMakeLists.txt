@@ -18,7 +18,6 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/Font.cpp
   Minigin/GameObject.cpp
   Minigin/InputManager.cpp
-  Minigin/Main.cpp
   Minigin/Minigin.cpp
   Minigin/Renderer.cpp
   Minigin/ResourceManager.cpp
@@ -27,6 +26,21 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/TextObject.cpp
   Minigin/Texture2D.cpp
   Minigin/Transform.cpp
+  LucyEngine/Main.cpp
+  LucyEngine/eng/src/Actor.cpp
+  LucyEngine/eng/src/Engine.cpp
+  LucyEngine/eng/src/AbstractComponent.cpp 
+  LucyEngine/components/src/TextureRenderer.cpp
+  LucyEngine/components/src/TextRenderer.cpp
+  LucyEngine/components/src/Transform2d.cpp
+  LucyEngine/components/src/FpsCounter.cpp "LucyEngine/eng/src/Services.cpp" "LucyEngine/eng/src/LucyRenderer.cpp")
+
+# Add top-level directories to includes
+target_include_directories(${TARGET_NAME} PRIVATE
+LucyEngine
+LucyEngine/eng
+LucyEngine/components
+LucyEngine/utils
 )
 
 # enable c++20 features
