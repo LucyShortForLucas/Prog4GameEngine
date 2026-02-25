@@ -92,7 +92,7 @@ eng::Engine::~Engine() {
 }
 
 void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> load) {
-	m_RootActor = std::move(load());
+	m_RootActor = load();
 #ifndef __EMSCRIPTEN__
 	// Set up time
 	auto lastTime = std::chrono::high_resolution_clock::now();
