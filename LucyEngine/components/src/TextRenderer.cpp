@@ -19,7 +19,7 @@ eng::TextRenderer::TextRenderer(eng::Actor& owner, const std::string& text, cons
 	m_FontPath(fontPath),
 	m_Size(size),
 	m_NeedsUpdate(true) {
-	m_FontPtr = eng::service::resources.Get().LoadFont(fontPath, static_cast<uint8_t>(size));
+	m_FontPtr = eng::service::resources.Get().LoadFont(fontPath, static_cast<uint8_t>(m_Size));
 }
 
 void eng::TextRenderer::SetText(const std::string& text) {
