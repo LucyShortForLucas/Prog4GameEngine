@@ -106,7 +106,7 @@ void Actor::Cleanup() {
             auto& movedChild{ child->m_MoveInfo.newParentPtr->m_ChildUptrs.emplace_back(std::move(child)) };
 
             // Erase the now empty unique pointer in our old parent
-            std::erase_if(m_ChildUptrs, [this](const std::unique_ptr<Actor>& childToErase) {
+            std::erase_if(m_ChildUptrs, [](const std::unique_ptr<Actor>& childToErase) {
                 return childToErase.get() == nullptr; });
 
             // inform child of new parent
