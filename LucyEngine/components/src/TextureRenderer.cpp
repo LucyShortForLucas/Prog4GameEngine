@@ -17,7 +17,7 @@ void TextureRenderer::SetSourceRect(SDL_FRect rect) {
 }
 
 
-TextureRenderer::TextureRenderer(eng::Actor& owner, const std::string& texturePath, glm::ivec2 size, SDL_FRect sourceRect, unsigned int layer) : AbstractComponent(owner), m_Size(size), m_SourceRect(sourceRect), m_TexturePath(texturePath), m_Layer(layer) {
+TextureRenderer::TextureRenderer(eng::Actor& owner, const std::string& texturePath, glm::ivec2 size, SDL_FRect sourceRect, unsigned int layer) : AbstractComponent(owner), m_Layer(layer), m_TexturePath(texturePath),  m_Size(size), m_SourceRect(sourceRect) {
 	LoadTexture(texturePath);
 	auto f_TextureSize{ m_TexturePtr->GetSize() };
 	if (m_Size.x == -1)  m_Size = f_TextureSize;
