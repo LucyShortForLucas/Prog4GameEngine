@@ -28,7 +28,7 @@ void eng::TextRenderer::SetText(const std::string& text) {
 
 void eng::TextRenderer::Update() {
 	if (m_NeedsUpdate) {
-		const auto f_Surf = TTF_RenderText_Blended(m_FontPtr->GetFont(), m_Text.c_str(), 0, m_Color);
+		const auto f_Surf = TTF_RenderText_Blended(m_FontPtr->GetFont(), m_Text.c_str(), m_Text.size(), m_Color);
 
 		if (f_Surf == nullptr) {
 			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
