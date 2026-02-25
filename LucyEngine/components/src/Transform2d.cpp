@@ -29,7 +29,7 @@ void Transform::SetGlobalPosition(float x, float y) {
 
 void Transform::SetGlobalPosition(glm::vec2 newPosition) {
 	auto f_TranslatePosition{ newPosition - GetGlobal().position };
-	TranslatePosition(newPosition);
+	TranslatePosition(f_TranslatePosition);
 }
 
 void Transform::FlagForGlobalUpdate() {
