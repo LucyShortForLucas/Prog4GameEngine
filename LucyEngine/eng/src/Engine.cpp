@@ -90,12 +90,9 @@ eng::Engine::~Engine() {
 	SDL_Quit();
 }
 
-void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> load) {
+void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> [[maybe_unused]] load) {
 #ifndef __EMSCRIPTEN__
-	// Set up services
-	auto& renderer = eng::service::renderer.Get(); //TODO: make service
-
-	std::unique_ptr<eng::Actor> f_Root{std::move(load())};
+	m_RootActor = std::move(load());
 
 	// Set up time
 	auto lastTime = std::chrono::high_resolution_clock::now();
@@ -103,7 +100,7 @@ void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> load) {
 	bool doContinue = true;
 	while (doContinue) {
 		lastTime = std::chrono::high_resolution_clock::now();
-		doContinue = RunOneFrame(*f_Root, renderer);
+		doContinue = RunOneFrame();
 		std::this_thread::sleep_for(lastTime + std::chrono::milliseconds(16) - std::chrono::high_resolution_clock::now());
 	}
 #else
@@ -111,20 +108,23 @@ void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> load) {
 #endif
 }
 
-bool eng::Engine::RunOneFrame(eng::Actor& root, eng::service::IRenderer& renderer) {
+bool eng::Engine::RunOneFrame() {
 	// Fetch time
 	auto& gameTime{ service::gameTime.Get() };
 	gameTime.UpdateDeltaTime();
-		
-	root.Start();
+
+	// Fetch Renderer
+	auto& renderer = eng::service::renderer.Get();
+
+	m_RootActor->Start();
 
 	bool doContinue{ dae::InputManager::GetInstance().ProcessInput() };
 
-	root.Update();
+	m_RootActor->Update();
 
-	root.LateUpdate();
+	m_RootActor->LateUpdate();
 
-	renderer.Render(root);
+	renderer.Render(*m_RootActor);
 
 	return doContinue;
 }

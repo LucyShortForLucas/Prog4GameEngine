@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 namespace eng {
 
 class Engine {
-public: //---------------|Constructor/destructor|---------------------------
+public: //--------------- Constructor/destructor ---------------------------
 
 	explicit Engine(const fs::path& dataPath);
 	~Engine();
@@ -21,10 +21,15 @@ public: //---------------|Constructor/destructor|---------------------------
 	Engine& operator=(const Engine& other) = delete;
 	Engine& operator=(Engine&& other) = delete;
 
-public: //---------------|Run methods|---------------------------
+public: //--------------- Run methods ---------------------------
 
 	void Run(std::function<std::unique_ptr<eng::Actor>()> loadGame);
-	bool RunOneFrame(eng::Actor& root, eng::service::IRenderer& renderer);
+	bool RunOneFrame();
+
+private: //----------------- Scene data -------------------
+
+	std::unique_ptr<Actor> m_RootActor;
+
 };
 
 }
