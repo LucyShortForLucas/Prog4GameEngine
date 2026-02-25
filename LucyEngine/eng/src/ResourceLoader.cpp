@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <filesystem>
 #include <map>
-#include "utils.h"
+#include "Utils.h"
 #include "Texture2D.h"
 #include "Font.h"
 #include <SDL3_ttf/SDL_ttf.h>
