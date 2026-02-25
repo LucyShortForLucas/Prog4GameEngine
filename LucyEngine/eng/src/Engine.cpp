@@ -18,6 +18,7 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include <thread>
+#include <utility>
 #include "Services.h"
 #include "InputManager.h"
 #include "Actor.h"
@@ -90,10 +91,9 @@ eng::Engine::~Engine() {
 	SDL_Quit();
 }
 
-void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> [[maybe_unused]] load) {
-#ifndef __EMSCRIPTEN__
+void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> load) {
 	m_RootActor = std::move(load());
-
+#ifndef __EMSCRIPTEN__
 	// Set up time
 	auto lastTime = std::chrono::high_resolution_clock::now();
 

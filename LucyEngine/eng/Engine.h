@@ -29,7 +29,6 @@ public: //--------------- Run methods ---------------------------
 private: //----------------- Scene data -------------------
 
 	std::unique_ptr<Actor> m_RootActor;
-
 };
 
 }

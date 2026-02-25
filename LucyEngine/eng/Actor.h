@@ -65,12 +65,20 @@ public: //-------------- Component Methods -----------------------------
 
 public: //-------------------- Gameloop Methods --------------------------------
 
+	/// @brief Executed on the first frame this actor is enabled.
 	void Start();
+	/// @brief Executed every frame if the actor is enabled.
 	void Update();
+	/// @brief Executed every frame if the actor is enabled, after every other Actor has had their Update method called
 	void LateUpdate();
+	/// @brief Executed a fixed amount of times per second. May be called more or less than once in the same frame.
 	void FixedUpdate();
+	/// @brief Executed every frame on RenderComponents during the rendering stage.
 	void Render();
+	/// @brief Executed every frame on ImguiRenderComponents during the rendering stage.
 	void RenderImgui();
+	/// @brief Executed every frame as the last logical step of the frame. This function cleans up its children, destroying or moving them as flagged.
+	void CleanupChildren();
 
 private: //----------------------- Component Fields -------------------------------------
 
@@ -135,7 +143,5 @@ inline void Actor::RemoveComponent() {
 #pragma endregion
 
 } // !namespace eng
-
-//#############################################|Comparison Operator overloads|#################################
 
 bool operator==(const eng::Actor& lhs, const eng::Actor& rhs);
