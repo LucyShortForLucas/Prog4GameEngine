@@ -17,6 +17,7 @@
 #include "FpsTracker.h"
 #include "TextRenderer.h"
 #include "ResourceLoader.h"
+#include "Rotator.h"
 
 #include <filesystem>
 #include <memory>
@@ -51,15 +52,24 @@ static std::unique_ptr<eng::Actor> load()
 	auto& logo{root->AddChildActor()};
 
 	logo.AddComponent<eng::TextureRenderer>("logo.png");
-	logo.GetComponent<eng::Transform>()->SetLocalPosition(358, 180);
+	logo.GetComponent<eng::Transform>()->SetGlobalPosition(358, 180);
 
 	auto& text{ root->AddChildActor() };
 
 	text.AddComponent<eng::TextRenderer>("Test Test I am text");
-	text.GetComponent<eng::Transform>()->SetLocalPosition(20, 20);
+	text.GetComponent<eng::Transform>()->SetGlobalPosition(20, 20);
 
-	auto& tracker = text.AddComponent<eng::FpsTracker>();
-	tracker.OnEnable(); // <-- MANUAL ENABLE for now, will be fixed once scenegraph is built
+	text.AddComponent<eng::FpsTracker>();
+
+	auto& blueTank{ root->AddChildActor() };
+	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{32, 32}, SDL_FRect(0,0, 32, 32));
+	blueTank.GetComponent<eng::Transform>()->SetGlobalPosition(400, 180);
+
+
+	auto& redTank{ blueTank.AddChildActor() };
+	redTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect(32, 0, 32, 32));
+	redTank.GetComponent<eng::Transform>()->SetLocalPosition(64, 64);
+	redTank.AddComponent<eng::Rotator>();
 
 	return root;
 }

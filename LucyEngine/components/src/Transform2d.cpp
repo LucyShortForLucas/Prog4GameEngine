@@ -5,8 +5,6 @@
 namespace eng {
 
 void Transform::SetLocalPosition(float x, float y) {
-	glm::vec2 f_OldPos{ m_TransformData.position };
-
 	m_TransformData.position.x = x;
 	m_TransformData.position.y = y;
 
