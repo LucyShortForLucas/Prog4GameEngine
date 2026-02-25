@@ -126,5 +126,7 @@ bool eng::Engine::RunOneFrame() {
 
 	renderer.Render(*m_RootActor);
 
+	m_RootActor->Cleanup();
+
 	return doContinue;
 }

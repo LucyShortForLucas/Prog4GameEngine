@@ -91,6 +91,9 @@ void Actor::RenderImgui() {
 
 void Actor::Cleanup() {
     for (auto& child : m_ChildUptrs) {
+
+        child->Cleanup();
+
         // Destroy children if flagged for it
         if (child->IsFlagged(Flags::Destroyed)) std::erase_if(m_ChildUptrs, [&child](const std::unique_ptr<Actor>& childToErase) {
             return childToErase == child;
