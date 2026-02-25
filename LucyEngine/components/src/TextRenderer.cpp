@@ -14,10 +14,11 @@
 
 eng::TextRenderer::TextRenderer(eng::Actor& owner, const std::string& text, const std::string& fontPath, unsigned int size, SDL_Color color) :
 	AbstractComponent(owner),
-	m_Text(text), m_NeedsUpdate(true),
-	m_Size(size),
+	m_Color(color),
+	m_Text(text),
 	m_FontPath(fontPath),
-	m_Color(color) {
+	m_Size(size),
+	m_NeedsUpdate(true) {
 	m_FontPtr = eng::service::resources.Get().LoadFont(fontPath, static_cast<uint8_t>(size));
 }
 
