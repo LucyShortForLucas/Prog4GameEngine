@@ -3,8 +3,6 @@
 #include "AbstractComponent.h"
 #include "TextRenderer.h"
 
-class eng::Actor;
-
 namespace eng {
 
 class FpsTracker final : public AbstractComponent {
