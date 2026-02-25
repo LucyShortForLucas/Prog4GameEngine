@@ -1,6 +1,5 @@
 #pragma once
 
-#include "glm/glm.hpp"
 #include "AbstractComponent.h"
 
 namespace eng {
@@ -9,11 +8,6 @@ struct TransformData {
 	glm::vec2 position{};
 };
 
-} // !eng
-
-namespace eng {
-
-class Actor;
 
 /// <summary>
 /// A component that allows Actors to store their local transform and observe their global transform.
@@ -30,6 +24,7 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 	Transform(const Transform&&) = delete;
 	Transform& operator=	(const Transform&&) = delete;
 
+
 public: //--------------- Transform Methods --------------
 
 
@@ -38,7 +33,13 @@ public: //--------------- Transform Methods --------------
 
 	void TranslatePosition(glm::vec2 translateVector);
 
+	void SetGlobalPosition(float x, float y);
+	void SetGlobalPosition(glm::vec2 newPosition);
+
+	void FlagForGlobalUpdate();
+
 	TransformData const& GetLocal() const;
+	TransformData const& GetGlobal();
 
 private: //--------------------------- Transform Fields ----------------------------
 	TransformData m_TransformData{};
@@ -47,5 +48,9 @@ private: //--------------------------- Transform Fields ------------------------
 
 }; // !TransformComponent
 
-} // !eng::cpt
+} // !eng
 
+
+//-----------------------------------------|Operators|------------------------------------
+
+eng::TransformData operator+(const eng::TransformData& lhs, const eng::TransformData& rhs);

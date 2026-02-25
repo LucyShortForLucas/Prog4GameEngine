@@ -22,6 +22,12 @@ namespace eng {
 /// The quintessential Game Object. An Actor manages the lifetime and ownership of Components and Child Actors.
 /// </summary>
 class Actor final {
+public: //--------------- Helper structs -----------------------------
+	struct MoveInfo {
+		Actor* newParentPtr{};
+		bool keepWorldTransform{};
+	};
+
 public: //--------------- Constructor/Destructor/copy/move --------------
 
 	Actor();
@@ -31,9 +37,8 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 	Actor(const Actor&) = delete;
 	Actor& operator=(const Actor&) = delete;
 
-	// Actors can be moved
-	Actor(Actor&&) = default;
-	Actor& operator=(Actor&&) = default;
+	Actor(Actor&&) = delete;
+	Actor& operator=(Actor&&) = delete;
 
 public: //-------------- Child Actor Methods ------------------
 	Actor& AddChildActor();
@@ -41,6 +46,14 @@ public: //-------------- Child Actor Methods ------------------
 	std::vector<Actor*>	GetChildren() const;
 
 	std::vector<Actor*>	GetAllChildren() const;
+
+public: //---------------|Parent Actor Methods|-------------------------
+
+
+	Actor* GetParent();
+
+	/// @brief Flags this actor to be moved to a new parent at the end of the frame. Note that you cannot reparent the root actor of a scene.
+	void SetParent(Actor& newParent, bool keepWorldTransform = true);
 
 public: //-------------- Component Methods -----------------------------
 	 
@@ -63,6 +76,48 @@ public: //-------------- Component Methods -----------------------------
 
 	Transform& GetTransform();
 
+public: //---------------------|Flag Enum/Methods|-----------------------------
+	enum class Flags {
+		/// If this flag is set, the actor will be destroyed at end of frame
+		Destroyed,
+		/// If this flag is set, the actor will be moved to another parent at end of frame
+		ParentChanged,
+		/// Skip this Actor's Update cycle. Disables Update(), LateUpdate(), and FixedUpdate()
+		NoUpdate,
+		/// Skip this Actor's Render cycle. Disable Render().
+		NoRender,
+		/// If not set, runs start methods on its components and sets it at the start of the next frame.
+		Started,
+		/// If set, the actor is considered inactive, Controls Enable() and Disable().
+		Disabled,
+		/// If set, the actor will start disabled. Disable() will be called in Start(). Setting this flag has no effect if the Started flag has already been set.
+		DisableOnStart,
+
+		SIZE_
+	};
+
+	bool IsFlagged(Flags flag)	const;
+
+	/// <summary>
+	/// Flag this actor for destruction and call OnDestroy() on its components. Note that the root actor of any given scene cannot be destroyed; you must load a new scene instead.
+	/// </summary>
+	void Destroy();
+
+	/// <summary>
+	/// Enable the actor and its children, if disabled. Unsets NoUpdate and NoRender and calls OnEnable().
+	/// </summary>
+	void Enable();
+
+	/// <summary>
+	/// Disable the actor and its children, if enabled. Sets NoUpdate and NoRender and calls OnDisable()
+	/// </summary> 
+	void Disable();
+
+	/// <summary>
+	/// Set this Actor to start enabled or disabled. By default, actors are enabled on start.
+	/// </summary>
+	void EnableOnStart(bool enable);
+
 public: //-------------------- Gameloop Methods --------------------------------
 
 	/// @brief Executed on the first frame this actor is enabled.
@@ -77,8 +132,16 @@ public: //-------------------- Gameloop Methods --------------------------------
 	void Render();
 	/// @brief Executed every frame on ImguiRenderComponents during the rendering stage.
 	void RenderImgui();
-	/// @brief Executed every frame as the last logical step of the frame. This function cleans up its children, destroying or moving them as flagged.
-	void CleanupChildren();
+	/// @brief Executed every frame as the last logical step of the frame. This function cleans up its children.
+	void Cleanup();
+
+private: //-------------------- Child/Parent Actor Fields -----------------------------------
+
+	Actor* m_ParentPtr{};
+
+	std::vector<std::unique_ptr<Actor>> m_ChildUptrs{};
+
+	MoveInfo m_MoveInfo{};
 
 private: //----------------------- Component Fields -------------------------------------
 
@@ -86,12 +149,9 @@ private: //----------------------- Component Fields ----------------------------
 
 	Transform* m_TransformPtr;
 
-private: //-------------------- Child/Parent Actor Fields -----------------------------------
+private: //----------------------- Metadata Fields -------------------------------------------
 
-	Actor* m_ParentPtr{};
-
-	std::vector < std::unique_ptr<Actor>> m_ChildUptrs{};
-
+	std::bitset<static_cast<int>(Flags::SIZE_)> m_Flags{};
 }; // !Actor
 
 

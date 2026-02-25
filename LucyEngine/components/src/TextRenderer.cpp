@@ -50,7 +50,7 @@ void eng::TextRenderer::Update() {
 void eng::TextRenderer::Render() {
 	if (m_TextTextureUptr == nullptr) return;
 
-	const glm::vec2 f_Pos{ Owner().GetTransform().GetLocal().position };
+	const glm::vec2 f_Pos{ Owner().GetTransform().GetGlobal().position };
 	const auto f_Size{ m_TextTextureUptr->GetSize() };
 	eng::service::renderer.Get().RenderTexture({ *m_TextTextureUptr, SDL_FRect{ f_Pos.x, f_Pos.y, f_Size.x, f_Size.y }, SDL_FRect{ 0, 0, f_Size.x, f_Size.y } });
 

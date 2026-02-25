@@ -24,7 +24,7 @@ TextureRenderer::TextureRenderer(eng::Actor& owner, const std::string& texturePa
 	if (m_SourceRect.x == -1) m_SourceRect = { 0,0, f_TextureSize.x, f_TextureSize.y };
 }
 void TextureRenderer::Render() {
-	auto f_Pos = Owner().GetTransform().GetLocal().position;
+	auto f_Pos = Owner().GetTransform().GetGlobal().position;
 	f_Pos.x *= s_GlobalScale;
 	f_Pos.y *= s_GlobalScale;
 
