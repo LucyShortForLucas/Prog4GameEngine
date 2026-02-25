@@ -14,8 +14,8 @@ public:
 	SdlResourceLoader();
 	~SdlResourceLoader() override;
 
-	virtual dae::Texture2D* LoadTexture(const std::string& file);
-	virtual dae::Font* LoadFont(const std::string& file, uint8_t size);
+	dae::Texture2D* LoadTexture(const std::string& file) override;
+	dae::Font* LoadFont(const std::string& file, uint8_t size) override;
 private:
 	std::map<std::string, std::unique_ptr<dae::Texture2D>> m_TextureUptrs;
 	std::map<std::pair<std::string, uint8_t>, std::unique_ptr<dae::Font>> m_FontUptrs;
