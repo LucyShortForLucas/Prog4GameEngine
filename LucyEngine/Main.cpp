@@ -18,6 +18,7 @@
 #include "TextRenderer.h"
 #include "ResourceLoader.h"
 #include "Rotator.h"
+#include "ThrashTheCache.h"
 
 #include <filesystem>
 #include <memory>
@@ -28,23 +29,6 @@ namespace fs = std::filesystem;
 
 static std::unique_ptr<eng::Actor> load()
 {
-	//auto& scene = dae::SceneManager::GetInstance().CreateScene();
-
-	//auto go = std::make_unique<dae::GameObject>();
-	//go->SetTexture("background.png");
-	//scene.Add(std::move(go));
-
-	//go = std::make_unique<dae::GameObject>();
-	//go->SetTexture("logo.png");
-	//go->SetPosition(358, 180);
-	//scene.Add(std::move(go));
-
-	//auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	//auto to = std::make_unique<dae::TextObject>("Programming 4 Assignment", font);
-	//to->SetColor({ 255, 255, 0, 255 });
-	//to->SetPosition(292, 20);
-	//scene.Add(std::move(to));
-
 	auto root{std::make_unique<eng::Actor>()};
 
 	root->AddComponent<eng::TextureRenderer>("background.png");
@@ -54,22 +38,15 @@ static std::unique_ptr<eng::Actor> load()
 	logo.AddComponent<eng::TextureRenderer>("logo.png");
 	logo.GetComponent<eng::Transform>()->SetGlobalPosition(358, 180);
 
-	auto& text{ root->AddChildActor() };
+	auto& fps{ root->AddChildActor() };
 
-	text.AddComponent<eng::TextRenderer>("Test Test I am text");
-	text.GetComponent<eng::Transform>()->SetGlobalPosition(20, 20);
+	fps.AddComponent<eng::TextRenderer>("Text");
+	fps.GetComponent<eng::Transform>()->SetGlobalPosition(20, 20);
+	fps.AddComponent<eng::FpsTracker>();
 
-	text.AddComponent<eng::FpsTracker>();
+	auto& thrashCache{ root->AddChildActor() };
 
-	auto& blueTank{ root->AddChildActor() };
-	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{32, 32}, SDL_FRect(0,0, 32, 32));
-	blueTank.GetComponent<eng::Transform>()->SetGlobalPosition(400, 180);
-
-
-	auto& redTank{ blueTank.AddChildActor() };
-	redTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect(32, 0, 32, 32));
-	redTank.GetComponent<eng::Transform>()->SetLocalPosition(64, 64);
-	redTank.AddComponent<eng::Rotator>();
+	thrashCache.AddComponent<eng::ThrashTheCache>();
 
 	return root;
 }

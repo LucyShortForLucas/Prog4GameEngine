@@ -47,7 +47,9 @@ void eng::Renderer::Render(eng::Actor& root) const {
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::ShowDemoWindow(); // For demonstration purposes, do not keep this in your engine
+    root.RenderImgui();
+
+    ImGui::EndFrame();
 
     ImGui::Render();
     
