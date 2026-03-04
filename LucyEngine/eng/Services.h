@@ -12,23 +12,28 @@ namespace eng::service {
 template <typename T>
 class Service final {
 public:
-	Service(std::unique_ptr<T> defaultServiceUptr) : m_DefaultServiceUptr(std::move(defaultServiceUptr)), m_ServicePtr(m_DefaultServiceUptr.get()) {};
+	Service(std::unique_ptr<T> defaultServiceUptr) : m_DefaultServiceUptr(std::move(defaultServiceUptr)), m_ServicePtr(m_DefaultServiceUptr.get()) {
+		m_ServicePtr = m_DefaultServiceUptr.get();
+	}
 
 	void Register(std::unique_ptr<T> service) {
-		m_ServicePtr = std::move(service);
-	};
+		m_RegisteredServicePtr = std::move(service);
+		m_ServicePtr = m_RegisteredServicePtr.get();
+	}
 
 	void Unregister() {
-		m_ServicePtr = m_DefaultServiceUptr;
-	};
+		m_ServicePtr = m_DefaultServiceUptr.get();
+		if (m_RegisteredServicePtr) m_RegisteredServicePtr.release();
+	}
 
 	T& Get() {
 		return *m_ServicePtr;
-	};
+	}
 private:
 
 	std::unique_ptr<T> m_DefaultServiceUptr{};
-	std::unique_ptr<T> m_ServicePtr{};
+	std::unique_ptr<T> m_RegisteredServicePtr{};
+	T* m_ServicePtr;
 };
 
 //---------------------------------------- Services ---------------------------------------

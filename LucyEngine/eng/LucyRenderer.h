@@ -19,6 +19,7 @@ namespace eng {
 class Renderer final : public service::IRenderer {
 public:
 	Renderer(SDL_Window* window);
+	~Renderer();
 
 	void Render(eng::Actor&) const override;
 
