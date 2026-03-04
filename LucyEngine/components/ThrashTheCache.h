@@ -29,28 +29,28 @@ public: //--------------- Gameloop Methods --------------
 private: //------------------- private Cache exercise helper methods --------
 
 	template <typename T>
-	static std::vector<int> TakeMeasurement(int sampleSize) {
+	static std::vector<float> TakeMeasurement(int sampleSize) {
 		std::vector<T> arr(67'000'000);
 
-		std::vector<int> measurements;
+		std::vector<float> measurements;
 
 		for (int stepSize{ 1 }; stepSize <= 1024; stepSize *= 2) {
-			std::vector<int> subMeasurements{};
+			std::vector<float> subMeasurements{};
 			for (int sampleId{}; sampleId < sampleSize; ++sampleId) {
 				auto start = std::chrono::high_resolution_clock::now();
 				for (int i{ 0 }; i < arr.size(); i += stepSize) {
 					arr[i].id *= 2;
 				}
-				subMeasurements.emplace_back(static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count()));
+				subMeasurements.emplace_back(static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count()));
 			};
 			std::ranges::sort(subMeasurements);
 			std::rotate(subMeasurements.begin(), subMeasurements.begin() + 1, subMeasurements.end());
 			subMeasurements.pop_back();
 			subMeasurements.pop_back();
 
-			measurements.emplace_back(std::accumulate(subMeasurements.begin(), subMeasurements.end(), 0) / static_cast<int>(subMeasurements.size()));
+			measurements.emplace_back(std::accumulate(subMeasurements.begin(), subMeasurements.end(), 0.f) / static_cast<float>(subMeasurements.size()));
 		};
-
+		
 		return measurements;
 	}
 
@@ -80,9 +80,9 @@ private: //-------------- Helper classes ---------------
 
 private: //--------------------- MeasurementData ---------------
 
-	std::vector<int> m_GameObject3dMeasurements{};
-	std::vector<int> m_GameObject3dAltMeasurements{};
-	std::vector<int> m_IntMeasurements{};
+	std::vector<float> m_GameObject3dMeasurements{};
+	std::vector<float> m_GameObject3dAltMeasurements{};
+	std::vector<float> m_IntMeasurements{};
 };
 
 } // !eng
