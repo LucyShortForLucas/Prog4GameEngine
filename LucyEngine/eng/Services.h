@@ -76,4 +76,13 @@ public:
 
 extern Service<IGameTime> gameTime;
 
+class IInput {
+public:
+	virtual ~IInput() = default;
+
+	virtual bool ProcessInput() = 0;
+};
+
+extern Service<IInput> input;
+
 }

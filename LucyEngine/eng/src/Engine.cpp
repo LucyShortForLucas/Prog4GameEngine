@@ -111,10 +111,11 @@ bool eng::Engine::RunOneFrame() {
 
 	// Fetch Renderer
 	auto& renderer = eng::service::renderer.Get();
+	auto& input = eng::service::input.Get();
 
 	m_RootActor->Start();
 
-	bool doContinue{ dae::InputManager::GetInstance().ProcessInput() };
+	bool doContinue{ input.ProcessInput() };
 
 	m_RootActor->Update();
 

@@ -32,9 +32,9 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   "LucyEngine/eng/src/GameTime.cpp" 
   "LucyEngine/components/src/FpsTracker.cpp"
   "LucyEngine/components/src/ThrashTheCache.cpp"
-  "LucyEngine/Input/src/CommandGroup.cpp"
+  "LucyEngine/Input/src/CommandInputGroup.cpp"
   "LucyEngine/Input/src/AbstractCommand.cpp"
-  "LucyEngine/utils/src/EventSource.cpp" "LucyEngine/utils/src/EventQueue.cpp")
+  "LucyEngine/utils/src/EventSource.cpp" "LucyEngine/utils/src/EventQueue.cpp" "LucyEngine/Input/src/Input.cpp" "LucyEngine/Input/src/KeyboardState.cpp" "LucyEngine/Input/src/GamepadState.cpp")
 
 # Add top-level directories to includes
 target_include_directories(${TARGET_NAME} PRIVATE
@@ -183,6 +183,7 @@ target_link_libraries("${TARGET_NAME}" PUBLIC
   imgui
   imgui_plot    
   ${VLD_LIBRARIES}
+  Xinput
 )
 
 if(MSVC)

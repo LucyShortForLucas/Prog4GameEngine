@@ -1,6 +1,6 @@
 #pragma once
 
-class CommandGroup final {
+class CommandInputGroup final {
 public:
 
 private:

@@ -20,6 +20,7 @@
 #include <memory>
 
 #include "GameTime.h"
+#include "Input.h"
 
 namespace fs = std::filesystem;
 
@@ -58,6 +59,7 @@ int main(int, char*[]) {
 	// Set up services
 	eng::service::resources.Register(std::make_unique<eng::SdlResourceLoader>());
 	eng::service::gameTime.Register(std::make_unique<eng::GameTime>());
+	eng::service::input.Register(std::make_unique<eng::Input>());
 
 	//dae::Minigin engine(data_location);
 	eng::Engine engine{data_location};

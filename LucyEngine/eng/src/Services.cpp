@@ -42,4 +42,14 @@ public:
 
 Service<IGameTime> gameTime{ std::make_unique<NullGameTime>() };
 
+
+class NullInput final : public IInput {
+public:
+	bool ProcessInput() override { return false; };
+};
+
+Service<IInput> input{ std::make_unique<NullInput>() };
+
+extern Service<IInput> input;
+
 }
