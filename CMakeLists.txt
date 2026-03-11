@@ -34,7 +34,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   "LucyEngine/components/src/ThrashTheCache.cpp"
   "LucyEngine/Input/src/CommandGroup.cpp"
   "LucyEngine/Input/src/AbstractCommand.cpp"
-  "LucyEngine/utils/src/EventSource.cpp")
+  "LucyEngine/utils/src/EventSource.cpp" "LucyEngine/utils/src/EventQueue.cpp")
 
 # Add top-level directories to includes
 target_include_directories(${TARGET_NAME} PRIVATE

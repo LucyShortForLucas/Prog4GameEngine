@@ -1,6 +1,6 @@
 #include "EventSource.h"
 
-void eng::EventSource::Invoke(uint64_t id, std::any context) {
+void eng::EventSource::Invoke(unsigned int id, std::any context) {
 	for (auto listener : m_Subjects) {
 		listener->OnEvent(id, context);
 	}
