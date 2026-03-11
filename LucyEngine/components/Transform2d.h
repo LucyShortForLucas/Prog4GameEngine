@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AbstractComponent.h"
+#include <glm/vec2.hpp>
 
 namespace eng {
 

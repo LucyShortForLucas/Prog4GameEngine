@@ -5,11 +5,7 @@
 #include <vld.h>
 #endif
 
-#include "Minigin.h"
-#include "SceneManager.h"
-#include "ResourceManager.h"
-#include "TextObject.h"
-#include "Scene.h"
+
 #include "Engine.h"
 #include "LucyRenderer.h"
 #include "Actor.h"

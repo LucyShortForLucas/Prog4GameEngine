@@ -16,16 +16,16 @@ endif()
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/Font.cpp
-  Minigin/GameObject.cpp
+  
   Minigin/InputManager.cpp
-  Minigin/Minigin.cpp
-  Minigin/Renderer.cpp
-  Minigin/ResourceManager.cpp
-  Minigin/Scene.cpp
-  Minigin/SceneManager.cpp
-  Minigin/TextObject.cpp
+  
+  
+  
+  
+  
+  
   Minigin/Texture2D.cpp
-  Minigin/Transform.cpp
+  
   LucyEngine/Main.cpp
   LucyEngine/eng/src/Actor.cpp
   LucyEngine/eng/src/Engine.cpp
@@ -36,7 +36,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   "LucyEngine/components/src/Rotator.cpp"
   "LucyEngine/eng/src/Services.cpp" 
   "LucyEngine/eng/src/LucyRenderer.cpp" 
-  "LucyEngine/eng/src/ResourceLoader.cpp" "LucyEngine/eng/src/GameTime.cpp" "LucyEngine/components/src/FpsTracker.cpp" "LucyEngine/components/src/ThrashTheCache.cpp")
+  "LucyEngine/eng/src/ResourceLoader.cpp" "LucyEngine/eng/src/GameTime.cpp" "LucyEngine/components/src/FpsTracker.cpp" "LucyEngine/components/src/ThrashTheCache.cpp" "LucyEngine/Input/src/CommandGroup.cpp" "LucyEngine/Input/src/AbstractCommand.cpp")
 
 # Add top-level directories to includes
 target_include_directories(${TARGET_NAME} PRIVATE
@@ -138,7 +138,7 @@ add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui_demo.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
-)
+ "LucyEngine/Input/src/AbstractCommand.cpp")
 
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${sdl3_SOURCE_DIR}/include)
 target_link_libraries(imgui PUBLIC SDL3::SDL3)
