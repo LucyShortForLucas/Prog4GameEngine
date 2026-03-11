@@ -6,6 +6,7 @@
 #include "Actor.h"
 #include "Font.h"
 #include <chrono>
+#include "CommandInputGroup.h"
 
 namespace eng::service {
 //---------------------------------------- Service class ---------------------------------------
@@ -81,6 +82,8 @@ public:
 	virtual ~IInput() = default;
 
 	virtual bool ProcessInput() = 0;
+	virtual CommandInputGroup& NewInputgroup(Actor& actor) = 0;
+	virtual EventSource& GetEventSource() = 0;
 };
 
 extern Service<IInput> input;

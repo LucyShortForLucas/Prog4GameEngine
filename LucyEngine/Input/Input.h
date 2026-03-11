@@ -24,7 +24,9 @@ class Input final : public service::IInput {
 public:
 	bool ProcessInput() override;
 
-	CommandInputGroup& NewInputgroup(Actor& actor);
+	CommandInputGroup& NewInputgroup(Actor& actor) override;
+
+	EventSource& GetEventSource();
 
 private:
 	KeyboardState m_KeyboardState{};

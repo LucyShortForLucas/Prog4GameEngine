@@ -22,6 +22,7 @@
 #include "GameTime.h"
 #include "Input.h"
 #include "Services.h"
+#include "Move.h"
 
 namespace fs = std::filesystem;
 
@@ -47,9 +48,29 @@ static std::unique_ptr<eng::Actor> load()
 	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{0, 0, 32, 32});
 	blueTank.GetComponent<eng::Transform>()->SetGlobalPosition(200, 100);
 
-	auto input{ eng::service::input.Get() };
+	auto& input{ eng::service::input.Get() };
 
-	auto blueTankInput { }
+	auto& blueTankInput{ input.NewInputgroup(blueTank) };
+	blueTankInput.SubscribeInputSource(input.GetEventSource());
+
+	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_W, std::make_unique<eng::Move>(glm::vec2{ 0, -80 }));
+	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_A, std::make_unique<eng::Move>(glm::vec2{ -80, 0 }));
+	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_S, std::make_unique<eng::Move>(glm::vec2{ 0, 80 }));
+	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_D, std::make_unique<eng::Move>(glm::vec2{ 80, 0 }));
+
+	auto& redTank{ root->AddChildActor() };
+
+	redTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{ 32, 0, 32, 32 });
+	redTank.GetComponent<eng::Transform>()->SetGlobalPosition(200, 150);
+
+	auto& redTankInput{ input.NewInputgroup(redTank) };
+	redTankInput.SubscribeInputSource(input.GetEventSource());
+
+	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Up, std::make_unique<eng::Move>(glm::vec2{ 0, -80 }));
+	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Left, std::make_unique<eng::Move>(glm::vec2{ -80, 0 }));
+	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Down, std::make_unique<eng::Move>(glm::vec2{ 0, 80 }));
+	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Right, std::make_unique<eng::Move>(glm::vec2{ 80, 0 }));
+
 
 	return root;
 }

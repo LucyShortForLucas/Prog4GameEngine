@@ -45,7 +45,13 @@ Service<IGameTime> gameTime{ std::make_unique<NullGameTime>() };
 
 class NullInput final : public IInput {
 public:
-	bool ProcessInput() override { return false; };
+	bool ProcessInput() override { return false; }
+	CommandInputGroup& NewInputgroup(Actor&) override { return m_NullInputGroup; }
+	EventSource& GetEventSource() { return m_NullEventSource; }
+
+private:
+	CommandInputGroup m_NullInputGroup{ nullptr };
+	EventSource m_NullEventSource{};
 };
 
 Service<IInput> input{ std::make_unique<NullInput>() };

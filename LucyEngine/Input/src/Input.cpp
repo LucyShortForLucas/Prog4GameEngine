@@ -62,12 +62,20 @@ bool Input::ProcessInput() {
 			);
 	}
 
+	for (auto& inputGroup : m_InputGroups) {
+		inputGroup->Update();
+	}
+
 	return true;
 }
 
 CommandInputGroup& Input::NewInputgroup(Actor& actor) {
 	m_InputGroups.emplace_back(std::make_unique<CommandInputGroup>( & actor));
 	return *m_InputGroups.back();
+}
+
+EventSource& Input::GetEventSource() {
+	return m_EventSource;
 }
 
 }
