@@ -12,4 +12,8 @@ EventQueue::Event EventQueue::PopEvent() {
 	return result;
 }
 
+bool eng::EventQueue::Empty() {
+	return m_Events.empty();
+}
+
 }

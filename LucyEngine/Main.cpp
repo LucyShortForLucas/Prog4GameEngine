@@ -21,6 +21,7 @@
 
 #include "GameTime.h"
 #include "Input.h"
+#include "Services.h"
 
 namespace fs = std::filesystem;
 
@@ -41,9 +42,14 @@ static std::unique_ptr<eng::Actor> load()
 	fps.GetComponent<eng::Transform>()->SetGlobalPosition(20, 20);
 	fps.AddComponent<eng::FpsTracker>();
 
-	auto& thrashCache{ root->AddChildActor() };
+	auto& blueTank{ root->AddChildActor() };
 
-	thrashCache.AddComponent<eng::ThrashTheCache>();
+	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{0, 0, 32, 32});
+	blueTank.GetComponent<eng::Transform>()->SetGlobalPosition(200, 100);
+
+	auto input{ eng::service::input.Get() };
+
+	auto blueTankInput { }
 
 	return root;
 }

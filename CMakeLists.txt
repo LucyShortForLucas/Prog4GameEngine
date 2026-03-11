@@ -34,7 +34,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   "LucyEngine/components/src/ThrashTheCache.cpp"
   "LucyEngine/Input/src/CommandInputGroup.cpp"
   "LucyEngine/Input/src/AbstractCommand.cpp"
-  "LucyEngine/utils/src/EventSource.cpp" "LucyEngine/utils/src/EventQueue.cpp" "LucyEngine/Input/src/Input.cpp" "LucyEngine/Input/src/KeyboardState.cpp" "LucyEngine/Input/src/GamepadState.cpp")
+  "LucyEngine/utils/src/EventSource.cpp" "LucyEngine/utils/src/EventQueue.cpp" "LucyEngine/Input/src/Input.cpp" "LucyEngine/Input/src/KeyboardState.cpp" "LucyEngine/Input/src/GamepadState.cpp" "LucyEngine/Commands/src/Move.cpp" "LucyEngine/Input/Key.h")
 
 # Add top-level directories to includes
 target_include_directories(${TARGET_NAME} PRIVATE
@@ -43,6 +43,7 @@ LucyEngine/eng
 LucyEngine/components
 LucyEngine/utils
 LucyEngine/Input
+LucyEngine/Commands
 )
 
 # enable c++20 features
@@ -137,7 +138,7 @@ add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/imgui_demo.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
-)
+ )
 
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${sdl3_SOURCE_DIR}/include)
 target_link_libraries(imgui PUBLIC SDL3::SDL3)

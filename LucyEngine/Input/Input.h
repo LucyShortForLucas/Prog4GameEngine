@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Services.h"
 #include "EventSource.h"
 
@@ -5,6 +7,8 @@
 #include "GamepadState.h"
 
 #include "SdbmHash.h"
+
+#include "CommandInputGroup.h"
 
 namespace eng {
 
@@ -16,37 +20,19 @@ constexpr unsigned int keyUp{ make_sdbm_hash("KeyUp") };
 
 }
 
-namespace eventContext {
-
-struct Key {
-	const bool isKeyboardKey;
-	union {
-		SDL_Scancode keyboardKey;
-		GamepadKeys gamepadKey;
-	};
-
-	Key(SDL_Scancode key) :
-		isKeyboardKey(true),
-		keyboardKey(key) {
-	}
-
-	Key(GamepadKeys key) :
-		isKeyboardKey(false),
-		gamepadKey(key) {}
-
-};
-
-}
-
 class Input final : public service::IInput {
 public:
 	bool ProcessInput() override;
+
+	CommandInputGroup& NewInputgroup(Actor& actor);
 
 private:
 	KeyboardState m_KeyboardState{};
 	GamepadState m_GamePadState{};
 
 	EventSource m_EventSource{};
+
+	std::vector<std::unique_ptr<CommandInputGroup>> m_InputGroups{};
 };
 
 }

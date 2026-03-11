@@ -1,3 +1,5 @@
+#pragma once
+
 #include "EventSource.h"
 #include <queue>
 
@@ -10,6 +12,8 @@ public:
 	void OnEvent(unsigned int id, std::any context) override;
 
 	Event PopEvent();
+
+	bool Empty();
 
 private:
 	std::queue<Event> m_Events{};
