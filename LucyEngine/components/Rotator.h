@@ -5,7 +5,7 @@
 
 namespace eng {
 
-class Rotator : public AbstractComponent {
+class Rotator final : public AbstractComponent {
 public: //--------------- Constructor/Destructor/copy/move --------------
 
 	Rotator(Actor& owner) : AbstractComponent(owner) {};
