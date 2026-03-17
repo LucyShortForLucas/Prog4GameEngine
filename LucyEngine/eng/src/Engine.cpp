@@ -20,6 +20,13 @@
 
 #include "AbstractComponent.h"
 
+#if USE_STEAMWORKS
+#pragma warning (push)
+#pragma warning (disable:4996)
+#include <steam_api.h>
+#pragma warning (pop)
+#endif
+
 
 static SDL_Window* g_window{};
 
@@ -75,11 +82,21 @@ eng::Engine::Engine(const fs::path&) {
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
+	// Set up Steam if needed
+	#if USE_STEAMWORKS
+	if (!SteamAPI_Init())
+		throw std::runtime_error(std::string("Fatal Error - Steam must be running to play this game (SteamAPI_Init() failed)."));
+	#endif
+
 	// Set up renderer from window as service
 	eng::service::renderer.Register(std::make_unique<eng::Renderer>(g_window));
 }
 
 eng::Engine::~Engine() {
+	#if USE_STEAMWORKS
+	SteamAPI_Shutdown();
+	#endif
+
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
 	SDL_Quit();

@@ -8,6 +8,13 @@
 
 #include <iostream>
 
+#if USE_STEAMWORKS
+#pragma warning (push)
+#pragma warning (disable:4996)
+#include <steam_api.h>
+#pragma warning (pop)
+#endif
+
 namespace eng {
 
 bool Input::ProcessInput() {
@@ -20,6 +27,10 @@ bool Input::ProcessInput() {
 
 		ImGui_ImplSDL3_ProcessEvent(&e);
 	}
+
+	#if USE_STEAMWORKS
+	SteamAPI_RunCallbacks();
+	#endif 
 
 	m_KeyboardState.FetchCurrentState();
 	m_GamePadState.FetchCurrentState();
