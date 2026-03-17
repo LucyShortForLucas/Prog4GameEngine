@@ -23,6 +23,10 @@
 #include "Input.h"
 #include "Services.h"
 #include "Move.h"
+#include "Kill.h"
+#include "AddScore.h"
+#include "HpScore.h"
+#include "HpScoreDisplay.h"
 
 namespace fs = std::filesystem;
 
@@ -43,9 +47,16 @@ static std::unique_ptr<eng::Actor> load()
 	fps.GetComponent<eng::Transform>()->SetGlobalPosition(20, 20);
 	fps.AddComponent<eng::FpsTracker>();
 
+	auto& blueTankUi{ root->AddChildActor() };
+	
+	blueTankUi.GetComponent<eng::Transform>()->SetGlobalPosition(10, 100);
+	blueTankUi.AddComponent<eng::TextRenderer>("# lives: 0 Score: 0");
+	blueTankUi.AddComponent<eng::HpScoreDisplay>();
+	
 	auto& blueTank{ root->AddChildActor() };
 
-	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{0, 0, 32, 32});
+	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{ 0, 0, 32, 32 });
+	blueTank.AddComponent<eng::HpScore>(3).Subsribe(*blueTankUi.GetComponent<eng::HpScoreDisplay>());
 	blueTank.GetComponent<eng::Transform>()->SetGlobalPosition(200, 100);
 
 	auto& input{ eng::service::input.Get() };
@@ -57,6 +68,10 @@ static std::unique_ptr<eng::Actor> load()
 	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_A, std::make_unique<eng::Move>(glm::vec2{ -80, 0 }));
 	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_S, std::make_unique<eng::Move>(glm::vec2{ 0, 80 }));
 	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_D, std::make_unique<eng::Move>(glm::vec2{ 80, 0 }));
+
+	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_X, std::make_unique<eng::Kill>());
+	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_Q, std::make_unique<eng::AddScore>(10));
+	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_B, std::make_unique<eng::AddScore>(100));
 
 	auto& redTank{ root->AddChildActor() };
 

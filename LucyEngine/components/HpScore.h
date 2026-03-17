@@ -10,7 +10,7 @@ namespace eng {
 namespace eventId {
 
 constexpr unsigned int livesChanged{ make_sdbm_hash("LivesChanged") };
-constexpr unsigned int scoreChanged{ make_sdbm_hash("LivesChanged") };
+constexpr unsigned int scoreChanged{ make_sdbm_hash("ScoreChanged") };
 
 }
 
@@ -31,7 +31,7 @@ struct ScoreChangedContext {
 class HpScore final : public AbstractComponent {
 public: //--------------- Constructor/Destructor/copy/move --------------
 
-	HpScore(Actor& owner, int startingLives) : AbstractComponent(owner) {};
+	HpScore(Actor& owner, int startingLives) : AbstractComponent(owner), m_Lives(startingLives) {};
 	~HpScore() = default;
 
 	HpScore(const HpScore&) = delete;
@@ -52,7 +52,7 @@ public: // ------------------ Setter methods ---------------------------
 
 private: //----------------- Health and score data ---------------------------
 
-	int m_Lives;
+	int m_Lives{};
 	int m_Score{};
 
 private: // ---------------- Event Source -------------------------------
