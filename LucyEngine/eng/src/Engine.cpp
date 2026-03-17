@@ -12,11 +12,9 @@
 #include <SDL3/SDL.h>
 //#include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include "InputManager.h"
 #include <thread>
 #include <utility>
 #include "Services.h"
-#include "InputManager.h"
 #include "Actor.h"
 #include "LucyRenderer.h"
 

@@ -16,7 +16,7 @@ endif()
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/Font.cpp
-  Minigin/InputManager.cpp
+  
   Minigin/Texture2D.cpp 
   LucyEngine/Main.cpp
   LucyEngine/eng/src/Actor.cpp
