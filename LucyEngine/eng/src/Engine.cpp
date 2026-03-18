@@ -17,6 +17,7 @@
 #include "Services.h"
 #include "Actor.h"
 #include "LucyRenderer.h"
+#include "SteamAchievements.h"
 
 #include "AbstractComponent.h"
 
@@ -86,6 +87,7 @@ eng::Engine::Engine(const fs::path&) {
 	#if USE_STEAMWORKS
 	if (!SteamAPI_Init())
 		throw std::runtime_error(std::string("Fatal Error - Steam must be running to play this game (SteamAPI_Init() failed)."));
+		g_SteamAchievements = new CSteamAchievements(g_Achievements, 4);
 	#endif
 
 	// Set up renderer from window as service
@@ -95,6 +97,8 @@ eng::Engine::Engine(const fs::path&) {
 eng::Engine::~Engine() {
 	#if USE_STEAMWORKS
 	SteamAPI_Shutdown();
+	if (g_SteamAchievements)
+		delete g_SteamAchievements;
 	#endif
 
 	SDL_DestroyWindow(g_window);

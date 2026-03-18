@@ -12,7 +12,7 @@ namespace eng {
 
 class TextRenderer final : public AbstractComponent {
 public: //--------------- Constructor/Destructor/copy/move --------------
-	TextRenderer(Actor& owner, const std::string& text = "", const std::string& fontPath = "Lingua.otf", unsigned int size = 36, SDL_Color color = { 255,255,255,255 });
+	TextRenderer(Actor& owner, const std::string& text = "", const std::string& fontPath = "Lingua.otf", unsigned int size = 24, SDL_Color color = { 255,255,255,255 });
 	~TextRenderer() = default;
 
 	TextRenderer(const TextRenderer&) = delete;

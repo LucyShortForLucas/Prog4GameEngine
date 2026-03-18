@@ -8,8 +8,8 @@ namespace eng {
 struct Key {
 	const bool isKeyboardKey;
 	union {
-		SDL_Scancode keyboardKey;
-		GamepadKeys gamepadKey;
+		const SDL_Scancode keyboardKey;
+		const GamepadKeys gamepadKey;
 	};
 
 	Key(SDL_Scancode key) :
