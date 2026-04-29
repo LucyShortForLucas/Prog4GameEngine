@@ -1,7 +1,5 @@
 #include "HpScore.h"
 
-#include "SteamAchievements.h"
-
 void eng::HpScore::Subsribe(AbstractEventListener& subject) {
 	m_EventSource.Subsribe(subject);
 }
@@ -20,6 +18,4 @@ void eng::HpScore::GainScore(int score) {
 	int oldScore = m_Score;
 	m_Score += score;
 	m_EventSource.Invoke(eventId::scoreChanged, std::make_any<eventContext::ScoreChangedContext>(oldScore, m_Score));
-	if (m_Score >= 500 and g_SteamAchievements)
-		g_SteamAchievements->SetAchievement("ACH_WIN_ONE_GAME");
 }
