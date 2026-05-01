@@ -5,18 +5,26 @@
 
 namespace eng {
 
-class EventQueue final : public AbstractEventListener {
+template <typename TEvent>
+class EventQueue final : public AbstractEventListener<TEvent>{
 public:
-	using Event = std::pair<unsigned int, std::any>;
+	void OnEvent(const TEvent& event) override {
+		m_Events.emplace_back(event);
+	}
 
-	void OnEvent(unsigned int id, std::any context) override;
+	TEvent PopEvent() {
+		assert(!m_Events.empty(), "Trying to pop an empty event queue");
+		auto result{ m_Events.back() };
+		m_Events.pop_back();
+		return result;
+	}
 
-	Event PopEvent();
-
-	bool Empty();
+	bool Empty() const {
+		return m_Events.empty();
+	}
 
 private:
-	std::queue<Event> m_Events{};
+	std::vector<TEvent> m_Events{};
 };
 
 }

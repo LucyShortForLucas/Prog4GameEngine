@@ -12,11 +12,19 @@
 
 namespace eng {
 
-namespace eventId {
+namespace event {
 
-constexpr unsigned int keyDown{ make_sdbm_hash("KeyDown") };
-constexpr unsigned int keyPressed{ make_sdbm_hash("KeyPressed") };
-constexpr unsigned int keyUp{ make_sdbm_hash("KeyUp") };
+struct KeyUp {
+	Key key;
+};
+
+struct KeyPressed {
+	Key key;
+};
+
+struct KeyDown {
+	Key key;
+};
 
 }
 
@@ -26,13 +34,16 @@ public:
 
 	CommandInputGroup& NewInputgroup(Actor& actor) override;
 
-	EventSource& GetEventSource();
-
+	EventSource<event::KeyUp>& UpEventSource();
+	EventSource<event::KeyPressed>& PressedEventSource();
+	EventSource<event::KeyDown>& DownEventSource();
 private:
 	KeyboardState m_KeyboardState{};
 	GamepadState m_GamePadState{};
 
-	EventSource m_EventSource{};
+	EventSource<event::KeyUp> m_UpEventSource{};
+	EventSource<event::KeyPressed> m_PressedEventSource{};
+	EventSource<event::KeyDown> m_DownEventSource{};
 
 	std::vector<std::unique_ptr<CommandInputGroup>> m_InputGroups{};
 };

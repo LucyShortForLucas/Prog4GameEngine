@@ -58,4 +58,22 @@ Service<IInput> input{ std::make_unique<NullInput>() };
 
 extern Service<IInput> input;
 
+class NullAudioPlayer final : public IAudioPlayer {
+public:
+	virtual void PlaySound(std::string) {};
+	virtual void StopSound(std::string) {};
+	virtual void StopSound() {};
+};
+
+Service<IAudioPlayer> audioPlayer{ std::make_unique<NullAudioPlayer>() };
+
+class NullLogger final : public ILogger {
+public:
+	void Log(const std::string& text) override {};
+	void LogError(const std::string& text) override {};
+
+};
+
+Service<ILogger> logger{ std::make_unique<NullLogger>() };
+
 }

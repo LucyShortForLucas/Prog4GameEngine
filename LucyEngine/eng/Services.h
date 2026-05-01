@@ -88,4 +88,23 @@ public:
 
 extern Service<IInput> input;
 
+class IAudioPlayer {
+public:
+	virtual ~IAudioPlayer() = default;
+	virtual void PlaySound(std::string sound) = 0;
+	virtual void StopSound(std::string sound) = 0;
+	virtual void StopSound() = 0;
+};
+
+extern Service<IAudioPlayer> audioPlayer;
+
+class ILogger {
+public:
+	virtual ~ILogger() = default;
+	virtual void Log(const std::string& text) = 0;
+	virtual void LogError(const std::string& text) = 0;
+};
+
+extern Service<ILogger> logger;
+
 }

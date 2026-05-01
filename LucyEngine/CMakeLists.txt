@@ -29,7 +29,8 @@ add_library(${PROJECT_NAME} STATIC
   components/src/HpScoreDisplay.cpp
   Commands/src/Kill.cpp
   Commands/src/AddScore.cpp
-)
+  eng/AudioPlayer.h eng/src/AudioPlayer.cpp
+ "eng/Logger.h" "eng/src/Logger.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   eng components utils Input Commands ../Minigin
@@ -64,6 +65,21 @@ if (WIN32)
   find_package(SDL3_ttf CONFIG REQUIRED)
 endif()
 
+# SDL3_mixerI
+set(SDL3_MIXER_DLL_PATH "${sdl3_mixer_SOURCE_DIR}/lib/x64/SDL3_mixer.dll" CACHE INTERNAL "")
+set(SDL3MIXER_BUILD_OPUS OFF CACHE BOOL "" FORCE)
+set(SDL3MIXER_BUILD_FLAC_LIBFLAC OFF CACHE BOOL "" FORCE)
+set(SDL3MIXER_BUILD_FLAC_DRFLAC ON CACHE BOOL "" FORCE)
+set(SDL3MIXER_BUILD_MPG123 OFF CACHE BOOL "" FORCE)
+set(SDL3MIXER_BUILD_XMP OFF CACHE BOOL "" FORCE)
+set(SDL3MIXER_BUILD_MOD_XMP OFF CACHE BOOL "" FORCE)
+
+FetchContent_Declare(SDL3_mixer
+  GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
+  GIT_TAG main
+)
+FetchContent_MakeAvailable(SDL3_mixer)
+
 # ImGui
 FetchContent_Declare(imgui GIT_REPOSITORY https://github.com/ocornut/imgui GIT_TAG v1.92.5-docking GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(imgui)
@@ -77,6 +93,7 @@ add_library(imgui STATIC
   ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
   ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
 )
+
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${sdl3_SOURCE_DIR}/include)
 target_link_libraries(imgui PUBLIC SDL3::SDL3)
 
@@ -85,4 +102,12 @@ FetchContent_MakeAvailable(imgui_plot)
 target_link_libraries(imgui_plot PRIVATE imgui)
 target_include_directories(imgui_plot PUBLIC ${imgui_plot_SOURCE_DIR}/include)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC SDL3::SDL3 SDL3_ttf::SDL3_ttf glm::glm imgui imgui_plot Xinput)
+target_link_libraries(${PROJECT_NAME} PUBLIC 
+  SDL3::SDL3 
+  SDL3_ttf::SDL3_ttf 
+  SDL3_mixer::SDL3_mixer
+  glm::glm 
+  imgui 
+  imgui_plot 
+  Xinput
+)

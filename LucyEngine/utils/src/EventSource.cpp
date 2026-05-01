@@ -6,10 +6,10 @@ void eng::EventSource::Invoke(unsigned int id, std::any context) {
 	}
 }
 
-void eng::EventSource::Subsribe(AbstractEventListener& subject) {
+void eng::EventSource::Subscribe(AbstractEventListener& subject) {
 	m_Subjects.emplace(&subject);
 }
 
-void eng::EventSource::UnSubsribe(AbstractEventListener& subject) {
+void eng::EventSource::Unsubscribe(AbstractEventListener& subject) {
 	m_Subjects.erase(&subject);
 }

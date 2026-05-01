@@ -42,8 +42,8 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 
 public: //------------------ Event Source Methods --------------------------
 
-	void Subsribe(AbstractEventListener& subject);
-	void UnSubsribe(AbstractEventListener& subject);
+	void Subscribe(AbstractEventListener& subject);
+	void Unsubscribe(AbstractEventListener& subject);
 
 public: // ------------------ Setter methods ---------------------------
 

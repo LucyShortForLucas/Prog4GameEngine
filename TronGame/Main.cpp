@@ -27,6 +27,7 @@
 #include "AddScore.h"
 #include "HpScore.h"
 #include "HpScoreDisplay.h"
+#include "Logger.h"
 
 namespace fs = std::filesystem;
 
@@ -60,7 +61,7 @@ static std::unique_ptr<eng::Actor> load()
 	auto& blueTank{ root->AddChildActor() };
 
 	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{ 0, 0, 32, 32 });
-	blueTank.AddComponent<eng::HpScore>(3).Subsribe(*blueTankUi.GetComponent<eng::HpScoreDisplay>());
+	blueTank.AddComponent<eng::HpScore>(3).Subscribe(*blueTankUi.GetComponent<eng::HpScoreDisplay>());
 	blueTank.GetComponent<eng::Transform>()->SetGlobalPosition(400, 300);
 
 	auto& input{ eng::service::input.Get() };
@@ -90,7 +91,7 @@ static std::unique_ptr<eng::Actor> load()
 	auto& redTank{ root->AddChildActor() };
 
 	redTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{ 32, 0, 32, 32 });
-	redTank.AddComponent<eng::HpScore>(3).Subsribe(*redTankUi.GetComponent<eng::HpScoreDisplay>());
+	redTank.AddComponent<eng::HpScore>(3).Subscribe(*redTankUi.GetComponent<eng::HpScoreDisplay>());
 	redTank.GetComponent<eng::Transform>()->SetGlobalPosition(500, 300);
 
 	auto& redTankInput{ input.NewInputgroup(redTank) };
@@ -110,17 +111,23 @@ static std::unique_ptr<eng::Actor> load()
 }
 
 int main(int, char*[]) {
-#if __EMSCRIPTEN__
-	fs::path data_location = "";
-#else
-	fs::path data_location = "./Data/";
-	if(!fs::exists(data_location))
-		data_location = "../Data/";
-#endif
-	// Set up services
+	#if __EMSCRIPTEN__
+		fs::path data_location = "";
+	#else
+		fs::path data_location = "./Data/";
+		if(!fs::exists(data_location))
+			data_location = "../Data/";
+	#endif
+	//----- Set up services -----
 	eng::service::resources.Register(std::make_unique<eng::SdlResourceLoader>());
 	eng::service::gameTime.Register(std::make_unique<eng::GameTime>());
 	eng::service::input.Register(std::make_unique<eng::Input>());
+
+	#ifndef NDEBUG // Use Assert Logger in debug mode, and messageboxLogger in release
+	eng::service::logger.Register(std::make_unique<eng::AssertLogger>());
+	#else
+	eng::service::logger.Register(std::make_unique<eng::MessageBoxLogger>());
+	#endif
 
 	//dae::Minigin engine(data_location);
 	eng::Engine engine{data_location};

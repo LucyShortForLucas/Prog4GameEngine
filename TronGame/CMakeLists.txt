@@ -12,12 +12,13 @@ if(WIN32)
   set_target_properties(${TARGET_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>")
 
   add_custom_command(
-    TARGET ${TARGET_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL3_DLL_PATH}" "$<TARGET_FILE_DIR:${TARGET_NAME}>"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL3_TTF_DLL_PATH}" "$<TARGET_FILE_DIR:${TARGET_NAME}>"
-    COMMENT "Copying DLLs to output directory..."
-    VERBATIM
-  )
+  TARGET ${TARGET_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL3_DLL_PATH}" "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SDL3_TTF_DLL_PATH}" "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:SDL3_mixer::SDL3_mixer> "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+  COMMENT "Copying SDL3 DLLs (core, ttf, mixer) to output directory..."
+  VERBATIM
+    )
 endif()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

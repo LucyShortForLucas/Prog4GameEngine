@@ -123,9 +123,9 @@ void eng::CommandInputGroup::Update() {
 }
 
 void eng::CommandInputGroup::SubscribeInputSource(EventSource& source) {
-	source.Subsribe(m_EventQueue);
+	source.Subscribe(m_EventQueue);
 }
 
 void eng::CommandInputGroup::UnsubscribeInputSource(EventSource& source) {
-	source.UnSubsribe(m_EventQueue);
+	source.Unsubscribe(m_EventQueue);
 }

@@ -1,11 +1,11 @@
 #include "HpScore.h"
 
-void eng::HpScore::Subsribe(AbstractEventListener& subject) {
-	m_EventSource.Subsribe(subject);
+void eng::HpScore::Subscribe(AbstractEventListener& subject) {
+	m_EventSource.Subscribe(subject);
 }
 
-void eng::HpScore::UnSubsribe(AbstractEventListener& subject) {
-	m_EventSource.UnSubsribe(subject);
+void eng::HpScore::Unsubscribe(AbstractEventListener& subject) {
+	m_EventSource.Unsubscribe(subject);
 }
 
 void eng::HpScore::ReduceLives(int damage) {
