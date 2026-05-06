@@ -7,21 +7,14 @@
 
 namespace eng {
 
-namespace eventId {
+namespace event {
 
-constexpr unsigned int livesChanged{ make_sdbm_hash("LivesChanged") };
-constexpr unsigned int scoreChanged{ make_sdbm_hash("ScoreChanged") };
-
-}
-
-namespace eventContext {
-
-struct LivesChangedContext {
+struct LivesChanged {
 	int oldLives;
 	int newLives;
 };
 
-struct ScoreChangedContext {
+struct ScoreChanged {
 	int oldScore;
 	int newScore;
 };
@@ -42,8 +35,10 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 
 public: //------------------ Event Source Methods --------------------------
 
-	void Subscribe(AbstractEventListener& subject);
-	void Unsubscribe(AbstractEventListener& subject);
+	void SubscribeLives(AbstractEventListener<event::LivesChanged>& subject);
+	void SubscribeScore(AbstractEventListener<event::ScoreChanged>& subject);
+	void UnsubscribeLives(AbstractEventListener<event::LivesChanged>& subject);
+	void UnsubscribeScore(AbstractEventListener<event::ScoreChanged>& subject);
 
 public: // ------------------ Setter methods ---------------------------
 
@@ -57,7 +52,8 @@ private: //----------------- Health and score data ---------------------------
 
 private: // ---------------- Event Source -------------------------------
 
-	EventSource m_EventSource{};
+	EventSource<event::LivesChanged> m_LivesChangedEventSource{};
+	EventSource<event::ScoreChanged> m_ScoreChangedEventSource{};
 
 }; // !HpScore
 

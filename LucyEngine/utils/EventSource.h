@@ -7,22 +7,6 @@
 
 namespace eng {
 
-//class AbstractEventListener {
-//public:
-//	virtual ~AbstractEventListener() = default;
-//	virtual void OnEvent(unsigned int id, std::any context) = 0;
-//};
-
-//class EventSource final {
-//public:
-//	void Invoke(unsigned int id, std::any context);
-//	void Subscribe(AbstractEventListener& subject);
-//	void Unsubscribe(AbstractEventListener& subject);
-//
-//private:
-//	std::set<AbstractEventListener*> m_Subjects;
-//};
-
 template <typename TEvent>
 class AbstractEventListener {
 public:

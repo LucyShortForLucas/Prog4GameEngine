@@ -13,7 +13,7 @@ public:
 	}
 
 	TEvent PopEvent() {
-		assert(!m_Events.empty(), "Trying to pop an empty event queue");
+		assert(!m_Events.empty() && "Trying to pop an empty event queue");
 		auto result{ m_Events.back() };
 		m_Events.pop_back();
 		return result;

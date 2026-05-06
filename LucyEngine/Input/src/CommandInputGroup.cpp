@@ -1,6 +1,8 @@
 #include "CommandInputGroup.h"
 #include "Input.h"
 
+namespace eng {
+
 eng::CommandInputGroup::CommandInputGroup(Actor* actor) :
 	m_Actor(actor) {
 }
@@ -69,63 +71,53 @@ void eng::CommandInputGroup::UnsubscribeAll(Key key) {
 	UnsubscribeKeyUp(key);
 }
 
-void eng::CommandInputGroup::Update() {
-	while (not m_EventQueue.Empty()) {
-		auto event{ m_EventQueue.PopEvent() };
-		switch (event.first) {
-
-		case eventId::keyDown: {
-			auto key{ std::any_cast<Key>(event.second) };
-
-			if (key.isKeyboardKey) {
-				if (m_KeyboardBindsDown.contains(key.keyboardKey) and m_KeyboardBindsDown.at(key.keyboardKey))
-					m_KeyboardBindsDown.at(key.keyboardKey)->Execute(*m_Actor);
-			}
-			else {
-				if (m_GamepadBindsDown.contains(key.gamepadKey) and m_GamepadBindsDown.at(key.gamepadKey))
-					m_GamepadBindsDown.at(key.gamepadKey)->Execute(*m_Actor);
-			}
-
-			break;
-		}
-
-		case eventId::keyPressed: {
-			auto key{ std::any_cast<Key>(event.second) };
-
-			if (key.isKeyboardKey) {
-				if (m_KeyboardBindsPressed.contains(key.keyboardKey) and m_KeyboardBindsPressed.at(key.keyboardKey))
-					m_KeyboardBindsPressed.at(key.keyboardKey)->Execute(*m_Actor);
-			}
-			else {
-				if (m_GamepadBindsPressed.contains(key.gamepadKey) and m_GamepadBindsPressed.at(key.gamepadKey))
-					m_GamepadBindsPressed.at(key.gamepadKey)->Execute(*m_Actor);
-			}
-
-			break;
-		}
-
-		case eventId::keyUp: {
-			auto key{ std::any_cast<Key>(event.second) };
-
-			if (key.isKeyboardKey) {
-				if (m_KeyboardBindsUp.contains(key.keyboardKey) and m_KeyboardBindsUp.at(key.keyboardKey))
-					m_KeyboardBindsUp.at(key.keyboardKey)->Execute(*m_Actor);
-			}
-			else {
-				if (m_GamepadBindsUp.contains(key.gamepadKey) and m_GamepadBindsUp.at(key.gamepadKey))
-					m_GamepadBindsUp.at(key.gamepadKey)->Execute(*m_Actor);
-			}
-
-			break;
-		}
-		}
+// Helper func
+static void ExecuteKeyCommands(Actor& actor, Key& key, std::map<SDL_Scancode, std::unique_ptr<AbstractCommand>>& keyboardBinds, std::map<GamepadKeys, std::unique_ptr<AbstractCommand>>& gamepadBinds) {
+	if (key.isKeyboardKey) {
+		if (keyboardBinds.contains(key.keyboardKey) and keyboardBinds.at(key.keyboardKey))
+			keyboardBinds.at(key.keyboardKey)->Execute(actor);
+	}
+	else {
+		if (gamepadBinds.contains(key.gamepadKey) and gamepadBinds.at(key.gamepadKey))
+			gamepadBinds.at(key.gamepadKey)->Execute(actor);
 	}
 }
 
-void eng::CommandInputGroup::SubscribeInputSource(EventSource& source) {
-	source.Subscribe(m_EventQueue);
+void eng::CommandInputGroup::Update() {
+	while (!m_DownEventQueue.Empty()) {
+		auto event{ m_DownEventQueue.PopEvent() };
+		auto& key{ event.key };
+
+		ExecuteKeyCommands(*m_Actor, key, m_KeyboardBindsDown, m_GamepadBindsDown);
+	}
+
+	while (!m_PressedEventQueue.Empty()) {
+		auto event{ m_PressedEventQueue.PopEvent() };
+		auto& key{ event.key };
+
+		ExecuteKeyCommands(*m_Actor, key, m_KeyboardBindsPressed, m_GamepadBindsPressed);
+	}
+
+	while (!m_UpEventQueue.Empty()) {
+		auto event{ m_UpEventQueue.PopEvent() };
+		auto& key{ event.key };
+
+		ExecuteKeyCommands(*m_Actor, key, m_KeyboardBindsUp, m_GamepadBindsUp);
+	}
+
 }
 
-void eng::CommandInputGroup::UnsubscribeInputSource(EventSource& source) {
-	source.Unsubscribe(m_EventQueue);
+void eng::CommandInputGroup::SubscribeInputSource(KeyEventSources sources) {
+	sources.down.Subscribe(m_DownEventQueue);
+	sources.pressed.Subscribe(m_PressedEventQueue);
+	sources.up.Subscribe(m_UpEventQueue);
 }
+
+void eng::CommandInputGroup::UnsubscribeInputSource(KeyEventSources sources) {
+	sources.down.Subscribe(m_DownEventQueue);
+	sources.pressed.Subscribe(m_PressedEventQueue);
+	sources.up.Subscribe(m_UpEventQueue);
+}
+
+
+} // !eng

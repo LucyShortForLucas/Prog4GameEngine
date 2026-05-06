@@ -10,6 +10,12 @@ namespace eng {
 
 class CommandInputGroup final {
 public:
+	struct KeyEventSources {
+		EventSource<eng::event::KeyDown>& down;
+		EventSource<eng::event::KeyPressed>& pressed;
+		EventSource<eng::event::KeyUp>& up;
+	};
+
 	CommandInputGroup(Actor* m_Actor = nullptr);
 
 	void SetActor(Actor* m_Actor);
@@ -26,8 +32,8 @@ public:
 
 	void Update();
 
-	void SubscribeInputSource(EventSource& source);
-	void UnsubscribeInputSource(EventSource& source);
+	void SubscribeInputSource(KeyEventSources sources);
+	void UnsubscribeInputSource(KeyEventSources sources);
 
 private:
 	Actor* m_Actor;
@@ -40,7 +46,9 @@ private:
 	std::map<GamepadKeys, std::unique_ptr<AbstractCommand>> m_GamepadBindsPressed{};
 	std::map<GamepadKeys, std::unique_ptr<AbstractCommand>> m_GamepadBindsUp{};
 
-	EventQueue m_EventQueue{};
+	EventQueue<event::KeyDown> m_DownEventQueue{};
+	EventQueue<event::KeyPressed> m_PressedEventQueue{};
+	EventQueue<event::KeyUp> m_UpEventQueue{};
 };
 
 }

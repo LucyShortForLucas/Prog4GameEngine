@@ -61,13 +61,13 @@ static std::unique_ptr<eng::Actor> load()
 	auto& blueTank{ root->AddChildActor() };
 
 	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{ 0, 0, 32, 32 });
-	blueTank.AddComponent<eng::HpScore>(3).Subscribe(*blueTankUi.GetComponent<eng::HpScoreDisplay>());
+	blueTank.AddComponent<eng::HpScore>(3).SubscribeLives(*blueTankUi.GetComponent<eng::HpScoreDisplay>());
 	blueTank.GetComponent<eng::Transform>()->SetGlobalPosition(400, 300);
 
 	auto& input{ eng::service::input.Get() };
 
 	auto& blueTankInput{ input.NewInputgroup(blueTank) };
-	blueTankInput.SubscribeInputSource(input.GetEventSource());
+	//blueTankInput.SubscribeInputSource(input.GetEventSource());
 
 	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_W, std::make_unique<eng::Move>(glm::vec2{ 0, -80 }));
 	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_A, std::make_unique<eng::Move>(glm::vec2{ -80, 0 }));
@@ -91,11 +91,11 @@ static std::unique_ptr<eng::Actor> load()
 	auto& redTank{ root->AddChildActor() };
 
 	redTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{ 32, 0, 32, 32 });
-	redTank.AddComponent<eng::HpScore>(3).Subscribe(*redTankUi.GetComponent<eng::HpScoreDisplay>());
+	redTank.AddComponent<eng::HpScore>(3).SubscribeLives(*redTankUi.GetComponent<eng::HpScoreDisplay>());
 	redTank.GetComponent<eng::Transform>()->SetGlobalPosition(500, 300);
 
 	auto& redTankInput{ input.NewInputgroup(redTank) };
-	redTankInput.SubscribeInputSource(input.GetEventSource());
+	//redTankInput.SubscribeInputSource(input.GetEventSource());
 
 	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Up, std::make_unique<eng::Move>(glm::vec2{ 0, -80 }));
 	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Left, std::make_unique<eng::Move>(glm::vec2{ -80, 0 }));

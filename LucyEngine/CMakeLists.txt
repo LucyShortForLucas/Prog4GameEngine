@@ -30,7 +30,7 @@ add_library(${PROJECT_NAME} STATIC
   Commands/src/Kill.cpp
   Commands/src/AddScore.cpp
   eng/AudioPlayer.h eng/src/AudioPlayer.cpp
- "eng/Logger.h" "eng/src/Logger.cpp")
+ "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   eng components utils Input Commands ../Minigin

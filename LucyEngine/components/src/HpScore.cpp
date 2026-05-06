@@ -1,21 +1,29 @@
 #include "HpScore.h"
 
-void eng::HpScore::Subscribe(AbstractEventListener& subject) {
-	m_EventSource.Subscribe(subject);
+void eng::HpScore::SubscribeLives(AbstractEventListener<event::LivesChanged>& subject) {
+	m_LivesChangedEventSource.Subscribe(subject);
 }
 
-void eng::HpScore::Unsubscribe(AbstractEventListener& subject) {
-	m_EventSource.Unsubscribe(subject);
+void eng::HpScore::SubscribeScore(AbstractEventListener<event::ScoreChanged>& subject) {
+	m_ScoreChangedEventSource.Subscribe(subject);
+}
+
+void eng::HpScore::UnsubscribeLives(AbstractEventListener<event::LivesChanged>& subject) {
+	m_LivesChangedEventSource.Unsubscribe(subject);
+}
+
+void eng::HpScore::UnsubscribeScore(AbstractEventListener<event::ScoreChanged>& subject) {
+	m_ScoreChangedEventSource.Unsubscribe(subject);
 }
 
 void eng::HpScore::ReduceLives(int damage) {
 	int oldLives = m_Lives;
 	m_Lives -= damage;
-	m_EventSource.Invoke(eventId::livesChanged, std::make_any<eventContext::LivesChangedContext>(oldLives, m_Lives));
+	m_LivesChangedEventSource.Invoke(event::LivesChanged{oldLives, m_Lives});
 }
 	
 void eng::HpScore::GainScore(int score) {
 	int oldScore = m_Score;
 	m_Score += score;
-	m_EventSource.Invoke(eventId::scoreChanged, std::make_any<eventContext::ScoreChangedContext>(oldScore, m_Score));
+	m_ScoreChangedEventSource.Invoke(event::ScoreChanged{ oldScore, m_Score });
 }

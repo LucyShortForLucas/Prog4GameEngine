@@ -83,7 +83,9 @@ public:
 
 	virtual bool ProcessInput() = 0;
 	virtual CommandInputGroup& NewInputgroup(Actor& actor) = 0;
-	virtual EventSource& GetEventSource() = 0;
+	virtual EventSource<event::KeyUp>& UpEventSource() = 0;
+	virtual EventSource<event::KeyPressed>& PressedEventSource() = 0;
+	virtual EventSource<event::KeyDown>& DownEventSource() = 0;
 };
 
 extern Service<IInput> input;

@@ -22,4 +22,20 @@ struct Key {
 
 };
 
-}
+namespace event {
+
+struct KeyUp {
+	Key key;
+};
+
+struct KeyPressed {
+	Key key;
+};
+
+struct KeyDown {
+	Key key;
+};
+
+} // !event
+
+} // !eng

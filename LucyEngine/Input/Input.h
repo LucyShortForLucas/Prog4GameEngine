@@ -12,22 +12,6 @@
 
 namespace eng {
 
-namespace event {
-
-struct KeyUp {
-	Key key;
-};
-
-struct KeyPressed {
-	Key key;
-};
-
-struct KeyDown {
-	Key key;
-};
-
-}
-
 class Input final : public service::IInput {
 public:
 	bool ProcessInput() override;

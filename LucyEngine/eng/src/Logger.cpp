@@ -28,7 +28,7 @@ void AssertLogger::LogError(const std::string& message) {
 		      << message 
 			  << ansi::RESET 
 			  << std::endl;
-	assert(false, message);
+	assert(false && message.c_str());
 }
 
 //---------- Messagebox Logger -----------------------------

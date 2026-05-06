@@ -47,11 +47,15 @@ class NullInput final : public IInput {
 public:
 	bool ProcessInput() override { return false; }
 	CommandInputGroup& NewInputgroup(Actor&) override { return m_NullInputGroup; }
-	EventSource& GetEventSource() { return m_NullEventSource; }
+	EventSource<event::KeyUp>& UpEventSource() { return m_NullKeyUpEvent; };
+	EventSource<event::KeyPressed>& PressedEventSource() { return m_NullKeyPressedEvent; };
+	EventSource<event::KeyDown>& DownEventSource() { return m_NullKeyDownEvent; };
 
 private:
 	CommandInputGroup m_NullInputGroup{ nullptr };
-	EventSource m_NullEventSource{};
+	EventSource<event::KeyUp> m_NullKeyUpEvent;
+	EventSource<event::KeyPressed> m_NullKeyPressedEvent;
+	EventSource<event::KeyDown> m_NullKeyDownEvent;
 };
 
 Service<IInput> input{ std::make_unique<NullInput>() };
