@@ -30,7 +30,7 @@ add_library(${PROJECT_NAME} STATIC
   Commands/src/Kill.cpp
   Commands/src/AddScore.cpp
   eng/AudioPlayer.h eng/src/AudioPlayer.cpp
- "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp")
+ "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp" "eng/src/Serialization.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   eng components utils Input Commands ../Minigin
@@ -44,6 +44,8 @@ include(FetchContent)
 find_package(glm CONFIG QUIET)
 if(NOT glm_FOUND)
   FetchContent_Declare(glm URL https://github.com/g-truc/glm/releases/download/1.0.3/glm-1.0.3.zip)
+   set(GLM_BUILD_LIBRARY OFF CACHE BOOL "" FORCE)
+  set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE) 
   FetchContent_MakeAvailable(glm)
 endif()
 
@@ -97,10 +99,20 @@ add_library(imgui STATIC
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${sdl3_SOURCE_DIR}/include)
 target_link_libraries(imgui PUBLIC SDL3::SDL3)
 
-FetchContent_Declare(imgui_plot GIT_REPOSITORY https://github.com/soulthreads/imgui-plot.git GIT_TAG master)
-FetchContent_MakeAvailable(imgui_plot)
-target_link_libraries(imgui_plot PRIVATE imgui)
-target_include_directories(imgui_plot PUBLIC ${imgui_plot_SOURCE_DIR}/include)
+# Nlohmann Json
+include(FetchContent)
+
+FetchContent_Declare(
+    nlohmann_json
+    URL      https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+    URL_HASH SHA256=42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
+)
+
+FetchContent_MakeAvailable(nlohmann_json)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+  ${nlohmann_json_SOURCE_DIR}/include
+)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC 
   SDL3::SDL3 
@@ -108,6 +120,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   SDL3_mixer::SDL3_mixer
   glm::glm 
   imgui 
-  imgui_plot 
   Xinput
+  nlohmann_json::nlohmann_json
 )

@@ -7,6 +7,7 @@
 #include "Font.h"
 #include <chrono>
 #include "CommandInputGroup.h"
+#include <HashedString.h>
 
 namespace eng::service {
 //---------------------------------------- Service class ---------------------------------------
@@ -93,8 +94,8 @@ extern Service<IInput> input;
 class IAudioPlayer {
 public:
 	virtual ~IAudioPlayer() = default;
-	virtual void PlaySound(std::string sound) = 0;
-	virtual void StopSound(std::string sound) = 0;
+	virtual void PlaySound(const HashedString& sound) = 0;
+	virtual void StopSound(int sound) = 0;
 	virtual void StopSound() = 0;
 };
 
@@ -104,6 +105,7 @@ class ILogger {
 public:
 	virtual ~ILogger() = default;
 	virtual void Log(const std::string& text) = 0;
+	virtual void LogSuccess(const std::string& text) = 0;
 	virtual void LogError(const std::string& text) = 0;
 };
 

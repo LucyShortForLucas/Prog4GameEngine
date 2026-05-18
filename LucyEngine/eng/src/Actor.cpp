@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include "Serialization.h"
 
 namespace eng {
 
@@ -41,7 +42,7 @@ void Actor::Update() {
 }
 
 void Actor::LateUpdate() {
-    if (IsFlagged(Flags::NoUpdate)) return;
+    if (IsFlagged(Flags::NoUpdate)) return;                                    
 
     for (auto& child : m_ChildUptrs) {
         child->LateUpdate();
@@ -95,15 +96,20 @@ void Actor::Cleanup() {
         child->Cleanup();
 
         // Destroy children if flagged for it
-        if (child->IsFlagged(Flags::Destroyed)) std::erase_if(m_ChildUptrs, [&child](const std::unique_ptr<Actor>& childToErase) {
+        if (child->IsFlagged(Flags::Destroyed)) 
+            std::erase_if(m_ChildUptrs, [&child](const std::unique_ptr<Actor>& childToErase) {
             return childToErase == child;
-            });;
+            });
 
         // Move children if flagged for it
         if (child->IsFlagged(Flags::ParentChanged)) {
 
             // Move child to new parent
-            auto& movedChild{ child->m_MoveInfo.newParentPtr->m_ChildUptrs.emplace_back(std::move(child)) };
+            auto& movedChild{ 
+                child->m_MoveInfo.newParentPtr->m_ChildUptrs.emplace_back(
+                    std::move(child)
+                ) 
+            };
 
             // Erase the now empty unique pointer in our old parent
             std::erase_if(m_ChildUptrs, [](const std::unique_ptr<Actor>& childToErase) {
@@ -238,6 +244,74 @@ void Actor::Disable() {
 
 void Actor::EnableOnStart(bool enable) {
     m_Flags[static_cast<int>(Flags::DisableOnStart)] = !enable;
+}
+
+nlohmann::ordered_json Actor::ToJson() {
+    nlohmann::ordered_json f_Json{};
+
+    f_Json["Flags"] = m_Flags.to_ulong();
+
+    for (auto& comp : GetAbstractComponents()) {
+        if (not IsComponentRegistered(comp->TypeName())) continue;
+
+        f_Json["Components"].emplace_back(nlohmann::ordered_json{
+            {"Type", comp->TypeName()},
+            {"Json", comp->Serialize()}
+            });
+    }
+
+    for (auto& child : GetChildren()) {
+        f_Json["Children"].emplace_back(child->ToJson());
+    }
+
+    return f_Json;
+}
+
+void Actor::Serialize(const std::string& filePath) {
+    std::ofstream file(filePath, std::ios::out | std::ios::trunc);  // overwrite mode
+
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open file " << filePath << " for writing.\n";
+        return;
+    }
+
+    file << ToJson().dump(4);
+
+    if (!file) {
+        std::cerr << "Error: Failed to write to file " << filePath << ".\n";
+    }
+}
+
+void Actor::DeserializeChild(const nlohmann::json& json) {
+    auto& f_Child{ AddChildActor() };
+
+    f_Child.m_Flags = json.value("Flags", 0);
+
+    if (json.contains("Components")) {
+        for (auto& [key, compJson] : json["Components"].items()) {
+            if (!compJson.contains("Type") or !compJson.contains("Json"))
+                continue;
+
+            if (!IsComponentRegistered(compJson["Type"]))
+                continue;
+
+            if (compJson["Type"] == "Transform") {
+                // Special case for Transforms. The default one has to be removed and the m_TransformPtr has to be updated. This solution isn't entirely elegant, but good enough.
+                f_Child.RemoveComponent<Transform>();
+                f_Child.m_TransformPtr = dynamic_cast<Transform*>(f_Child.m_CompUptrs.emplace_back(DeserializeComponent(f_Child, compJson["Type"], compJson["Json"])).get());
+                continue;
+            }
+
+            f_Child.m_CompUptrs.emplace_back(DeserializeComponent(f_Child, compJson["Type"], compJson["Json"]));
+        }
+    }
+
+    if (!json.contains("Children")) 
+        return;
+
+    for (auto& [key, childJson] : json["Children"].items()) {
+        f_Child.DeserializeChild(childJson);
+    }
 }
 
 } // namespace eng

@@ -4,22 +4,17 @@
 #include "AbstractComponent.h"
 #include "Texture2D.h"
 #include "Font.h"
+#include "Serialization.h"
 
 #include <string>
 #include <memory>
 
 namespace eng {
 
-class TextRenderer final : public AbstractComponent {
+DECL_COMPONENT(TextRenderer)
 public: //--------------- Constructor/Destructor/copy/move --------------
 	TextRenderer(Actor& owner, const std::string& text = "", const std::string& fontPath = "Lingua.otf", unsigned int size = 24, SDL_Color color = { 255,255,255,255 });
 	~TextRenderer() = default;
-
-	TextRenderer(const TextRenderer&) = delete;
-	TextRenderer& operator=	(const TextRenderer&) = delete;
-
-	TextRenderer(TextRenderer&&) = delete;
-	TextRenderer& operator=		(TextRenderer&&) = delete;
 
 public: //------------------ General methods --------------------------
 

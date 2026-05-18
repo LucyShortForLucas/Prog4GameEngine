@@ -5,20 +5,15 @@
 #include "AbstractComponent.h"
 #include "Texture2D.h"
 #include <SDL3/SDL.h>
+#include "Serialization.h"
 
 namespace eng {
 
-class TextureRenderer final : public eng::AbstractComponent {
+DECL_COMPONENT(TextureRenderer)
 public: //--------------- Constructor/Destructor/copy/move --------------
 
 	TextureRenderer(eng::Actor& owner, const std::string& texturePath, glm::ivec2 size = { -1, -1 }, SDL_FRect sourceRect = { -1, -1, -1, -1 }, unsigned int layer = 0);
 	~TextureRenderer() override = default;
-
-	TextureRenderer(const TextureRenderer& other) = delete;
-	TextureRenderer& operator=	(const TextureRenderer&) = delete;
-
-	TextureRenderer(TextureRenderer&&) = delete;
-	TextureRenderer& operator=	(TextureRenderer&&) = delete;
 
 public: //------------------------ Texture Methods -------------------------
 

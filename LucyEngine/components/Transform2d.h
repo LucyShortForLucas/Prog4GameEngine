@@ -3,28 +3,20 @@
 #include "AbstractComponent.h"
 #include <glm/vec2.hpp>
 
+#include "Serialization.h"
+#include <memory>
+
 namespace eng {
 
 struct TransformData {
 	glm::vec2 position{};
 };
 
-
-/// <summary>
-/// A component that allows Actors to store their local transform and observe their global transform.
-/// </summary>
-class Transform final : public AbstractComponent {
-public: //--------------- Constructor/Destructor/copy/move --------------
+DECL_COMPONENT(Transform)
+public: //--------------- Constructor/Destructor --------------
 
 	Transform(eng::Actor& owner) : AbstractComponent(owner) {};
 	~Transform() = default;
-
-	Transform(const Transform&) = delete;
-	Transform& operator=	(const Transform&) = delete;
-
-	Transform(const Transform&&) = delete;
-	Transform& operator=	(const Transform&&) = delete;
-
 
 public: //--------------- Transform Methods --------------
 

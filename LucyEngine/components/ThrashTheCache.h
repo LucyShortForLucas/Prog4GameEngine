@@ -9,18 +9,11 @@
 
 namespace eng {
 
-class ThrashTheCache final : public AbstractComponent  {
+DECL_COMPONENT(ThrashTheCache)
 public: //--------------- Constructor/Destructor/copy/move --------------
 
 	ThrashTheCache(eng::Actor& owner) : AbstractComponent(owner) {};
 	~ThrashTheCache() = default;
-
-	ThrashTheCache(const ThrashTheCache&) = delete;
-	ThrashTheCache& operator=	(const ThrashTheCache&) = delete;
-
-	ThrashTheCache(const ThrashTheCache&&) = delete;
-	ThrashTheCache& operator=	(const ThrashTheCache&&) = delete;
-
 
 public: //--------------- Gameloop Methods --------------
 

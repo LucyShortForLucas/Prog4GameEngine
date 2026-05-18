@@ -4,8 +4,13 @@
 #include <string>
 
 #include "Services.h"
+#include "Serialization.h"
 
 namespace eng {
+
+std::unique_ptr<FpsTracker> FpsTracker::Deserialize(Actor& owner, const nlohmann::json& json) {
+	return std::make_unique<FpsTracker>();
+}
 
 void FpsTracker::OnEnable() {
 	assert(Owner().GetComponent<TextRenderer>() && "An FpsTracker Component requires a Text Renderer");

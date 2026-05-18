@@ -4,6 +4,7 @@
 #include "AbstractComponent.h"
 
 #include "SdbmHash.h"
+#include "Serialization.h"
 
 namespace eng {
 
@@ -21,17 +22,11 @@ struct ScoreChanged {
 
 }
 
-class HpScore final : public AbstractComponent {
+DECL_COMPONENT(HpScore)
 public: //--------------- Constructor/Destructor/copy/move --------------
 
 	HpScore(Actor& owner, int startingLives) : AbstractComponent(owner), m_Lives(startingLives) {};
 	~HpScore() = default;
-
-	HpScore(const HpScore&) = delete;
-	HpScore& operator=	(const HpScore&) = delete;
-
-	HpScore(HpScore&&) = delete;
-	HpScore& operator=	(HpScore&&) = delete;
 
 public: //------------------ Event Source Methods --------------------------
 

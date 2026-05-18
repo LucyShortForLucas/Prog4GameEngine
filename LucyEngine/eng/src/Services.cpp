@@ -64,8 +64,8 @@ extern Service<IInput> input;
 
 class NullAudioPlayer final : public IAudioPlayer {
 public:
-	virtual void PlaySound(std::string) {};
-	virtual void StopSound(std::string) {};
+	virtual void PlaySound(const HashedString& sound) {};
+	virtual void StopSound(int) {};
 	virtual void StopSound() {};
 };
 
@@ -75,6 +75,7 @@ class NullLogger final : public ILogger {
 public:
 	void Log(const std::string& text) override {};
 	void LogError(const std::string& text) override {};
+	void LogSuccess(const std::string& text) override {};
 
 };
 

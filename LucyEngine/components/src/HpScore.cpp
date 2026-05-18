@@ -1,5 +1,13 @@
 #include "HpScore.h"
 
+namespace eng {
+
+std::unique_ptr<HpScore> HpScore::Deserialize(Actor& owner, const nlohmann::json& json) {
+	return std::make_unique<HpScore>(owner, 0);
+}
+
+}
+
 void eng::HpScore::SubscribeLives(AbstractEventListener<event::LivesChanged>& subject) {
 	m_LivesChangedEventSource.Subscribe(subject);
 }

@@ -65,12 +65,14 @@ void PrintSDLVersion() {
 }
 
 eng::Engine::Engine(const fs::path&) {
+	auto& logger{ service::logger.Get() };
+
 	PrintSDLVersion();
 
-	if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
-		SDL_Log("Renderer error: %s", SDL_GetError());
-		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
-	}
+	if (SDL_InitSubSystem(SDL_INIT_VIDEO))
+		logger.LogSuccess("SDL Successfully initiated!");
+	else
+		logger.LogError(std::string("Failed to initialize SDL3: ") + SDL_GetError());
 
 	g_window = SDL_CreateWindow(
 		"Programming 4 assignment",
@@ -78,9 +80,12 @@ eng::Engine::Engine(const fs::path&) {
 		576,
 		SDL_WINDOW_OPENGL
 	);
-	if (g_window == nullptr) {
-		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
+
+	if (g_window != nullptr) {
+		logger.LogSuccess("SDL3 Window Successfully created!");
 	}
+	else
+		logger.LogError(std::string("Failed to Create SDL3 window: ") + SDL_GetError());
 
 	// Set up Steam if needed
 	#if USE_STEAMWORKS

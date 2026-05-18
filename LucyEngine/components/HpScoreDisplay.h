@@ -3,13 +3,16 @@
 #include "AbstractComponent.h"										
 #include "TextRenderer.h"											
 #include "EventSource.h"											
-#include "HpScore.h"												
+#include "HpScore.h"	
+#include "Serialization.h"
 																	
 namespace eng {														
 																	
-class HpScoreDisplay final : public AbstractComponent, 				
-	public AbstractEventListener<event::LivesChanged>,				
-	public AbstractEventListener<event::ScoreChanged> {				
+//class HpScoreDisplay final : public AbstractComponent, 				
+//	public AbstractEventListener<event::LivesChanged>,				
+//	public AbstractEventListener<event::ScoreChanged> {				
+
+DECL_COMPONENT(HpScoreDisplay, public AbstractEventListener<event::LivesChanged>, public AbstractEventListener<event::ScoreChanged>)
 public: 
 	//---- Constructor/Destructor/copy/move ----													
 	HpScoreDisplay(Actor& owner) : AbstractComponent(owner) {};		

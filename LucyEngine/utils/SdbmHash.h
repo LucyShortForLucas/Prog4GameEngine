@@ -2,10 +2,6 @@
 
 #include <string>
 
-/// <summary>
-/// The code below is taken straight from the powerpoint
-/// </summary>
-
 namespace eng {
 
 template <int length> struct sdbm_hash {
@@ -27,7 +23,7 @@ template <size_t N> constexpr unsigned int make_sdbm_hash(const char(&text)[N]) 
 	return sdbm_hash<N - 1>::calculate(text);
 }
 
-// Alternate SDBM hash function for runtime hashing (Primarily used during deserialization)
+// Alternate SDBM hash function for runtime hashing (Primarily needed for deserialization)
 inline unsigned long runtime_sdbm_hash(const std::string& str) {
 	unsigned long hash = 0;
 

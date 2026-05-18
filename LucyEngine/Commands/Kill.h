@@ -17,7 +17,7 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 	Kill& operator=	(const Kill&&) = delete;
 
 public: //---------------------------|Execute|------------------------
-
+	
 	bool Execute(Actor& target) override;
 
 }; // !Kill

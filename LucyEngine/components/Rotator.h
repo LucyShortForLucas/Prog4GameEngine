@@ -2,20 +2,15 @@
 
 #include "AbstractComponent.h"
 #include "TextRenderer.h"
+#include "Serialization.h"
 
 namespace eng {
 
-class Rotator final : public AbstractComponent {
+DECL_COMPONENT(Rotator)
 public: //--------------- Constructor/Destructor/copy/move --------------
 
 	Rotator(Actor& owner) : AbstractComponent(owner) {};
 	~Rotator() = default;
-
-	Rotator(const Rotator&) = delete;
-	Rotator& operator=	(const Rotator&) = delete;
-
-	Rotator(Rotator&&) = delete;
-	Rotator& operator=	(Rotator&&) = delete;
 
 public: //------------------ Gameloop Methods --------------------------
 	void Update() override;

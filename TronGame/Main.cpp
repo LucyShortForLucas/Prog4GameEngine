@@ -28,6 +28,8 @@
 #include "HpScore.h"
 #include "HpScoreDisplay.h"
 #include "Logger.h"
+#include "CommandInputGroup.h"
+#include "AudioPlayer.h"
 
 namespace fs = std::filesystem;
 
@@ -55,19 +57,33 @@ static std::unique_ptr<eng::Actor> load()
 	blueTankUi.AddComponent<eng::HpScoreDisplay>();
 
 	auto& blueTankControlText{ root->AddChildActor() };
-	blueTankControlText.AddComponent<eng::TextRenderer>("Use WASD to move the blue tank, C to inflict damage, Z and X to get score");
+	blueTankControlText.AddComponent<eng::TextRenderer>(
+		"Use WASD to move the blue tank, C to inflict damage, Z and X to get score");
 	blueTankControlText.GetComponent<eng::Transform>()->SetGlobalPosition(10, 100);
 	
 	auto& blueTank{ root->AddChildActor() };
 
-	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{ 0, 0, 32, 32 });
-	blueTank.AddComponent<eng::HpScore>(3).SubscribeLives(*blueTankUi.GetComponent<eng::HpScoreDisplay>());
+	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png",
+		glm::ivec2{ 32, 32 }, SDL_FRect{ 0, 0, 32, 32 });
+
+	blueTank.AddComponent<eng::HpScore>(3)
+		.SubscribeLives(*blueTankUi.GetComponent<eng::HpScoreDisplay>());
+
 	blueTank.GetComponent<eng::Transform>()->SetGlobalPosition(400, 300);
 
 	auto& input{ eng::service::input.Get() };
 
 	auto& blueTankInput{ input.NewInputgroup(blueTank) };
-	//blueTankInput.SubscribeInputSource(input.GetEventSource());
+
+	auto& inputService{ eng::service::input.Get() };
+
+	eng::CommandInputGroup::KeyEventSources keyEventSources {
+		inputService.DownEventSource(),
+		inputService.PressedEventSource(),
+		inputService.UpEventSource()
+	};
+
+	blueTankInput.SubscribeInputSource(keyEventSources);
 
 	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_W, std::make_unique<eng::Move>(glm::vec2{ 0, -80 }));
 	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_A, std::make_unique<eng::Move>(glm::vec2{ -80, 0 }));
@@ -95,7 +111,7 @@ static std::unique_ptr<eng::Actor> load()
 	redTank.GetComponent<eng::Transform>()->SetGlobalPosition(500, 300);
 
 	auto& redTankInput{ input.NewInputgroup(redTank) };
-	//redTankInput.SubscribeInputSource(input.GetEventSource());
+	redTankInput.SubscribeInputSource(keyEventSources);
 
 	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Up, std::make_unique<eng::Move>(glm::vec2{ 0, -80 }));
 	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Left, std::make_unique<eng::Move>(glm::vec2{ -80, 0 }));
@@ -118,19 +134,20 @@ int main(int, char*[]) {
 		if(!fs::exists(data_location))
 			data_location = "../Data/";
 	#endif
-	//----- Set up services -----
+
+	#ifndef NDEBUG // Use Assert Logger in debug mode, and messageboxLogger in release
+		eng::service::logger.Register(std::make_unique<eng::AssertLogger>());
+	#else
+		eng::service::logger.Register(std::make_unique<eng::MessageBoxLogger>());
+	#endif
+
 	eng::service::resources.Register(std::make_unique<eng::SdlResourceLoader>());
 	eng::service::gameTime.Register(std::make_unique<eng::GameTime>());
 	eng::service::input.Register(std::make_unique<eng::Input>());
 
-	#ifndef NDEBUG // Use Assert Logger in debug mode, and messageboxLogger in release
-	eng::service::logger.Register(std::make_unique<eng::AssertLogger>());
-	#else
-	eng::service::logger.Register(std::make_unique<eng::MessageBoxLogger>());
-	#endif
-
-	//dae::Minigin engine(data_location);
 	eng::Engine engine{data_location};
+	eng::service::audioPlayer.Register(std::make_unique<eng::AudioPlayer>()); // We set up the audo after the engine because it relies on SDL, which is initialized in the engine
 	engine.Run(load);
+	eng::service::audioPlayer.Unregister(); // Manually unregistering the SDL Mixer service to ensure it is destroyed before a call to SDL_Quit
     return 0;
 }

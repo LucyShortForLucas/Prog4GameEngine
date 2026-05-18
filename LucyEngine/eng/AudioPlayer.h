@@ -1,5 +1,6 @@
 #pragma once
 #include "Services.h"
+#include <HashedString.h>
 
 namespace eng {
 
@@ -17,9 +18,8 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 
 public: //--------------- Audio method implementations --------------
 
-	/// LoadSound -> id
-	void PlaySound(std::string sound)	override; /// String -> id
-	void StopSound(std::string sound)	override;
+	void PlaySound(const HashedString& sound)	override;
+	void StopSound(int sound)	override;
 	void StopSound()					override;
 
 private: //--------------------------- Pimpl ----------------------------
@@ -41,8 +41,8 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 
 public: //--------------- Audio method implementations -------------- 
 
-	void PlaySound(std::string sound)	override;
-	void StopSound(std::string sound)	override;
+	void PlaySound(const HashedString& sound)	override;
+	void StopSound(int sound)	override;
 	void StopSound()					override;
 
 
