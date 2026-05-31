@@ -9,11 +9,13 @@
 
 namespace eng {
 
-DECL_COMPONENT(TextureRenderer)
+DECL_COMPONENT(TextureRenderer, public AbstractComponent)
 public: //--------------- Constructor/Destructor/copy/move --------------
 
 	TextureRenderer(eng::Actor& owner, const std::string& texturePath, glm::ivec2 size = { -1, -1 }, SDL_FRect sourceRect = { -1, -1, -1, -1 }, unsigned int layer = 0);
 	~TextureRenderer() override = default;
+
+	nlohmann::ordered_json Serialize() override;
 
 public: //------------------------ Texture Methods -------------------------
 
@@ -34,5 +36,6 @@ private: //--------------------------- Fields ----------------------------
 	SDL_FRect m_SourceRect{};
 
 }; // !TextureRenderer
+REGISTER_COMPONENT(TextureRenderer)
 
-} // !cpt
+} // !eng

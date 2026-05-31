@@ -24,21 +24,26 @@ namespace eng {
 /// for all components anyway). Declares the static method x::Deserialize(Actor& owner, const nlohmann::json& json),
 /// which must be implemented in source. Leaves the class body open with private access modifier.
 /// 
-/// First argument is the name of the component type, optionally followed by other classes to inherit from.
+/// First argument is the name of the component type, followed by one or more other classes to inherit from. All Components must inherit from AbstractComponent or a derived class thereof.
 /// 
-#define DECL_COMPONENT(x, ...) class x final : public AbstractComponent, ##__VA_ARGS__ { \
+#define DECL_COMPONENT(x, ...) class x final : __VA_ARGS__ { \
 public: \
     static std::unique_ptr<x> Deserialize(Actor& owner, const nlohmann::json& json); \
-    const std::string& TypeName() override { return #x; }; \
-x(const x&) = delete; \
-x& operator=(const x&) = delete; \
-x(x&&) = delete; \
-x& operator=(x&&) = delete; \
+    const std::string& TypeName() override { static const std::string s{#x}; return s; }; \
+	x(const x&) = delete; \
+	x& operator=(const x&) = delete; \
+	x(x&&) = delete; \
+	x& operator=(x&&) = delete; \
 private: \
-[[maybe_unused]] static inline const bool s_registered = [] { \
-    eng::RegisterComponentType<x>(#x); \
-    return true; \
-    }();
+
+/// @brief
+/// A macro to handle the registration of the component's 
+#define REGISTER_COMPONENT(x) namespace { \
+	[[maybe_unused]] static inline const bool x##_registered = [] { \
+		eng::RegisterComponentType<x>(#x); \
+		return true; \
+    }(); \
+}
 
 //---- Typedefs ----
 
@@ -48,7 +53,7 @@ using CompDeserializeFunc = std::function<std::unique_ptr<AbstractComponent>(Act
 //---- Concepts ----
 
 template <typename T>
-concept RegistrableComponent = std::derived_from<T, AbstractComponent>&&
+concept RegistrableComponent = std::derived_from<T, AbstractComponent> &&
 	requires (T a, Actor& actor, const nlohmann::json& json) {
 		{ T::Deserialize(actor, json) } -> std::convertible_to<std::unique_ptr<T>>;
 };
@@ -185,6 +190,36 @@ struct nlohmann::adl_serializer<SDL_Rect> {
 	}
 
 	static void to_json(ordered_json& j, const SDL_Rect& rect) {
+		j = json::array({ rect.x, rect.y, rect.w, rect.h });
+	}
+
+};
+
+template <>
+struct nlohmann::adl_serializer<SDL_FRect> {
+	static void from_json(const json& j, SDL_FRect& rect) {
+		if (j.is_array() && j.size() >= 2) {
+			rect.x = eng::JsonArrayGet(j, 0, static_cast<float>(0));
+			rect.y = eng::JsonArrayGet(j, 1, static_cast<float>(0));
+			rect.w = eng::JsonArrayGet(j, 2, static_cast<float>(0));
+			rect.h = eng::JsonArrayGet(j, 3, static_cast<float>(0));
+		}
+	}
+
+	static void to_json(json& j, const SDL_FRect& rect) {
+		j = json::array({ rect.x, rect.y, rect.w, rect.h });
+	}
+
+	static void from_json(const ordered_json& j, SDL_FRect& rect) {
+		if (j.is_array() && j.size() >= 2) {
+			rect.x = eng::JsonArrayGet(j, 0, static_cast<float>(0));
+			rect.y = eng::JsonArrayGet(j, 1, static_cast<float>(0));
+			rect.w = eng::JsonArrayGet(j, 2, static_cast<float>(0));
+			rect.h = eng::JsonArrayGet(j, 3, static_cast<float>(0));
+		}
+	}
+
+	static void to_json(ordered_json& j, const SDL_FRect& rect) {
 		j = json::array({ rect.x, rect.y, rect.w, rect.h });
 	}
 

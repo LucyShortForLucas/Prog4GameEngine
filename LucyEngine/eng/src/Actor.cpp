@@ -8,8 +8,9 @@
 namespace eng {
 
 
-Actor::Actor() {
-    m_TransformPtr = &AddComponent<Transform>();
+Actor::Actor(SceneTree* sceneTreePtr) :
+    m_SceneTreePtr(sceneTreePtr),
+    m_TransformPtr{ &AddComponent<Transform>() }  {
 }
 
 void Actor::Start() {
@@ -123,6 +124,8 @@ void Actor::Cleanup() {
 
             // Moving complete
             movedChild->m_MoveInfo.newParentPtr = nullptr;
+
+            movedChild->m_MoveEventSource.Invoke(event::ActorMoved{movedChild.get(), this, movedChild->GetParent()});
         }
     }
 }
@@ -142,30 +145,30 @@ Transform& Actor::GetTransform() {
 }
 
 Actor& Actor::AddChildActor() {
-    auto& f_NewChild{ m_ChildUptrs.emplace_back(std::make_unique<Actor>()) };
+    auto& newChild{ m_ChildUptrs.emplace_back(std::make_unique<Actor>()) };
 
-    f_NewChild->m_ParentPtr = this;
+    newChild->m_ParentPtr = this;
 
     return *m_ChildUptrs.back();
 }
 
 std::vector<Actor*> Actor::GetChildren() const {
-    std::vector<Actor*> f_Result{};
+    std::vector<Actor*> result{};
     for (const auto& childUptr : m_ChildUptrs) {
-        f_Result.emplace_back(childUptr.get());
+        result.emplace_back(childUptr.get());
     }
-    return f_Result;
+    return result;
 }
 
 std::vector<Actor*> Actor::GetAllChildren() const {
-    std::vector<Actor*> f_Result = GetChildren();
+    std::vector<Actor*> result = GetChildren();
 
-    for (size_t i{}; i < f_Result.size(); ++i) {
-        auto f_ChildChildren{ f_Result[i]->GetChildren() };
-        f_Result.insert(f_Result.end(), f_ChildChildren.begin(), f_ChildChildren.end());
+    for (size_t i{}; i < result.size(); ++i) {
+        auto childChildren{ result[i]->GetChildren() };
+        result.insert(result.end(), childChildren.begin(), childChildren.end());
     }
 
-    return f_Result;
+    return result;
 }
 
 void Actor::SetParent(Actor& newParent, bool keepWorldTransform) {
@@ -199,6 +202,8 @@ void Actor::Destroy() {
     if (IsFlagged(Flags::Destroyed) or m_ParentPtr == nullptr) return;
     m_Flags.set(static_cast<int>(Flags::Destroyed));
 
+    m_DestroyEventSource.Invoke(event::ActorDestroyed{this});
+
     for (auto& child : m_ChildUptrs) {
         child->Destroy();
     }
@@ -224,6 +229,8 @@ void Actor::Enable() {
     for (auto& compUptr : m_CompUptrs) {
         compUptr->OnEnable();
     }
+
+    m_EnabledEventSource.Invoke(event::ActorEnabled{this});
 }
 
 void Actor::Disable() {
@@ -240,31 +247,38 @@ void Actor::Disable() {
     for (auto& compUptr : m_CompUptrs) {
         compUptr->OnDisable();
     }
+
+    m_DisabledEventSource.Invoke(event::ActorDisabled{ this });
 }
 
 void Actor::EnableOnStart(bool enable) {
     m_Flags[static_cast<int>(Flags::DisableOnStart)] = !enable;
 }
 
-nlohmann::ordered_json Actor::ToJson() {
-    nlohmann::ordered_json f_Json{};
+void Actor::PreserveOnParentClear(bool clear) {
+    m_Flags[static_cast<int>(Flags::PreserveOnParentClear)] = clear;
 
-    f_Json["Flags"] = m_Flags.to_ulong();
+}
+
+nlohmann::ordered_json Actor::ToJson() {
+    nlohmann::ordered_json j{};
+
+    j["Flags"] = m_Flags.to_ulong();
 
     for (auto& comp : GetAbstractComponents()) {
         if (not IsComponentRegistered(comp->TypeName())) continue;
 
-        f_Json["Components"].emplace_back(nlohmann::ordered_json{
+        j["Components"].emplace_back(nlohmann::ordered_json{
             {"Type", comp->TypeName()},
             {"Json", comp->Serialize()}
             });
     }
 
     for (auto& child : GetChildren()) {
-        f_Json["Children"].emplace_back(child->ToJson());
+        j["Children"].emplace_back(child->ToJson());
     }
 
-    return f_Json;
+    return j;
 }
 
 void Actor::Serialize(const std::string& filePath) {
@@ -282,10 +296,10 @@ void Actor::Serialize(const std::string& filePath) {
     }
 }
 
-void Actor::DeserializeChild(const nlohmann::json& json) {
-    auto& f_Child{ AddChildActor() };
+Actor* Actor::DeserializeChild(const nlohmann::json& json) {
+    auto& child{ AddChildActor() };
 
-    f_Child.m_Flags = json.value("Flags", 0);
+    child.m_Flags = json.value("Flags", 0);
 
     if (json.contains("Components")) {
         for (auto& [key, compJson] : json["Components"].items()) {
@@ -297,21 +311,64 @@ void Actor::DeserializeChild(const nlohmann::json& json) {
 
             if (compJson["Type"] == "Transform") {
                 // Special case for Transforms. The default one has to be removed and the m_TransformPtr has to be updated. This solution isn't entirely elegant, but good enough.
-                f_Child.RemoveComponent<Transform>();
-                f_Child.m_TransformPtr = dynamic_cast<Transform*>(f_Child.m_CompUptrs.emplace_back(DeserializeComponent(f_Child, compJson["Type"], compJson["Json"])).get());
+                child.RemoveComponent<Transform>();
+                child.m_TransformPtr = dynamic_cast<Transform*>(child.m_CompUptrs.emplace_back(DeserializeComponent(child, compJson["Type"], compJson["Json"])).get());
                 continue;
             }
 
-            f_Child.m_CompUptrs.emplace_back(DeserializeComponent(f_Child, compJson["Type"], compJson["Json"]));
+            child.m_CompUptrs.emplace_back(DeserializeComponent(child, compJson["Type"], compJson["Json"]));
         }
     }
 
     if (!json.contains("Children")) 
-        return;
+        return &child;
 
     for (auto& [key, childJson] : json["Children"].items()) {
-        f_Child.DeserializeChild(childJson);
+        child.DeserializeChild(childJson);
     }
+
+    return &child;
+}
+
+void eng::Actor::ClearChildren() {
+    for (auto child : GetChildren()) {
+        if (child->IsFlagged(Flags::PreserveOnParentClear))
+            continue;
+        child->Destroy();
+    }
+}
+
+void eng::Actor::ForceClearChildren() {
+    for (auto child : GetChildren()) 
+        child->Destroy();
+}
+
+void eng::Actor::SubscribeActorDestroyed(AbstractEventListener<event::ActorDestroyed>& subject) {
+    m_DestroyEventSource.Subscribe(subject);
+}
+void eng::Actor::UnsubscribeActorDestroyed(AbstractEventListener<event::ActorDestroyed>& subject) {
+    m_DestroyEventSource.Unsubscribe(subject);
+}
+
+void eng::Actor::SubscribeActorMoved(AbstractEventListener<event::ActorMoved>& subject) {
+    m_MoveEventSource.Subscribe(subject);
+}
+void eng::Actor::UnsubscribeActorMoved(AbstractEventListener<event::ActorMoved>& subject) {
+    m_MoveEventSource.Unsubscribe(subject);
+}
+
+void eng::Actor::SubscribeActorEnabled(AbstractEventListener<event::ActorEnabled>& subject) {
+    m_EnabledEventSource.Subscribe(subject);
+}
+void eng::Actor::UnsubscribeActorEnabled(AbstractEventListener<event::ActorEnabled>& subject) {
+    m_EnabledEventSource.Unsubscribe(subject);
+}
+
+void eng::Actor::SubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject) {
+    m_DisabledEventSource.Subscribe(subject);
+}
+void eng::Actor::UnsubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject) {
+    m_DisabledEventSource.Unsubscribe(subject);
 }
 
 } // namespace eng

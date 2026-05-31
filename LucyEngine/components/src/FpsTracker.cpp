@@ -9,7 +9,7 @@
 namespace eng {
 
 std::unique_ptr<FpsTracker> FpsTracker::Deserialize(Actor& owner, const nlohmann::json& json) {
-	return std::make_unique<FpsTracker>();
+	return std::make_unique<FpsTracker>(owner);
 }
 
 void FpsTracker::OnEnable() {

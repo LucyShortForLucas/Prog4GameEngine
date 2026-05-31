@@ -4,6 +4,21 @@
 
 namespace eng {
 
+nlohmann::ordered_json Transform::Serialize() {
+	nlohmann::ordered_json j;
+
+	j["LocalPosition"] = m_TransformData.position;
+
+	return j;
+}
+
+std::unique_ptr<Transform> Transform::Deserialize(Actor& owner, const nlohmann::json& json) {
+	auto t{ std::make_unique<Transform>(owner) };
+	t->SetLocalPosition(json.value("LocalPosition", glm::vec2{}));
+	return t;
+}
+
+
 void Transform::SetLocalPosition(float x, float y) {
 	m_TransformData.position.x = x;
 	m_TransformData.position.y = y;

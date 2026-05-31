@@ -8,6 +8,7 @@
 #include "Texture2D.h"
 #include "Font.h"
 #include <SDL3_ttf/SDL_ttf.h>
+#include <fstream>
 
 namespace eng {
 
@@ -24,7 +25,6 @@ eng::SdlResourceLoader::~SdlResourceLoader() {
 
 dae::Texture2D* eng::SdlResourceLoader::LoadTexture(const std::string& file) {
 	const auto fullPath = std::string(SDL_GetBasePath()) + "Data\\Textures\\" + file;
-
 	const auto filename = std::filesystem::path(fullPath).filename().string();
 
 	if (m_TextureUptrs.find(filename) == m_TextureUptrs.end()) m_TextureUptrs.insert(std::pair(filename, std::make_unique<dae::Texture2D>(fullPath)));
@@ -33,8 +33,7 @@ dae::Texture2D* eng::SdlResourceLoader::LoadTexture(const std::string& file) {
 }
 
 dae::Font* eng::SdlResourceLoader::LoadFont(const std::string& file, uint8_t size) {
-	const auto fullPath = std::string(SDL_GetBasePath()) + "Data\\" + file;
-
+	const auto fullPath = std::string(SDL_GetBasePath()) + "Data\\Fonts\\" + file;
 	const auto filename = std::filesystem::path(fullPath).filename().string();
 
 	const auto key = std::pair<std::string, uint8_t>(filename, size);
@@ -42,6 +41,20 @@ dae::Font* eng::SdlResourceLoader::LoadFont(const std::string& file, uint8_t siz
 	if (m_FontUptrs.find(key) == m_FontUptrs.end()) m_FontUptrs.insert(std::make_pair(key, std::make_unique<dae::Font>(fullPath, size)));
 
 	return m_FontUptrs.at(key).get();
+}
+
+nlohmann::json* eng::SdlResourceLoader::LoadJson(const std::string& file) {
+	const auto fullPath = std::string(SDL_GetBasePath()) + "Data\\Json\\" + file;
+	const auto filename = std::filesystem::path(fullPath).filename().string();
+
+	if (m_JsonUptrs.find(filename) == m_JsonUptrs.end()) {
+		auto j{ std::make_unique<nlohmann::json>() };
+		std::ifstream stream{ file };
+		stream >> *j;
+		m_JsonUptrs.insert(std::pair(filename, std::move(j)));
+	}
+
+	return m_JsonUptrs.at(filename).get();
 }
 
 }

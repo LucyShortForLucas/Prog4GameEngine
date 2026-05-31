@@ -12,11 +12,13 @@ struct TransformData {
 	glm::vec2 position{};
 };
 
-DECL_COMPONENT(Transform)
+DECL_COMPONENT(Transform, public AbstractComponent)
 public: //--------------- Constructor/Destructor --------------
 
 	Transform(eng::Actor& owner) : AbstractComponent(owner) {};
 	~Transform() = default;
+
+	nlohmann::ordered_json Serialize();
 
 public: //--------------- Transform Methods --------------
 
@@ -40,7 +42,7 @@ private: //--------------------------- Transform Fields ------------------------
 	bool m_GlobalNeedsUpdate{};
 
 }; // !TransformComponent
-
+REGISTER_COMPONENT(Transform)
 } // !eng
 
 

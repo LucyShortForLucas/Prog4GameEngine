@@ -13,8 +13,6 @@
 #include "FpsTracker.h"
 #include "TextRenderer.h"
 #include "ResourceLoader.h"
-#include "Rotator.h"
-#include "ThrashTheCache.h"
 
 #include <filesystem>
 #include <memory>
@@ -22,11 +20,6 @@
 #include "GameTime.h"
 #include "Input.h"
 #include "Services.h"
-#include "Move.h"
-#include "Kill.h"
-#include "AddScore.h"
-#include "HpScore.h"
-#include "HpScoreDisplay.h"
 #include "Logger.h"
 #include "CommandInputGroup.h"
 #include "AudioPlayer.h"
@@ -54,7 +47,6 @@ static std::unique_ptr<eng::Actor> load()
 	
 	blueTankUi.GetComponent<eng::Transform>()->SetGlobalPosition(10, 300);
 	blueTankUi.AddComponent<eng::TextRenderer>("# lives: 3 Score: 0");
-	blueTankUi.AddComponent<eng::HpScoreDisplay>();
 
 	auto& blueTankControlText{ root->AddChildActor() };
 	blueTankControlText.AddComponent<eng::TextRenderer>(
@@ -66,8 +58,6 @@ static std::unique_ptr<eng::Actor> load()
 	blueTank.AddComponent<eng::TextureRenderer>("tempTanks.png",
 		glm::ivec2{ 32, 32 }, SDL_FRect{ 0, 0, 32, 32 });
 
-	blueTank.AddComponent<eng::HpScore>(3)
-		.SubscribeLives(*blueTankUi.GetComponent<eng::HpScoreDisplay>());
 
 	blueTank.GetComponent<eng::Transform>()->SetGlobalPosition(400, 300);
 
@@ -85,20 +75,10 @@ static std::unique_ptr<eng::Actor> load()
 
 	blueTankInput.SubscribeInputSource(keyEventSources);
 
-	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_W, std::make_unique<eng::Move>(glm::vec2{ 0, -80 }));
-	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_A, std::make_unique<eng::Move>(glm::vec2{ -80, 0 }));
-	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_S, std::make_unique<eng::Move>(glm::vec2{ 0, 80 }));
-	blueTankInput.SubscribeKeyPressed(SDL_SCANCODE_D, std::make_unique<eng::Move>(glm::vec2{ 80, 0 }));
-
-	blueTankInput.SubscribeKeyDown(SDL_SCANCODE_C, std::make_unique<eng::Kill>());
-	blueTankInput.SubscribeKeyDown(SDL_SCANCODE_Z, std::make_unique<eng::AddScore>(10));
-	blueTankInput.SubscribeKeyDown(SDL_SCANCODE_X, std::make_unique<eng::AddScore>(100));
-
 	auto& redTankUi{ root->AddChildActor() };
 
 	redTankUi.GetComponent<eng::Transform>()->SetGlobalPosition(10, 400);
 	redTankUi.AddComponent<eng::TextRenderer>("# lives: 3 Score: 0");
-	redTankUi.AddComponent<eng::HpScoreDisplay>();
 
 	auto& redTankControlText{ root->AddChildActor() };
 	redTankControlText.AddComponent<eng::TextRenderer>("Use the D-pad to move the blue tank, X to inflict damage, A and B to get score");
@@ -107,20 +87,9 @@ static std::unique_ptr<eng::Actor> load()
 	auto& redTank{ root->AddChildActor() };
 
 	redTank.AddComponent<eng::TextureRenderer>("tempTanks.png", glm::ivec2{ 32, 32 }, SDL_FRect{ 32, 0, 32, 32 });
-	redTank.AddComponent<eng::HpScore>(3).SubscribeLives(*redTankUi.GetComponent<eng::HpScoreDisplay>());
 	redTank.GetComponent<eng::Transform>()->SetGlobalPosition(500, 300);
 
 	auto& redTankInput{ input.NewInputgroup(redTank) };
-	redTankInput.SubscribeInputSource(keyEventSources);
-
-	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Up, std::make_unique<eng::Move>(glm::vec2{ 0, -80 }));
-	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Left, std::make_unique<eng::Move>(glm::vec2{ -80, 0 }));
-	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Down, std::make_unique<eng::Move>(glm::vec2{ 0, 80 }));
-	redTankInput.SubscribeKeyPressed(eng::GamepadKeys::Right, std::make_unique<eng::Move>(glm::vec2{ 80, 0 }));
-
-	redTankInput.SubscribeKeyDown(eng::GamepadKeys::X, std::make_unique<eng::Kill>());
-	redTankInput.SubscribeKeyDown(eng::GamepadKeys::A, std::make_unique<eng::AddScore>(10));
-	redTankInput.SubscribeKeyDown(eng::GamepadKeys::B, std::make_unique<eng::AddScore>(100));
 
 
 	return root;

@@ -10,13 +10,13 @@ add_library(${PROJECT_NAME} STATIC
   components/src/TextureRenderer.cpp
   components/src/TextRenderer.cpp
   components/src/Transform2d.cpp
-  components/src/Rotator.cpp
+  
   eng/src/Services.cpp 
   eng/src/LucyRenderer.cpp 
   eng/src/ResourceLoader.cpp
   eng/src/GameTime.cpp 
   components/src/FpsTracker.cpp
-  components/src/ThrashTheCache.cpp
+  
   Input/src/CommandInputGroup.cpp
   Input/src/AbstractCommand.cpp
   utils/src/EventSource.cpp
@@ -24,13 +24,8 @@ add_library(${PROJECT_NAME} STATIC
   Input/src/Input.cpp
   Input/src/KeyboardState.cpp
   Input/src/GamepadState.cpp
-  Commands/src/Move.cpp
-  components/src/HpScore.cpp
-  components/src/HpScoreDisplay.cpp
-  Commands/src/Kill.cpp
-  Commands/src/AddScore.cpp
   eng/AudioPlayer.h eng/src/AudioPlayer.cpp
- "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp" "eng/src/Serialization.cpp")
+ "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp" "eng/src/Serialization.cpp" "eng/src/SceneTree.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   eng components utils Input Commands ../Minigin

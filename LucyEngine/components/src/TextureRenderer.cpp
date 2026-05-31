@@ -16,6 +16,25 @@ void TextureRenderer::SetSourceRect(SDL_FRect rect) {
 	m_SourceRect = rect;
 }
 
+nlohmann::ordered_json TextureRenderer::Serialize() {
+	nlohmann::ordered_json j{};
+
+	j["TexturePath"] = m_TexturePath;
+	j["Size"] = m_Size;
+	j["SourceRect"] = m_SourceRect;
+	j["Layer"] = m_Layer;
+
+	return j;
+}
+
+std::unique_ptr<TextureRenderer> TextureRenderer::Deserialize(Actor& owner, const nlohmann::json& json) {
+	return std::make_unique<TextureRenderer>(owner,
+		json.value("TexturePath", ""),
+		json.value("Size", glm::ivec2{}),
+		json.value("SourceRect", SDL_FRect{}),
+		json.value("Layer", 0u)
+	);
+}
 
 TextureRenderer::TextureRenderer(eng::Actor& owner, const std::string& texturePath, glm::ivec2 size, SDL_FRect sourceRect, unsigned int layer) : AbstractComponent(owner), m_Layer(layer), m_TexturePath(texturePath),  m_Size(size), m_SourceRect(sourceRect) {
 	LoadTexture(texturePath);

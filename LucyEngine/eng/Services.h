@@ -7,7 +7,7 @@
 #include "Font.h"
 #include <chrono>
 #include "CommandInputGroup.h"
-#include <HashedString.h>
+#include "HashedString.h"
 
 namespace eng::service {
 //---------------------------------------- Service class ---------------------------------------
@@ -63,6 +63,7 @@ public:
 
 	virtual dae::Texture2D* LoadTexture(const std::string& file) = 0;
 	virtual dae::Font* LoadFont(const std::string& file, uint8_t size) = 0;
+	virtual nlohmann::json* LoadJson(const std::string& file) = 0;
 };
 
 extern Service<IResourceLoader>  resources;

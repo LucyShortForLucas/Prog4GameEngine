@@ -11,6 +11,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL_oldnames.h>
 
+namespace eng {
 
 eng::TextRenderer::TextRenderer(eng::Actor& owner, const std::string& text, const std::string& fontPath, unsigned int size, SDL_Color color) :
 	AbstractComponent(owner),
@@ -20,6 +21,26 @@ eng::TextRenderer::TextRenderer(eng::Actor& owner, const std::string& text, cons
 	m_Size(size),
 	m_NeedsUpdate(true) {
 	m_FontPtr = eng::service::resources.Get().LoadFont(fontPath, static_cast<uint8_t>(m_Size));
+}
+
+nlohmann::ordered_json eng::TextRenderer::Serialize() {
+	nlohmann::ordered_json j{};
+
+	j["Text"] = m_Text;
+	j["FontPath"] = m_FontPath;
+	j["Size"] = m_Size;
+	j["Color"] = m_Color;
+
+	return j;
+}
+
+std::unique_ptr<TextRenderer> TextRenderer::Deserialize(Actor& owner, const nlohmann::json& json) {
+	return std::make_unique<TextRenderer>(owner,
+		json.value("Text", ""),
+		json.value("FontPath", ""),
+		json.value("Size", 12u),
+		json.value("Color", SDL_Color{})
+	);
 }
 
 void eng::TextRenderer::SetText(const std::string& text) {
@@ -53,5 +74,7 @@ void eng::TextRenderer::Render() {
 	const glm::vec2 f_Pos{ Owner().GetTransform().GetGlobal().position };
 	const auto f_Size{ m_TextTextureUptr->GetSize() };
 	eng::service::renderer.Get().RenderTexture({ *m_TextTextureUptr, SDL_FRect{ f_Pos.x, f_Pos.y, f_Size.x, f_Size.y }, SDL_FRect{ 0, 0, f_Size.x, f_Size.y } });
+
+}
 
 }

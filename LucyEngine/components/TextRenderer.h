@@ -11,10 +11,12 @@
 
 namespace eng {
 
-DECL_COMPONENT(TextRenderer)
+DECL_COMPONENT(TextRenderer, public AbstractComponent)
 public: //--------------- Constructor/Destructor/copy/move --------------
 	TextRenderer(Actor& owner, const std::string& text = "", const std::string& fontPath = "Lingua.otf", unsigned int size = 24, SDL_Color color = { 255,255,255,255 });
 	~TextRenderer() = default;
+
+	nlohmann::ordered_json Serialize() override;
 
 public: //------------------ General methods --------------------------
 
@@ -36,5 +38,5 @@ private: //---------------------------|Fields|----------------------------
 	std::unique_ptr<dae::Texture2D> m_TextTextureUptr{};
 
 }; // !TextRenderer
-
+REGISTER_COMPONENT(TextRenderer)
 }

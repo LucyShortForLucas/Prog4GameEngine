@@ -6,7 +6,7 @@
 
 namespace eng {
 
-DECL_COMPONENT(FpsTracker)
+DECL_COMPONENT(FpsTracker, public AbstractComponent)
 public: //--------------- Constructor/Destructor/copy/move --------------
 
 	FpsTracker(Actor& owner) : AbstractComponent(owner) {};
@@ -22,5 +22,6 @@ private: //--------------------------- Component references --------------------
 	TextRenderer* m_TextRendererPtr{};
 
 }; // !FpsTracker
+REGISTER_COMPONENT(FpsTracker)
 
 }

@@ -1,48 +1,76 @@
-#pragma once																   // 
-                                                                               //	The Actor class is the main building block of scenes within any 
-#include <set>																   // game created in this engine. It is equivalent to GameObjects in 
-#include <memory>															   // Unity and Actors in Unreal.
-#include <vector>															   //  
-#include <bitset>															   //	At its core, all this class does is manage two sets of other 
-#include <cstddef>															   // objects: Components and other Actors. Components are the actual meat
-#include <unordered_map>													   // of an entity's behaviour; they hold virtually all game logic. The 
-#include <optional>															   // other Actors an Actor manages are its children. They inherit its 
-#include <ranges>															   // transform data and are destroyed when their parent is destroyed.
-#include <algorithm>														   //  
-#include <nlohmann/json.hpp>                                                   // Most of the time an Actor represents a single 'entity' inside of 
-#include "Utils.h"															   // a game scene, however every scene also has a single, special
-#include "AbstractComponent.h"												   // actor: the 'root actor', the parent of all other actors in the
-#include "Transform2d.h"													   // scene.
-                                                                               // 
-namespace eng {																   // ...]
-                                                                                										
-class Actor final {																	   /// The quintessential GameObject. An Actor manages the lifetime and ownership of Components and Child Actors.
-public:																		   // [...
-    struct MoveInfo {														   //	
-        Actor* newParentPtr{};												   //   The 'Root Actor' or 'Scene Root' is the top-level actor that
-        bool keepWorldTransform{};											   // ultimately owns all other actors in a scene. It is the only actor
-    };				                                                           // in any given scene that does not have a parent of its own. In this
-                                                                               // way, reasoning about the Root Actor is akin to reasoning about the
-//---- Constr/Destr/Copy/Move                                                  // scene as a whole.
-    Actor();																   //
-    ~Actor() = default;														   //	The reason for this design choice is that by forcing only a single 
-                                                                               // 'free actor' to exist in any given scene, there is no real need for
-    Actor(const Actor&) = delete;											   // a 'scene' at all; a scene is conceptually equivalent to a Root Actor.
-    Actor& operator=(const Actor&) = delete;								   // This removes the need for any sort of scene class or global scene
-                                                                               // manager, and makes reasoning about a scene the same as reasoning
-    Actor(Actor&&) = delete;												   // about an actor, simplifying development. 
-    Actor& operator=(Actor&&) = delete;										   //====================================================================
+#pragma once																   
+                                                                               
+#include <set>																   
+#include <memory>															   
+#include <vector>															   
+#include <bitset>															   
+#include <cstddef>															   
+#include <unordered_map>													   
+#include <optional>															   
+#include <ranges>															   
+#include <algorithm>														   
+#include <nlohmann/json.hpp>                                                   
+#include "Utils.h"															   
+#include "AbstractComponent.h"												   
+#include "Transform2d.h"													   
+#include "EventSource.h"                                                       
+                                                                               
+namespace eng {																   
+
+class SceneTree; // Forward Declaration
+
+namespace event {
+
+struct ActorDestroyed {
+    Actor* actorPtr;
+};
+
+struct ActorEnabled {
+    Actor* actorPtr;
+};
+
+struct ActorDisabled {
+    Actor* actorPtr;
+};
+
+struct ActorMoved {
+    Actor* actorPtr;
+    Actor* oldParent;
+    Actor* newParent;
+};
+
+}
+																	               /// The quintessential GameObject. An Actor manages the lifetime and ownership of Components and Child Actors.
+class Actor final {
+public:																		   
+    struct MoveInfo {														   
+        Actor* newParentPtr{};												   
+        bool keepWorldTransform{};											   
+    };				                                                           
+                                                                               
+//---- Constr/Destr/Copy/Move                                                  
+    Actor(SceneTree* sceneTree = nullptr);									   
+    ~Actor() = default;														   
+                                                                               
+    Actor(const Actor&) = delete;											   
+    Actor& operator=(const Actor&) = delete;								   
+                                                                               
+    Actor(Actor&&) = delete;												   
+    Actor& operator=(Actor&&) = delete;										   
  
 //---- Serialization methods
 
     nlohmann::ordered_json ToJson();
     void Serialize(const std::string& filePath);
-    void DeserializeChild(const nlohmann::json& json);
+    Actor* DeserializeChild(const nlohmann::json& json);
 
-//---- Child Actor Methods:													   
-    Actor& AddChildActor();													   
-    std::vector<Actor*>	GetChildren() const;								    
-    std::vector<Actor*>	GetAllChildren() const;								    
+//---- Child Actor Methods:	
+                                                                                   /// Adds a new, empty child actor
+    Actor& AddChildActor();													       /// Get all the children of this actor 
+    std::vector<Actor*>	GetChildren() const;								       /// Get all the children of this actor and all of their children, recursively
+    std::vector<Actor*>	GetAllChildren() const;                                    /// Destroy all children of this actor. Does not destroy children flagged with PreserveOnParentClear
+    void ClearChildren();                                                          /// Destroy all children of this actor, regardless of their flags.
+    void ForceClearChildren();                                                     
                                                                                
 //---- Parent Actor Methods														   
     Actor* GetParent();															    
@@ -61,31 +89,47 @@ public:																		   // [...
     Transform& GetTransform();												   
                                                                                
 //---- Flag Enum/Methods
-    enum class Flags {															    
-        Destroyed,																    /// If this flag is set, the actor will be destroyed at end of frame   
-        ParentChanged,															    /// If this flag is set, the actor will be moved to another parent at end of frame											   
-        NoUpdate,																    /// Skip this Actor's Update cycle. Disables Update(), LateUpdate(), and FixedUpdate()									   
-        NoRender,																    /// Skip this Actor's Render cycle. Disable Render().				   
-        Started,																    /// If not set, runs start methods on its components and sets it at the start of the next frame.								   
-        Disabled,																    /// If set, the actor is considered inactive, Controls Enable() and Disable().													   										   
-        DisableOnStart,															    /// If set, the actor will start disabled. Disable() will be called in Start(). Setting this flag has no effect if the Started flag has already been set.
-        SIZE_																        /// The size of the Flags enum class											                                                                   
+    enum class Flags {															    /// If this flag is set, the actor will be destroyed at end of frame   
+        Destroyed,																    /// If this flag is set, the actor will be moved to another parent at end of frame											   
+        ParentChanged,															    /// Skip this Actor's Update cycle. Disables Update(), LateUpdate(), and FixedUpdate()									   
+        NoUpdate,																    /// Skip this Actor's Render cycle. Disable Render().				   
+        NoRender,																    /// If not set, runs start methods on its components and sets it at the start of the next frame.								   
+        Started,																    /// If set, the actor is considered inactive, Controls Enable() and Disable().													   							
+        Disabled,																    /// If set, the actor will start disabled. Disable() will be called in Start(). Setting this flag has no effect if the Started flag has already been set.			   
+        DisableOnStart,															    /// If set, this actor will not be destroyed if its parent's ClearChildren() method is called
+        PreserveOnParentClear,                                                      /// The size of the Flags enum class 
+        SIZE_																       											                                                                   
     };											  
-    bool IsFlagged(Flags flag)	const;											    										                                                                       
-    void Destroy();																    /// Flag this actor for destruction and call OnDestroy() on its components. Note that the root actor of any given scene cannot be destroyed; you must load a new scene instead.                                    
-    void Enable();															        /// Enable the actor and its children, if disabled. Unsets NoUpdate and	NoRender and calls OnEnable().										                                                                   
-    void Disable();																    /// Disable the actor and its children, if enabled. Sets NoUpdate andNoRender and calls OnDisable()										                                                                               
-    void EnableOnStart(bool enable);										        /// Set this Actor to start enabled or disabled. By default, actors	are enabled on start.														                                                                                              
-                                                                                                                                                   
+    bool IsFlagged(Flags flag)	const;
+        											    							/// Flag this actor for destruction and call OnDestroy() on its components. Note that the root actor of any given scene cannot be destroyed; you must load a new scene instead.			                                                                       
+    void Destroy();																    /// Enable the actor and its children, if disabled. Unsets NoUpdate and	NoRender and calls OnEnable().										                                                                       
+    void Enable();															        /// Disable the actor and its children, if enabled. Sets NoUpdate andNoRender and calls OnDisable()										                                                                       
+    void Disable();																    /// Set this Actor to start enabled or disabled. By default, actors	are enabled on start.														                                                                       
+    void EnableOnStart(bool enable);										        /// Set this Actor to remain even after a call to its parents' Clear() method                                                               
+    void PreserveOnParentClear(bool clear = true);
+
 //---- Gameloop Methods 
-                                                                                                                      
-    void Start();															        /// @brief Executed on the first frame this actor is enabled.			                                                              
-    void Update();															        /// Executed every frame if the actor is enabled.				                                            							                                                                      
-    void LateUpdate();														        /// Executed every frame if the actor is enabled, after every other Actor has had their Update method called							                                                                      
-    void FixedUpdate();														        /// Executed a fixed amount of times per second. May be called more or less than once in the same frame.								                                                                      
-    void Render();															        /// Executed every frame on RenderComponents during the rendering stage.														                                                                      
-    void RenderImgui();														        /// Executed every frame on ImguiRenderComponents during the rendering stage.																                                                                      
-    void Cleanup();															        /// Executed every frame as the last logical step of the frame. This function cleans up its children.		                                                              
+                                                                                    /// @brief Executed on the first frame this actor is enabled.			                                                                       
+    void Start();															        /// Executed every frame if the actor is enabled.				                                                                     
+    void Update();															        /// Executed every frame if the actor is enabled, after every other Actor has had their Update method called							                                                                      
+    void LateUpdate();														        /// Executed a fixed amount of times per second. May be called more or less than once in the same frame.								                                                                      
+    void FixedUpdate();														        /// Executed every frame on RenderComponents during the rendering stage.																                                                                      
+    void Render();															        /// Executed every frame on ImguiRenderComponents during the rendering stage.													                                                                      
+    void RenderImgui();														        /// Executed every frame as the last logical step of the frame. This function cleans up its children.		 								                                                                      
+    void Cleanup();															                                                                     
+
+//---- Event Methods
+    void SubscribeActorDestroyed(AbstractEventListener<event::ActorDestroyed>& subject);
+    void UnsubscribeActorDestroyed(AbstractEventListener<event::ActorDestroyed>& subject);
+
+    void SubscribeActorMoved(AbstractEventListener<event::ActorMoved>& subject);
+    void UnsubscribeActorMoved(AbstractEventListener<event::ActorMoved>& subject);
+    
+    void SubscribeActorEnabled(AbstractEventListener<event::ActorEnabled>& subject);
+    void UnsubscribeActorEnabled(AbstractEventListener<event::ActorEnabled>& subject);
+
+    void SubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject);
+    void UnsubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject);
 
 private:
 //---- Child/Parent Actor Fields                                                                                                                
@@ -99,7 +143,13 @@ private:
                                                                                                                                                   
 //---- Metadata Fields                                                                                                                                   
     std::bitset<static_cast<int>(Flags::SIZE_)> m_Flags{};
+    SceneTree* m_SceneTreePtr{};
 
+//---- Events
+    EventSource<event::ActorDestroyed> m_DestroyEventSource{};
+    EventSource<event::ActorMoved> m_MoveEventSource{};
+    EventSource<event::ActorEnabled> m_EnabledEventSource{};
+    EventSource<event::ActorDisabled> m_DisabledEventSource{};
 }; // !Actor																                                                                      
                                                                                                                                                   
                                                                                                                                                   
