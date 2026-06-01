@@ -27,6 +27,10 @@
 #pragma warning (pop)
 #endif
 
+#if _DEBUG && __has_include(<vld.h>)
+#include <vld.h>
+#endif
+
 
 static SDL_Window* g_window{};
 
@@ -69,13 +73,17 @@ eng::Engine::Engine(const fs::path&) {
 
 	PrintSDLVersion();
 
+	#if _DEBUG && __has_include(<vld.h>) // We are not tracking SLD leaks
+	VLDDisable();
+	#endif
+
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO))
 		logger.LogSuccess("SDL Successfully initiated!");
 	else
 		logger.LogError(std::string("Failed to initialize SDL3: ") + SDL_GetError());
 
 	g_window = SDL_CreateWindow(
-		"Programming 4 assignment",
+		"TRON - Battle Tanks - Lucas Schonkeren",
 		1024,
 		576,
 		SDL_WINDOW_OPENGL
@@ -86,6 +94,10 @@ eng::Engine::Engine(const fs::path&) {
 	}
 	else
 		logger.LogError(std::string("Failed to Create SDL3 window: ") + SDL_GetError());
+
+	#if _DEBUG && __has_include(<vld.h>)
+	VLDEnable();
+	#endif
 
 	// Set up Steam if needed
 	#if USE_STEAMWORKS
@@ -110,8 +122,8 @@ eng::Engine::~Engine() {
 	SDL_Quit();
 }
 
-void eng::Engine::Run(std::function<std::unique_ptr<eng::Actor>()> load) {
-	m_RootActor = load();
+void eng::Engine::Run(const std::string& initialActorPath) {
+	m_SceneTreeUptr = std::make_unique<SceneTree>(initialActorPath);
 #ifndef __EMSCRIPTEN__
 	// Set up time
 	auto lastTime = std::chrono::high_resolution_clock::now();
@@ -136,17 +148,21 @@ bool eng::Engine::RunOneFrame() {
 	auto& renderer = eng::service::renderer.Get();
 	auto& input = eng::service::input.Get();
 
-	m_RootActor->Start();
+	// Fetch Root Actor
+
+	auto& rootActor{m_SceneTreeUptr->Root()};
+
+	rootActor.Start();
 
 	bool doContinue{ input.ProcessInput() };
 
-	m_RootActor->Update();
+	rootActor.Update();
 
-	m_RootActor->LateUpdate();
+	rootActor.LateUpdate();
 
-	renderer.Render(*m_RootActor);
+	renderer.Render(rootActor);
 
-	m_RootActor->Cleanup();
+	rootActor.Cleanup();
 
 	return doContinue;
 }

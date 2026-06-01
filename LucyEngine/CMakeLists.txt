@@ -25,7 +25,7 @@ add_library(${PROJECT_NAME} STATIC
   Input/src/KeyboardState.cpp
   Input/src/GamepadState.cpp
   eng/AudioPlayer.h eng/src/AudioPlayer.cpp
- "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp" "eng/src/Serialization.cpp" "eng/src/SceneTree.cpp")
+ "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp" "eng/src/Serialization.cpp" "eng/src/SceneTree.cpp" "components/src/TagSetter.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   eng components utils Input Commands ../Minigin
@@ -95,7 +95,6 @@ target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${sdl3_SOURCE_DIR}/i
 target_link_libraries(imgui PUBLIC SDL3::SDL3)
 
 # Nlohmann Json
-include(FetchContent)
 
 FetchContent_Declare(
     nlohmann_json
@@ -109,6 +108,17 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   ${nlohmann_json_SOURCE_DIR}/include
 )
 
+# VLD
+set(VLD_ROOT "C:/Program Files (x86)/Visual Leak Detector")
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    "${VLD_ROOT}/include"
+)
+
+target_link_directories(${PROJECT_NAME} PUBLIC
+    "${VLD_ROOT}/lib/Win64"
+)
+
 target_link_libraries(${PROJECT_NAME} PUBLIC 
   SDL3::SDL3 
   SDL3_ttf::SDL3_ttf 
@@ -117,4 +127,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   imgui 
   Xinput
   nlohmann_json::nlohmann_json
+  vld
 )

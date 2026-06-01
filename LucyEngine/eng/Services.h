@@ -25,7 +25,7 @@ public:
 
 	void Unregister() {
 		m_ServicePtr = m_DefaultServiceUptr.get();
-		if (m_RegisteredServicePtr) m_RegisteredServicePtr.release();
+		if (m_RegisteredServicePtr) m_RegisteredServicePtr.reset();
 	}
 
 	T& Get() {

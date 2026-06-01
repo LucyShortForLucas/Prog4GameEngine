@@ -5,6 +5,7 @@
 #include <filesystem>
 
 #include "Services.h"
+#include "SceneTree.h"
 
 namespace fs = std::filesystem;
 
@@ -23,12 +24,12 @@ public: //--------------- Constructor/destructor ---------------------------
 
 public: //--------------- Run methods ---------------------------
 
-	void Run(std::function<std::unique_ptr<eng::Actor>()> loadGame);
+	void Run(const std::string& initalActorPath);
 	bool RunOneFrame();
 
 private: //----------------- Scene data -------------------
 
-	std::unique_ptr<Actor> m_RootActor;
+	std::unique_ptr<SceneTree> m_SceneTreeUptr;
 };
 
 }

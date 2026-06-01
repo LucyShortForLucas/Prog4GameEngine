@@ -9,6 +9,7 @@
 #include <SDL3/SDl.h>
 #include "Utils.h"
 #include <nlohmann/json.hpp>
+#include "HashedString.h"
 
 namespace eng {
 class Actor;

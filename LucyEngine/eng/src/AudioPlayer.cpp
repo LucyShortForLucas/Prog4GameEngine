@@ -38,9 +38,12 @@ public:
 				// Wait until there's audio to be played
 				m_AudioToPlayCv.wait(
 					f_Lock, [this, &stopToken]() -> bool {
-						return !m_AudioToPlay.empty();
+						return !m_AudioToPlay.empty() || stopToken.stop_requested();
 					}
 				);
+
+				if (stopToken.stop_requested())
+					break;
 
 				// Get next audio to play
 				const HashedString audioToPlay{ m_AudioToPlay.front().first };
@@ -97,6 +100,8 @@ public:
 	};
 
 	~impl() {
+		m_AudioThread.request_stop();
+		m_AudioToPlayCv.notify_one();
 		m_AudioThread.join();
 		MIX_DestroyMixer(m_pMixer);
 

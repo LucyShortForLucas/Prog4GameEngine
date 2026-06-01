@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include "Serialization.h"
+#include "SceneTree.h"
 
 namespace eng {
 
@@ -198,6 +199,20 @@ bool Actor::IsFlagged(Flags flag) const {
     return m_Flags.test(static_cast<int>(flag));
 }
 
+void Actor::Awaken() {
+    if (IsFlagged(Flags::Awake))
+        return;
+    m_Flags.set(static_cast<int>(Flags::Awake));
+
+    for (auto& compUptr : m_CompUptrs) {
+        compUptr->Awake();
+    }
+
+    for (auto& child : m_ChildUptrs) {
+        child->Awaken();
+    }
+}
+
 void Actor::Destroy() {
     if (IsFlagged(Flags::Destroyed) or m_ParentPtr == nullptr) return;
     m_Flags.set(static_cast<int>(Flags::Destroyed));
@@ -282,7 +297,7 @@ nlohmann::ordered_json Actor::ToJson() {
 }
 
 void Actor::Serialize(const std::string& filePath) {
-    std::ofstream file(filePath, std::ios::out | std::ios::trunc);  // overwrite mode
+    std::ofstream file(filePath, std::ios::out | std::ios::in | std::ios::trunc);
 
     if (!file.is_open()) {
         std::cerr << "Error: Could not open file " << filePath << " for writing.\n";
@@ -299,7 +314,10 @@ void Actor::Serialize(const std::string& filePath) {
 Actor* Actor::DeserializeChild(const nlohmann::json& json) {
     auto& child{ AddChildActor() };
 
-    child.m_Flags = json.value("Flags", 0);
+    if (json.empty())
+        return &child;
+
+    child.m_Flags = json.value("Flags", 0ul);
 
     if (json.contains("Components")) {
         for (auto& [key, compJson] : json["Components"].items()) {
@@ -369,6 +387,10 @@ void eng::Actor::SubscribeActorDisabled(AbstractEventListener<event::ActorDisabl
 }
 void eng::Actor::UnsubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject) {
     m_DisabledEventSource.Unsubscribe(subject);
+}
+
+SceneTree* eng::Actor::GetSceneTree() {
+    return m_SceneTreePtr;
 }
 
 } // namespace eng

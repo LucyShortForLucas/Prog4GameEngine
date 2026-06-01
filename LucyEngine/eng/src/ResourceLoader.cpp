@@ -9,6 +9,7 @@
 #include "Font.h"
 #include <SDL3_ttf/SDL_ttf.h>
 #include <fstream>
+#include <iostream>
 
 namespace eng {
 
@@ -49,7 +50,7 @@ nlohmann::json* eng::SdlResourceLoader::LoadJson(const std::string& file) {
 
 	if (m_JsonUptrs.find(filename) == m_JsonUptrs.end()) {
 		auto j{ std::make_unique<nlohmann::json>() };
-		std::ifstream stream{ file };
+		std::ifstream stream{ fullPath };
 		stream >> *j;
 		m_JsonUptrs.insert(std::pair(filename, std::move(j)));
 	}

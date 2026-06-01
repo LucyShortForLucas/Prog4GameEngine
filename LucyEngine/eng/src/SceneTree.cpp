@@ -41,6 +41,8 @@ void SceneTree::TagActor(unsigned int tag, Actor* actorPtr) {
 		m_TaggedActors[tag] = std::vector<Actor*>{};
 
 	m_TaggedActors[tag].emplace_back(actorPtr);
+
+	actorPtr->SubscribeActorDestroyed(*this);
 }
 
 void SceneTree::UnTagActor(unsigned int tag, Actor* actorPtr) {
@@ -50,6 +52,8 @@ void SceneTree::UnTagActor(unsigned int tag, Actor* actorPtr) {
 	auto it = std::ranges::find(m_TaggedActors[tag], actorPtr);
 	if (it != m_TaggedActors[tag].end()) 
 		m_TaggedActors[tag].erase(it);
+
+	actorPtr->UnsubscribeActorDestroyed(*this);
 }
 
 Actor* SceneTree::GetActorWithTag(unsigned int tag) {
@@ -70,7 +74,7 @@ const std::vector<Actor*>& SceneTree::GetAllActorsWithTag(unsigned int tag) {
 }
 
 void SceneTree::OnEvent(const event::ActorDestroyed& event) {
-
+	event.actorPtr->UnsubscribeActorDestroyed(*this);
 }
 
 

@@ -1,0 +1,270 @@
+{
+    "Flags": 0,
+    "Components": [
+        {
+            "Type": "Transform",
+            "Json": {
+                "LocalPosition": [
+                    0.0,
+                    0.0
+                ]
+            }
+        },
+        {
+            "Type": "TextureRenderer",
+            "Json": {
+                "TexturePath": "background.png",
+                "Size": [
+                    1024,
+                    576
+                ],
+                "SourceRect": [
+                    0.0,
+                    0.0,
+                    1024.0,
+                    576.0
+                ],
+                "Layer": 0
+            }
+        }
+    ],
+    "Children": [
+        {
+            "Flags": 0,
+            "Components": [
+                {
+                    "Type": "Transform",
+                    "Json": {
+                        "LocalPosition": [
+                            358.0,
+                            180.0
+                        ]
+                    }
+                },
+                {
+                    "Type": "TextureRenderer",
+                    "Json": {
+                        "TexturePath": "logo.png",
+                        "Size": [
+                            308,
+                            100
+                        ],
+                        "SourceRect": [
+                            0.0,
+                            0.0,
+                            308.0,
+                            100.0
+                        ],
+                        "Layer": 0
+                    }
+                }
+            ]
+        },
+        {
+            "Flags": 0,
+            "Components": [
+                {
+                    "Type": "Transform",
+                    "Json": {
+                        "LocalPosition": [
+                            20.0,
+                            20.0
+                        ]
+                    }
+                },
+                {
+                    "Type": "TextRenderer",
+                    "Json": {
+                        "Text": "Text",
+                        "FontPath": "Lingua.otf",
+                        "Size": 24,
+                        "Color": [
+                            255,
+                            255,
+                            255,
+                            255
+                        ]
+                    }
+                },
+                {
+                    "Type": "FpsTracker",
+                    "Json": null
+                }
+            ]
+        },
+        {
+            "Flags": 0,
+            "Components": [
+                {
+                    "Type": "Transform",
+                    "Json": {
+                        "LocalPosition": [
+                            10.0,
+                            300.0
+                        ]
+                    }
+                },
+                {
+                    "Type": "TextRenderer",
+                    "Json": {
+                        "Text": "# lives: 3 Score: 0",
+                        "FontPath": "Lingua.otf",
+                        "Size": 24,
+                        "Color": [
+                            255,
+                            255,
+                            255,
+                            255
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Flags": 0,
+            "Components": [
+                {
+                    "Type": "Transform",
+                    "Json": {
+                        "LocalPosition": [
+                            10.0,
+                            100.0
+                        ]
+                    }
+                },
+                {
+                    "Type": "TextRenderer",
+                    "Json": {
+                        "Text": "Use WASD to move the blue tank, C to inflict damage, Z and X to get score",
+                        "FontPath": "Lingua.otf",
+                        "Size": 24,
+                        "Color": [
+                            255,
+                            255,
+                            255,
+                            255
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Flags": 0,
+            "Components": [
+                {
+                    "Type": "Transform",
+                    "Json": {
+                        "LocalPosition": [
+                            400.0,
+                            300.0
+                        ]
+                    }
+                },
+                {
+                    "Type": "TextureRenderer",
+                    "Json": {
+                        "TexturePath": "tempTanks.png",
+                        "Size": [
+                            32,
+                            32
+                        ],
+                        "SourceRect": [
+                            0.0,
+                            0.0,
+                            32.0,
+                            32.0
+                        ],
+                        "Layer": 0
+                    }
+                }
+            ]
+        },
+        {
+            "Flags": 0,
+            "Components": [
+                {
+                    "Type": "Transform",
+                    "Json": {
+                        "LocalPosition": [
+                            10.0,
+                            400.0
+                        ]
+                    }
+                },
+                {
+                    "Type": "TextRenderer",
+                    "Json": {
+                        "Text": "# lives: 3 Score: 0",
+                        "FontPath": "Lingua.otf",
+                        "Size": 24,
+                        "Color": [
+                            255,
+                            255,
+                            255,
+                            255
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Flags": 0,
+            "Components": [
+                {
+                    "Type": "Transform",
+                    "Json": {
+                        "LocalPosition": [
+                            10.0,
+                            150.0
+                        ]
+                    }
+                },
+                {
+                    "Type": "TextRenderer",
+                    "Json": {
+                        "Text": "Use the D-pad to move the blue tank, X to inflict damage, A and B to get score",
+                        "FontPath": "Lingua.otf",
+                        "Size": 24,
+                        "Color": [
+                            255,
+                            255,
+                            255,
+                            255
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Flags": 0,
+            "Components": [
+                {
+                    "Type": "Transform",
+                    "Json": {
+                        "LocalPosition": [
+                            500.0,
+                            300.0
+                        ]
+                    }
+                },
+                {
+                    "Type": "TextureRenderer",
+                    "Json": {
+                        "TexturePath": "tempTanks.png",
+                        "Size": [
+                            32,
+                            32
+                        ],
+                        "SourceRect": [
+                            32.0,
+                            0.0,
+                            32.0,
+                            32.0
+                        ],
+                        "Layer": 0
+                    }
+                }
+            ]
+        }
+    ]
+}

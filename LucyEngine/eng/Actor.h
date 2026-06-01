@@ -13,11 +13,12 @@
 #include "Utils.h"															   
 #include "AbstractComponent.h"												   
 #include "Transform2d.h"													   
-#include "EventSource.h"                                                       
+#include "EventSource.h"      
                                                                                
 namespace eng {																   
 
 class SceneTree; // Forward Declaration
+class Actor;
 
 namespace event {
 
@@ -89,7 +90,8 @@ public:
     Transform& GetTransform();												   
                                                                                
 //---- Flag Enum/Methods
-    enum class Flags {															    /// If this flag is set, the actor will be destroyed at end of frame   
+    enum class Flags {	                                                            /// If this flag is set, the actor is 'awake'. Its components' Awake() methods are defferred until the Actor wakes up. The actor is automatically awoken when added to a Scenetree.
+        Awake,                                                                      /// If this flag is set, the actor will be destroyed at end of frame   
         Destroyed,																    /// If this flag is set, the actor will be moved to another parent at end of frame											   
         ParentChanged,															    /// Skip this Actor's Update cycle. Disables Update(), LateUpdate(), and FixedUpdate()									   
         NoUpdate,																    /// Skip this Actor's Render cycle. Disable Render().				   
@@ -101,7 +103,8 @@ public:
         SIZE_																       											                                                                   
     };											  
     bool IsFlagged(Flags flag)	const;
-        											    							/// Flag this actor for destruction and call OnDestroy() on its components. Note that the root actor of any given scene cannot be destroyed; you must load a new scene instead.			                                                                       
+                                                                                    /// Awaken this actor, calling Awake() on its components and flagging it as awake.
+    void Awaken();                                                                  /// Flag this actor for destruction and call OnDestroy() on its components. Note that the root actor of any given scene cannot be destroyed; you must load a new scene instead.			                                                                       
     void Destroy();																    /// Enable the actor and its children, if disabled. Unsets NoUpdate and	NoRender and calls OnEnable().										                                                                       
     void Enable();															        /// Disable the actor and its children, if enabled. Sets NoUpdate andNoRender and calls OnDisable()										                                                                       
     void Disable();																    /// Set this Actor to start enabled or disabled. By default, actors	are enabled on start.														                                                                       
@@ -109,7 +112,7 @@ public:
     void PreserveOnParentClear(bool clear = true);
 
 //---- Gameloop Methods 
-                                                                                    /// @brief Executed on the first frame this actor is enabled.			                                                                       
+                                                                                    /// Executed on the first frame this actor is enabled.			                                                                       
     void Start();															        /// Executed every frame if the actor is enabled.				                                                                     
     void Update();															        /// Executed every frame if the actor is enabled, after every other Actor has had their Update method called							                                                                      
     void LateUpdate();														        /// Executed a fixed amount of times per second. May be called more or less than once in the same frame.								                                                                      
@@ -130,6 +133,9 @@ public:
 
     void SubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject);
     void UnsubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject);
+
+//---- SceneTree methods
+    SceneTree* GetSceneTree();
 
 private:
 //---- Child/Parent Actor Fields                                                                                                                
@@ -167,9 +173,11 @@ CompT& Actor::AddComponent(ArgsT... args) {
     }																		                                                                      
                                                                                                                                                   
     m_CompUptrs.emplace_back(std::make_unique<CompT>(*this, args...));		                                                                      
-                                                                                                                                                  
-    return *static_cast<CompT*>(m_CompUptrs.back().get());					                                                                      
-                                                                                                                                                  
+                                                               
+    if (IsFlagged(Flags::Awake))
+        m_CompUptrs.back()->Awake();
+
+    return *static_cast<CompT*>(m_CompUptrs.back().get());                                                                                 
 }																			                                                                      
                                                                                                                                                   
 template<std::derived_from<AbstractComponent> CompT>						                                                                      
