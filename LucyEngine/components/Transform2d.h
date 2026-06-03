@@ -5,6 +5,7 @@
 
 #include "Serialization.h"
 #include <memory>
+#include "EventSource.h"
 
 namespace eng {
 
@@ -12,16 +13,32 @@ struct TransformData {
 	glm::vec2 position{};
 };
 
+class Transform;
+
+namespace event {
+
+struct GlobalPositionChanged {
+	Transform& transform;
+};
+
+struct LocalPositionChanged {
+	Transform& transform;
+};
+
+}
+
 DECL_COMPONENT(Transform, public AbstractComponent)
-public: //--------------- Constructor/Destructor --------------
+	DECL_EVENT(GlobalPositionChanged)
+	DECL_EVENT(LocalPositionChanged)
+public: 
+//---- Constructor/Destructor
 
 	Transform(eng::Actor& owner) : AbstractComponent(owner) {};
 	~Transform() = default;
 
 	nlohmann::ordered_json Serialize();
 
-public: //--------------- Transform Methods --------------
-
+//---- Transform Methods 
 
 	void SetLocalPosition(float x, float y);
 	void SetLocalPosition(glm::vec2 newPosition);
@@ -34,11 +51,12 @@ public: //--------------- Transform Methods --------------
 	void FlagForGlobalUpdate();
 
 	TransformData const& GetLocal() const;
-	TransformData const& GetGlobal();
+	TransformData const& GetGlobal() const;
 
-private: //--------------------------- Transform Fields ----------------------------
+private: 
+//---- Transform Fields 
 	TransformData m_TransformData{};
-	TransformData m_GlobalTransformData{};
+	mutable TransformData m_GlobalTransformData{};
 	bool m_GlobalNeedsUpdate{};
 
 }; // !TransformComponent

@@ -18,6 +18,7 @@
 #include "Logger.h"
 #include "CommandInputGroup.h"
 #include "AudioPlayer.h"
+#include "PhysicsBody.h"
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>

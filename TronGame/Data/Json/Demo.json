@@ -160,23 +160,43 @@
                         ]
                     }
                 },
-                {
-                    "Type": "TextureRenderer",
-                    "Json": {
-                        "TexturePath": "tempTanks.png",
-                        "Size": [
-                            32,
-                            32
-                        ],
-                        "SourceRect": [
-                            0.0,
-                            0.0,
-                            32.0,
-                            32.0
-                        ],
-                        "Layer": 0
-                    }
+              {
+                "Type": "TextureRenderer",
+                "Json": {
+                  "TexturePath": "tempTanks.png",
+                  "Size": [
+                    32,
+                    32
+                  ],
+                  "SourceRect": [
+                    0.0,
+                    0.0,
+                    32.0,
+                    32.0
+                  ],
+                  "Layer": 0
                 }
+              },
+              {
+                "Type": "AabbCollider",
+                "Json": {
+                  "Bounds": [
+                    0.0,
+                    0.0,
+                    32.0,
+                    32.0
+                  ]
+                }
+              },
+              {
+                "Type": "PhysicsBody",
+                "Json": {
+                  "Velocity": [
+                    10.0,
+                    0.0
+                  ]
+                }
+              }
             ]
         },
         {
@@ -237,34 +257,54 @@
         },
         {
             "Flags": 0,
-            "Components": [
-                {
-                    "Type": "Transform",
-                    "Json": {
-                        "LocalPosition": [
-                            500.0,
-                            300.0
-                        ]
-                    }
-                },
-                {
-                    "Type": "TextureRenderer",
-                    "Json": {
-                        "TexturePath": "tempTanks.png",
-                        "Size": [
-                            32,
-                            32
-                        ],
-                        "SourceRect": [
-                            32.0,
-                            0.0,
-                            32.0,
-                            32.0
-                        ],
-                        "Layer": 0
-                    }
-                }
-            ]
+          "Components": [
+            {
+              "Type": "Transform",
+              "Json": {
+                "LocalPosition": [
+                  500.0,
+                  300.0
+                ]
+              }
+            },
+            {
+              "Type": "TextureRenderer",
+              "Json": {
+                "TexturePath": "tempTanks.png",
+                "Size": [
+                  32,
+                  32
+                ],
+                "SourceRect": [
+                  32.0,
+                  0.0,
+                  32.0,
+                  32.0
+                ],
+                "Layer": 0
+              }
+            },
+            {
+              "Type": "AabbCollider",
+              "Json": {
+                "Bounds": [
+                  0.0,
+                  0.0,
+                  32.0,
+                  32.0
+                ]
+              }
+            },
+            {
+              "Type": "PhysicsBody",
+              "Json": {
+                "Velocity": [
+                  -30.0,
+                  0.0
+                ]
+              }
+            }
+          ]
         }
     ]
 }

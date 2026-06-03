@@ -25,8 +25,10 @@ void Actor::Start() {
         compUptr->Start();
     }
 
-    Enable();
-    if (IsFlagged(Flags::DisableOnStart)) Disable();
+    if (!m_ParentPtr)
+        Enable();
+    if (IsFlagged(Flags::DisableOnStart)) 
+        Disable();
 
     m_Flags[static_cast<int>(Flags::Started)] = true;
 }
@@ -145,6 +147,10 @@ Transform& Actor::GetTransform() {
     return *m_TransformPtr;
 }
 
+const Transform& Actor::GetTransform() const {
+    return *m_TransformPtr;
+}
+
 Actor& Actor::AddChildActor() {
     auto& newChild{ m_ChildUptrs.emplace_back(std::make_unique<Actor>()) };
 
@@ -195,6 +201,10 @@ Actor* eng::Actor::GetParent() {
     return m_ParentPtr;
 }
 
+const Actor* const eng::Actor::GetParent() const {
+    return m_ParentPtr;
+}
+
 bool Actor::IsFlagged(Flags flag) const {
     return m_Flags.test(static_cast<int>(flag));
 }
@@ -231,13 +241,13 @@ void Actor::Destroy() {
 }
 
 void Actor::Enable() {
-    for (auto& child : m_ChildUptrs) {
+     for (auto& child : m_ChildUptrs) {
         child->Enable();
     }
 
-    if (not IsFlagged(Flags::Disabled) and not IsFlagged(Flags::Started)) return;
+    if (IsFlagged(Flags::Enabled) and not IsFlagged(Flags::Started)) return;
 
-    m_Flags.reset(static_cast<int>(Flags::Disabled));
+    m_Flags.set(static_cast<int>(Flags::Enabled));
     m_Flags.reset(static_cast<int>(Flags::NoRender));
     m_Flags.reset(static_cast<int>(Flags::NoUpdate));
 
@@ -253,10 +263,10 @@ void Actor::Disable() {
         child->Disable();
     }
 
-    if (IsFlagged(Flags::Disabled)) return;
+    if (not IsFlagged(Flags::Enabled)) return;
 
     m_Flags.set(static_cast<int>(Flags::NoRender));
-    m_Flags.set(static_cast<int>(Flags::Disabled));
+    m_Flags.reset(static_cast<int>(Flags::Enabled));
     m_Flags.set(static_cast<int>(Flags::NoUpdate));
 
     for (auto& compUptr : m_CompUptrs) {
@@ -390,6 +400,10 @@ void eng::Actor::UnsubscribeActorDisabled(AbstractEventListener<event::ActorDisa
 }
 
 SceneTree* eng::Actor::GetSceneTree() {
+    return m_SceneTreePtr;
+}
+
+const SceneTree* const eng::Actor::GetSceneTree() const {
     return m_SceneTreePtr;
 }
 

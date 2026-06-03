@@ -74,7 +74,8 @@ public:
     void ForceClearChildren();                                                     
                                                                                
 //---- Parent Actor Methods														   
-    Actor* GetParent();															    
+    Actor* GetParent();					
+    const Actor* const GetParent() const;
     void SetParent(Actor& newParent, bool keepWorldTransform = true);		        /// Flags this actor to be moved to a new parent at the end of the frame. Note that you cannot reparent the root actor of a scene.                                                                 
                                                                                
 //---- Component Methods													   
@@ -87,7 +88,8 @@ public:
     void RemoveComponent();													   
 
 //---- Transform methods
-    Transform& GetTransform();												   
+    Transform& GetTransform();			
+    const Transform& GetTransform() const;
                                                                                
 //---- Flag Enum/Methods
     enum class Flags {	                                                            /// If this flag is set, the actor is 'awake'. Its components' Awake() methods are defferred until the Actor wakes up. The actor is automatically awoken when added to a Scenetree.
@@ -97,7 +99,7 @@ public:
         NoUpdate,																    /// Skip this Actor's Render cycle. Disable Render().				   
         NoRender,																    /// If not set, runs start methods on its components and sets it at the start of the next frame.								   
         Started,																    /// If set, the actor is considered inactive, Controls Enable() and Disable().													   							
-        Disabled,																    /// If set, the actor will start disabled. Disable() will be called in Start(). Setting this flag has no effect if the Started flag has already been set.			   
+        Enabled,																    /// If set, the actor will start disabled. Disable() will be called in Start(). Setting this flag has no effect if the Started flag has already been set.			   
         DisableOnStart,															    /// If set, this actor will not be destroyed if its parent's ClearChildren() method is called
         PreserveOnParentClear,                                                      /// The size of the Flags enum class 
         SIZE_																       											                                                                   
@@ -136,6 +138,7 @@ public:
 
 //---- SceneTree methods
     SceneTree* GetSceneTree();
+    const SceneTree* const GetSceneTree() const;
 
 private:
 //---- Child/Parent Actor Fields                                                                                                                
@@ -174,8 +177,15 @@ CompT& Actor::AddComponent(ArgsT... args) {
                                                                                                                                                   
     m_CompUptrs.emplace_back(std::make_unique<CompT>(*this, args...));		                                                                      
                                                                
-    if (IsFlagged(Flags::Awake))
+    if (IsFlagged(Flags::Awake)) {
         m_CompUptrs.back()->Awake();
+
+        if (IsFlagged(Flags::Enabled))
+            m_CompUptrs.back()->OnEnable();
+
+        if (IsFlagged(Flags::Started))
+            m_CompUptrs.back()->Start();
+    }
 
     return *static_cast<CompT*>(m_CompUptrs.back().get());                                                                                 
 }																			                                                                      

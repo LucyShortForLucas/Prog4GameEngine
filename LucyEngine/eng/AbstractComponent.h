@@ -9,6 +9,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include <iostream>
 
 namespace eng {
 
@@ -45,6 +46,7 @@ public:
 public: //--------------------- Relationship Methods -------------------------
 
 	Actor& Owner();
+	const Actor& Owner() const;
 
 private: //-------------------- Fields --------------------------
 	Actor& m_Owner;

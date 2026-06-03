@@ -73,7 +73,9 @@ public:
 	virtual ~IGameTime() = default;
 
 	virtual float	DeltaTime() const = 0;
+	virtual float	FixedDeltaTime() const = 0;
 	virtual void	UpdateDeltaTime() = 0;
+	virtual bool	UpdateFixedDeltaTime() = 0;
 	virtual int		MinMilliSecPerFrame() const = 0;
 };
 

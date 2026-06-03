@@ -4,6 +4,7 @@
 #include "TextRenderer.h"
 #include "Serialization.h"
 
+
 namespace eng {
 
 DECL_COMPONENT(FpsTracker, public AbstractComponent)

@@ -23,7 +23,8 @@ void Transform::SetLocalPosition(float x, float y) {
 	m_TransformData.position.x = x;
 	m_TransformData.position.y = y;
 
-	m_GlobalNeedsUpdate = true;
+	m_LocalPositionChangedEvent.Invoke(event::LocalPositionChanged{ *this });
+	FlagForGlobalUpdate();
 	for (auto child : Owner().GetAllChildren()) {
 		child->GetTransform().FlagForGlobalUpdate();
 	}
@@ -49,12 +50,13 @@ void Transform::SetGlobalPosition(glm::vec2 newPosition) {
 
 void Transform::FlagForGlobalUpdate() {
 	m_GlobalNeedsUpdate = true;
+	m_GlobalPositionChangedEvent.Invoke(event::GlobalPositionChanged{*this});
 }
 eng::TransformData const& Transform::GetLocal() const {
 	return m_TransformData;
 }
 
-eng::TransformData const& Transform::GetGlobal() {
+eng::TransformData const& Transform::GetGlobal() const {
 	if (!Owner().GetParent()) return m_TransformData;
 	if (!m_GlobalNeedsUpdate) return m_GlobalTransformData;
 

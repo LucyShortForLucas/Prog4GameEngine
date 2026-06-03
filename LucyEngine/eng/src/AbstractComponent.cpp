@@ -11,4 +11,8 @@ eng::Actor& AbstractComponent::Owner() {
     return m_Owner;
 }
 
+const eng::Actor& AbstractComponent::Owner() const {
+    return m_Owner;
+}
+
 } // !eng

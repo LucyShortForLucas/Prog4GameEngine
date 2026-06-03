@@ -18,4 +18,32 @@ inline std::chrono::zoned_seconds ZonedSecondsNow() {
     return std::chrono::zoned_time(std::chrono::current_zone(), sec);
 }
 
+struct Line2df final {
+    glm::vec2 from;
+    glm::vec2 to;
+};
+
+inline float LineRectIntersect(Line2df line, SDL_FRect rect) {
+    float dx = line.from.x - line.to.x;
+    float dy = line.from.y - line.to.y;
+
+    float t0 = 0.0f, t1 = 1.0f;
+
+    auto clip = [&](float p, float q) -> bool {
+        if (std::abs(p) < 1e-8f) return q >= 0.0f;
+        float r = q / p;
+        if (p < 0.0f) t0 = std::max(t0, r);
+        else          t1 = std::min(t1, r);
+        return t0 <= t1;
+        };
+
+    if (!clip(-dx, line.from.x - rect.x))        return 1.0f;
+    if (!clip(dx, rect.x + rect.w - line.from.x))   return 1.0f;
+    if (!clip(-dy, line.from.y - rect.y))        return 1.0f;
+    if (!clip(dy, rect.y + rect.h - line.from.y))   return 1.0f;
+    if (t0 >= t1)                    return 1.0f;
+
+    return t0;
+}
+
 }

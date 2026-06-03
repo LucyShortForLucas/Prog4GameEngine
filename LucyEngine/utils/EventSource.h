@@ -41,4 +41,14 @@ private:
 	std::vector<AbstractEventListener<TEvent>*> m_Subjects;
 };
 
+/// @brief A helper macro to implement a private EventSource member in a class and automatically generate the appropriate public Subscribe/Unsubcsribe methods.
+/// for an event x named Foo, creates a member 'm_FooEvent' and the methods 'SubscribeFoo(AbstractEventListener<event::Foo>& subject)' and 'SubscribeFoo(AbstractEventListener<event::Foo>& subject)'
+/// All events must be within the event namespace at the class' namespace scope.
+/// Leaves the class body open at private access.
+#define DECL_EVENT(x) public: \
+void Subscribe##x(AbstractEventListener<event::x>& subject) { m_##x##Event.Subscribe(subject); } \
+void Unsubscribe##x(AbstractEventListener<event::x>& subject) { m_##x##Event.Unsubscribe(subject); } \
+private: \
+EventSource<event::x> m_##x##Event{};
+
 }

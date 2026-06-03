@@ -25,7 +25,7 @@ add_library(${PROJECT_NAME} STATIC
   Input/src/KeyboardState.cpp
   Input/src/GamepadState.cpp
   eng/AudioPlayer.h eng/src/AudioPlayer.cpp
- "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp" "eng/src/Serialization.cpp" "eng/src/SceneTree.cpp" "components/src/TagSetter.cpp")
+ "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp" "eng/src/Serialization.cpp" "eng/src/SceneTree.cpp" "components/src/TagSetter.cpp" "components/AabbCollider.h" "components/src/AabbCollider.cpp" "components/src/PhysicsBody.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   eng components utils Input Commands ../Minigin
@@ -128,4 +128,10 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   Xinput
   nlohmann_json::nlohmann_json
   vld
+)
+
+target_link_options(${PROJECT_NAME} PRIVATE
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wl,--whole-archive>
+    my_static_lib
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wl,--no-whole-archive>
 )

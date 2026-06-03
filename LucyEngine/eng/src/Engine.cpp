@@ -19,6 +19,7 @@
 #include "LucyRenderer.h"
 
 #include "AbstractComponent.h"
+#include "AabbCollider.h"
 
 #if USE_STEAMWORKS
 #pragma warning (push)
@@ -157,6 +158,11 @@ bool eng::Engine::RunOneFrame() {
 	bool doContinue{ input.ProcessInput() };
 
 	rootActor.Update();
+
+	while (gameTime.UpdateFixedDeltaTime()) {
+		rootActor.FixedUpdate();
+		AabbCollider::NotifyCollisions();
+	}
 
 	rootActor.LateUpdate();
 

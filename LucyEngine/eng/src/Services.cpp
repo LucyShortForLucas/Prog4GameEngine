@@ -37,7 +37,9 @@ public:
 	virtual ~NullGameTime() = default;
 
 	virtual float	DeltaTime() const { return 0.01f; };
+	virtual float	FixedDeltaTime() const { return 0.01f; };
 	virtual void	UpdateDeltaTime() {};
+	virtual bool	UpdateFixedDeltaTime() { return false; };
 	virtual int		MinMilliSecPerFrame() const { return 10; };
 };
 
