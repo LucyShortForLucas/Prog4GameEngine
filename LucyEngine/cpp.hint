@@ -1,0 +1,1 @@
+#define DECL_COMPONENT(x, ...) class x final : __VA_ARGS__ {

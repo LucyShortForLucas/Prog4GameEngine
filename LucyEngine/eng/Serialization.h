@@ -26,16 +26,16 @@ namespace eng {
 /// which must be implemented in source. Leaves the class body open with private access modifier.
 /// 
 /// First argument is the name of the component type, followed by one or more other classes to inherit from. All Components must inherit from AbstractComponent or a derived class thereof.
-/// 
+
 #define DECL_COMPONENT(x, ...) class x final : __VA_ARGS__ { \
-public: \
-    static std::unique_ptr<x> Deserialize(Actor& owner, const nlohmann::json& json); \
-    const std::string& TypeName() override { static const std::string s{#x}; return s; }; \
-	x(const x&) = delete; \
-	x& operator=(const x&) = delete; \
-	x(x&&) = delete; \
-	x& operator=(x&&) = delete; \
-private: \
+  public: \
+      static std::unique_ptr<x> Deserialize(Actor& owner, const nlohmann::json& json); \
+      const std::string& TypeName() override { static const std::string s{#x}; return s; }; \
+      x(const x&) = delete; \
+      x& operator=(const x&) = delete; \
+      x(x&&) = delete; \
+      x& operator=(x&&) = delete; \
+  private:
 
 /// @brief
 /// A macro to handle the registration of the component's 
