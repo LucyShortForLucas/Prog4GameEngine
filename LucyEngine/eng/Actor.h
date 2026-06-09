@@ -13,7 +13,7 @@
 #include "Utils.h"															   
 #include "AbstractComponent.h"												   
 #include "Transform2d.h"													   
-#include "EventSource.h"      
+#include "EventSource.h"   
                                                                                
 namespace eng {																   
 
@@ -23,8 +23,7 @@ class Actor;
 namespace event {
 
 struct ActorDestroyed {
-    Actor* actorPtr;
-};
+    Actor* actorPtr;};
 
 struct ActorEnabled {
     Actor* actorPtr;
@@ -43,14 +42,18 @@ struct ActorMoved {
 }
 																	               /// The quintessential GameObject. An Actor manages the lifetime and ownership of Components and Child Actors.
 class Actor final {
-public:																		   
+    DECL_EVENT(ActorDestroyed)
+    DECL_EVENT(ActorEnabled)
+    DECL_EVENT(ActorDisabled)
+    DECL_EVENT(ActorMoved)
+public:																	   
     struct MoveInfo {														   
         Actor* newParentPtr{};												   
         bool keepWorldTransform{};											   
     };				                                                           
                                                                                
 //---- Constr/Destr/Copy/Move                                                  
-    Actor(SceneTree* sceneTree = nullptr);									   
+    Actor(SceneTree* sceneTree);									   
     ~Actor() = default;														   
                                                                                
     Actor(const Actor&) = delete;											   
@@ -92,8 +95,7 @@ public:
     const Transform& GetTransform() const;
                                                                                
 //---- Flag Enum/Methods
-    enum class Flags {	                                                            /// If this flag is set, the actor is 'awake'. Its components' Awake() methods are defferred until the Actor wakes up. The actor is automatically awoken when added to a Scenetree.
-        Awake,                                                                      /// If this flag is set, the actor will be destroyed at end of frame   
+    enum class Flags {	                                                            /// If this flag is set, the actor will be destroyed at end of frame   
         Destroyed,																    /// If this flag is set, the actor will be moved to another parent at end of frame											   
         ParentChanged,															    /// Skip this Actor's Update cycle. Disables Update(), LateUpdate(), and FixedUpdate()									   
         NoUpdate,																    /// Skip this Actor's Render cycle. Disable Render().				   
@@ -105,8 +107,7 @@ public:
         SIZE_																       											                                                                   
     };											  
     bool IsFlagged(Flags flag)	const;
-                                                                                    /// Awaken this actor, calling Awake() on its components and flagging it as awake.
-    void Awaken();                                                                  /// Flag this actor for destruction and call OnDestroy() on its components. Note that the root actor of any given scene cannot be destroyed; you must load a new scene instead.			                                                                       
+                                                                                    /// Flag this actor for destruction and call OnDestroy() on its components. Note that the root actor of any given scene cannot be destroyed; you must load a new scene instead.			                                                                       
     void Destroy();																    /// Enable the actor and its children, if disabled. Unsets NoUpdate and	NoRender and calls OnEnable().										                                                                       
     void Enable();															        /// Disable the actor and its children, if enabled. Sets NoUpdate andNoRender and calls OnDisable()										                                                                       
     void Disable();																    /// Set this Actor to start enabled or disabled. By default, actors	are enabled on start.														                                                                       
@@ -122,19 +123,6 @@ public:
     void Render();															        /// Executed every frame on ImguiRenderComponents during the rendering stage.													                                                                      
     void RenderImgui();														        /// Executed every frame as the last logical step of the frame. This function cleans up its children.		 								                                                                      
     void Cleanup();															                                                                     
-
-//---- Event Methods
-    void SubscribeActorDestroyed(AbstractEventListener<event::ActorDestroyed>& subject);
-    void UnsubscribeActorDestroyed(AbstractEventListener<event::ActorDestroyed>& subject);
-
-    void SubscribeActorMoved(AbstractEventListener<event::ActorMoved>& subject);
-    void UnsubscribeActorMoved(AbstractEventListener<event::ActorMoved>& subject);
-    
-    void SubscribeActorEnabled(AbstractEventListener<event::ActorEnabled>& subject);
-    void UnsubscribeActorEnabled(AbstractEventListener<event::ActorEnabled>& subject);
-
-    void SubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject);
-    void UnsubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject);
 
 //---- SceneTree methods
     SceneTree* GetSceneTree();
@@ -154,11 +142,6 @@ private:
     std::bitset<static_cast<int>(Flags::SIZE_)> m_Flags{};
     SceneTree* m_SceneTreePtr{};
 
-//---- Events
-    EventSource<event::ActorDestroyed> m_DestroyEventSource{};
-    EventSource<event::ActorMoved> m_MoveEventSource{};
-    EventSource<event::ActorEnabled> m_EnabledEventSource{};
-    EventSource<event::ActorDisabled> m_DisabledEventSource{};
 }; // !Actor																                                                                      
                                                                                                                                                   
                                                                                                                                                   
@@ -177,16 +160,6 @@ CompT& Actor::AddComponent(ArgsT... args) {
                                                                                                                                                   
     m_CompUptrs.emplace_back(std::make_unique<CompT>(*this, args...));		                                                                      
                                                                
-    if (IsFlagged(Flags::Awake)) {
-        m_CompUptrs.back()->Awake();
-
-        if (IsFlagged(Flags::Enabled))
-            m_CompUptrs.back()->OnEnable();
-
-        if (IsFlagged(Flags::Started))
-            m_CompUptrs.back()->Start();
-    }
-
     return *static_cast<CompT*>(m_CompUptrs.back().get());                                                                                 
 }																			                                                                      
                                                                                                                                                   

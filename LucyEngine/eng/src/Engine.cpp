@@ -69,7 +69,7 @@ void PrintSDLVersion() {
 	LogSDLVersion("Linked with SDL_ttf ", SDL_VERSIONNUM_MAJOR(version), SDL_VERSIONNUM_MINOR(version), SDL_VERSIONNUM_MICRO(version));
 }
 
-eng::Engine::Engine(const fs::path&) {
+eng::Engine::Engine(const std::string& title, int width, int height) {
 	auto& logger{ service::logger.Get() };
 
 	PrintSDLVersion();
@@ -84,9 +84,9 @@ eng::Engine::Engine(const fs::path&) {
 		logger.LogError(std::string("Failed to initialize SDL3: ") + SDL_GetError());
 
 	g_window = SDL_CreateWindow(
-		"TRON - Battle Tanks - Lucas Schonkeren",
-		1024,
-		576,
+		title.c_str(),
+		width,
+		height,
 		SDL_WINDOW_OPENGL
 	);
 

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <string>
+#include <nlohmann/json.hpp>    
 
 #include "SdbmHash.h"
+
 
 namespace eng {
 
@@ -19,11 +21,11 @@ struct HashedString final {
 		text{string},
 		hash{eng::runtime_sdbm_hash(string)} {}
 
-	bool operator<(const HashedString& other) {
+	bool operator<(const HashedString& other) const {
 		return hash < other.hash;
 	}
 
-	bool operator==(const HashedString& other) {
+	bool operator==(const HashedString& other) const {
 		return hash == other.hash;
 	}
 

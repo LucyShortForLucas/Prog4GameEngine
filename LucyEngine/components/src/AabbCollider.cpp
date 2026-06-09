@@ -4,7 +4,6 @@
 #include <unordered_set>
 #include <future>
 
-
 namespace eng {
 
 std::unique_ptr<AabbCollider> AabbCollider::Deserialize(Actor& owner, const nlohmann::json& json) {
@@ -22,7 +21,13 @@ AabbCollider::AabbCollider(Actor& owner, SDL_FRect bounds, int layer, uint32_t l
 }
 
 nlohmann::ordered_json AabbCollider::Serialize() {
-	return nlohmann::ordered_json();
+	auto j{ nlohmann::ordered_json() };
+
+	j["Bounds"] = m_Bounds;
+	j["Layer"] = m_Layer;
+	j["LayerMask"] = m_LayerMask;
+
+	return j;
 }
 
 void AabbCollider::OnEnable() {
@@ -74,32 +79,33 @@ void AabbCollider::NotifyCollisions() {
 
 	// Sweep for X hits, then asynchronously check y hits on x hits
 	for (Bound bound : s_HBounds) {
-		if (bound.first) {
-			SDL_FRect rect{ bound.collider ->GetRect() };
 
-			// Asynchronously check Y collisions for any X collisions
-			for (AabbCollider* other : openSet) {
-				potentialHits.emplace_back(std::async([bound, other, rect]() -> std::pair<bool, std::pair<AabbCollider*, AabbCollider*>> {
-					SDL_FRect otherRect{ other->GetRect() };
-
-					auto result{ std::make_pair(true,
-						bound.collider < other // Make sure the pair is sorted so collider pairs are always the same
-						? std::make_pair(bound.collider, other)
-						: std::make_pair(other, bound.collider)
-					) };
-
-					if (rect.y > otherRect.y + otherRect.h || rect.y + rect.h < otherRect.y)
-						result.first = false; // No hit
-
-					return result;
-					}));
-			}
-			// Add self to the open set
-			openSet.emplace(bound.collider);
-		}
-		else {
+		if (!bound.first) {
 			openSet.erase(bound.collider);
+			continue;
 		}
+
+		SDL_FRect rect{ bound.collider ->GetRect() };
+
+		// Asynchronously check Y collisions for any X collisions
+		for (AabbCollider* other : openSet) {
+			potentialHits.emplace_back(std::async([bound, other, rect]() -> std::pair<bool, std::pair<AabbCollider*, AabbCollider*>> {
+				SDL_FRect otherRect{ other->GetRect() };
+
+				auto result{ std::make_pair(true,
+					bound.collider < other // Make sure the pair is sorted so collider pairs are always the same
+					? std::make_pair(bound.collider, other)
+					: std::make_pair(other, bound.collider)
+				) };
+
+				if (rect.y > otherRect.y + otherRect.h || rect.y + rect.h < otherRect.y)
+					result.first = false; // No hit
+
+				return result;
+				}));
+		}
+		// Add self to the open set
+		openSet.emplace(bound.collider);
 	}
 
 	std::set<std::pair<AabbCollider*, AabbCollider*>> collisions;

@@ -5,6 +5,7 @@
 #include "Texture2D.h"
 #include "Font.h"
 #include "Serialization.h"
+#include "TextureRenderer.h"
 
 #include <string>
 #include <memory>
@@ -24,8 +25,8 @@ public: //------------------ General methods --------------------------
 
 public: //------------------ Gameloop methods --------------------------
 
+	void Start() override;
 	void Update() override;
-	void Render() override;
 
 
 private: //---------------------------|Fields|----------------------------
@@ -36,6 +37,7 @@ private: //---------------------------|Fields|----------------------------
 	bool m_NeedsUpdate{};
 	dae::Font* m_FontPtr;
 	std::unique_ptr<dae::Texture2D> m_TextTextureUptr{};
+	TextureRenderer* m_TextureRendererPtr{};
 
 }; // !TextRenderer
 REGISTER_COMPONENT(TextRenderer)

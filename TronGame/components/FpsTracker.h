@@ -4,13 +4,12 @@
 #include "TextRenderer.h"
 #include "Serialization.h"
 
+namespace tron {
 
-namespace eng {
-
-DECL_COMPONENT(FpsTracker, public AbstractComponent)
+DECL_COMPONENT(FpsTracker, public eng::AbstractComponent)
 public: //--------------- Constructor/Destructor/copy/move --------------
 
-	FpsTracker(Actor& owner) : AbstractComponent(owner) {};
+	FpsTracker(eng::Actor& owner) : eng::AbstractComponent(owner) {};
 	~FpsTracker() = default;
 
 //------------------ Gameloop Methods --------------------------
@@ -20,9 +19,9 @@ public: //--------------- Constructor/Destructor/copy/move --------------
 
 private: //--------------------------- Component references ----------------------------
 
-	TextRenderer* m_TextRendererPtr{};
+	eng::TextRenderer* m_TextRendererPtr{};
 
 }; // !FpsTracker
 REGISTER_COMPONENT(FpsTracker)
 
-}
+} // !tron

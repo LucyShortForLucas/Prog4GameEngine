@@ -25,16 +25,15 @@ void Actor::Start() {
         compUptr->Start();
     }
 
-    if (!m_ParentPtr)
-        Enable();
+    m_Flags[static_cast<int>(Flags::Started)] = true;
+
+    Enable();
     if (IsFlagged(Flags::DisableOnStart)) 
         Disable();
-
-    m_Flags[static_cast<int>(Flags::Started)] = true;
 }
 
 void Actor::Update() {
-    if (IsFlagged(Flags::NoUpdate)) return;
+    if (IsFlagged(Flags::NoUpdate) or not IsFlagged(Flags::Started)) return;
 
     for (auto& child : m_ChildUptrs) {
         child->Update();
@@ -46,7 +45,7 @@ void Actor::Update() {
 }
 
 void Actor::LateUpdate() {
-    if (IsFlagged(Flags::NoUpdate)) return;                                    
+    if (IsFlagged(Flags::NoUpdate) or not IsFlagged(Flags::Started)) return;
 
     for (auto& child : m_ChildUptrs) {
         child->LateUpdate();
@@ -58,7 +57,7 @@ void Actor::LateUpdate() {
 }
 
 void Actor::FixedUpdate() {
-    if (IsFlagged(Flags::NoUpdate)) return;
+    if (IsFlagged(Flags::NoUpdate) or not IsFlagged(Flags::Started)) return;
 
     for (auto& child : m_ChildUptrs) {
         child->FixedUpdate();
@@ -71,7 +70,7 @@ void Actor::FixedUpdate() {
 }
 
 void Actor::Render() {
-    if (IsFlagged(Flags::NoRender)) return;
+    if (IsFlagged(Flags::NoRender) or not IsFlagged(Flags::Started)) return;
 
     for (auto& compUptr : m_CompUptrs) {
         compUptr->Render();
@@ -83,7 +82,7 @@ void Actor::Render() {
 }
 
 void Actor::RenderImgui() {
-    if (IsFlagged(Flags::NoRender)) return;
+    if (IsFlagged(Flags::NoRender) or not IsFlagged(Flags::Started)) return;
 
     for (auto& compUptr : m_CompUptrs) {
         compUptr->RenderImgui();
@@ -95,15 +94,11 @@ void Actor::RenderImgui() {
 }
 
 void Actor::Cleanup() {
+    if (not IsFlagged(Flags::Started)) return;
+
     for (auto& child : m_ChildUptrs) {
 
         child->Cleanup();
-
-        // Destroy children if flagged for it
-        if (child->IsFlagged(Flags::Destroyed)) 
-            std::erase_if(m_ChildUptrs, [&child](const std::unique_ptr<Actor>& childToErase) {
-            return childToErase == child;
-            });
 
         // Move children if flagged for it
         if (child->IsFlagged(Flags::ParentChanged)) {
@@ -128,9 +123,14 @@ void Actor::Cleanup() {
             // Moving complete
             movedChild->m_MoveInfo.newParentPtr = nullptr;
 
-            movedChild->m_MoveEventSource.Invoke(event::ActorMoved{movedChild.get(), this, movedChild->GetParent()});
+            movedChild->m_ActorMovedEvent.Invoke(event::ActorMoved{movedChild.get(), this, movedChild->GetParent()});
         }
     }
+
+    // Erase children that are flagged for it
+    std::erase_if(m_ChildUptrs, [](const std::unique_ptr<Actor>& child) {
+        return child->IsFlagged(Flags::Destroyed);
+        });
 }
 
 std::vector<AbstractComponent*> Actor::GetAbstractComponents() {
@@ -152,7 +152,7 @@ const Transform& Actor::GetTransform() const {
 }
 
 Actor& Actor::AddChildActor() {
-    auto& newChild{ m_ChildUptrs.emplace_back(std::make_unique<Actor>()) };
+    auto& newChild{ m_ChildUptrs.emplace_back(std::make_unique<Actor>(m_SceneTreePtr)) };
 
     newChild->m_ParentPtr = this;
 
@@ -209,25 +209,11 @@ bool Actor::IsFlagged(Flags flag) const {
     return m_Flags.test(static_cast<int>(flag));
 }
 
-void Actor::Awaken() {
-    if (IsFlagged(Flags::Awake))
-        return;
-    m_Flags.set(static_cast<int>(Flags::Awake));
-
-    for (auto& compUptr : m_CompUptrs) {
-        compUptr->Awake();
-    }
-
-    for (auto& child : m_ChildUptrs) {
-        child->Awaken();
-    }
-}
-
 void Actor::Destroy() {
     if (IsFlagged(Flags::Destroyed) or m_ParentPtr == nullptr) return;
     m_Flags.set(static_cast<int>(Flags::Destroyed));
 
-    m_DestroyEventSource.Invoke(event::ActorDestroyed{this});
+    m_ActorDestroyedEvent.Invoke(event::ActorDestroyed{this});
 
     for (auto& child : m_ChildUptrs) {
         child->Destroy();
@@ -245,7 +231,7 @@ void Actor::Enable() {
         child->Enable();
     }
 
-    if (IsFlagged(Flags::Enabled) and not IsFlagged(Flags::Started)) return;
+    if (IsFlagged(Flags::Enabled) or not IsFlagged(Flags::Started)) return;
 
     m_Flags.set(static_cast<int>(Flags::Enabled));
     m_Flags.reset(static_cast<int>(Flags::NoRender));
@@ -255,7 +241,7 @@ void Actor::Enable() {
         compUptr->OnEnable();
     }
 
-    m_EnabledEventSource.Invoke(event::ActorEnabled{this});
+    m_ActorEnabledEvent.Invoke(event::ActorEnabled{this});
 }
 
 void Actor::Disable() {
@@ -273,7 +259,7 @@ void Actor::Disable() {
         compUptr->OnDisable();
     }
 
-    m_DisabledEventSource.Invoke(event::ActorDisabled{ this });
+    m_ActorDisabledEvent.Invoke(event::ActorDisabled{ this });
 }
 
 void Actor::EnableOnStart(bool enable) {
@@ -331,7 +317,7 @@ Actor* Actor::DeserializeChild(const nlohmann::json& json) {
 
     if (json.contains("Components")) {
         for (auto& [key, compJson] : json["Components"].items()) {
-            if (!compJson.contains("Type") or !compJson.contains("Json"))
+            if (!compJson.contains("Type"))
                 continue;
 
             if (!IsComponentRegistered(compJson["Type"]))
@@ -343,8 +329,9 @@ Actor* Actor::DeserializeChild(const nlohmann::json& json) {
                 child.m_TransformPtr = dynamic_cast<Transform*>(child.m_CompUptrs.emplace_back(DeserializeComponent(child, compJson["Type"], compJson["Json"])).get());
                 continue;
             }
-
-            child.m_CompUptrs.emplace_back(DeserializeComponent(child, compJson["Type"], compJson["Json"]));
+            
+            auto j{ compJson.value("Json", nlohmann::json::object()) };
+            child.m_CompUptrs.emplace_back(DeserializeComponent(child, compJson["Type"], j));
         }
     }
 
@@ -369,34 +356,6 @@ void eng::Actor::ClearChildren() {
 void eng::Actor::ForceClearChildren() {
     for (auto child : GetChildren()) 
         child->Destroy();
-}
-
-void eng::Actor::SubscribeActorDestroyed(AbstractEventListener<event::ActorDestroyed>& subject) {
-    m_DestroyEventSource.Subscribe(subject);
-}
-void eng::Actor::UnsubscribeActorDestroyed(AbstractEventListener<event::ActorDestroyed>& subject) {
-    m_DestroyEventSource.Unsubscribe(subject);
-}
-
-void eng::Actor::SubscribeActorMoved(AbstractEventListener<event::ActorMoved>& subject) {
-    m_MoveEventSource.Subscribe(subject);
-}
-void eng::Actor::UnsubscribeActorMoved(AbstractEventListener<event::ActorMoved>& subject) {
-    m_MoveEventSource.Unsubscribe(subject);
-}
-
-void eng::Actor::SubscribeActorEnabled(AbstractEventListener<event::ActorEnabled>& subject) {
-    m_EnabledEventSource.Subscribe(subject);
-}
-void eng::Actor::UnsubscribeActorEnabled(AbstractEventListener<event::ActorEnabled>& subject) {
-    m_EnabledEventSource.Unsubscribe(subject);
-}
-
-void eng::Actor::SubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject) {
-    m_DisabledEventSource.Subscribe(subject);
-}
-void eng::Actor::UnsubscribeActorDisabled(AbstractEventListener<event::ActorDisabled>& subject) {
-    m_DisabledEventSource.Unsubscribe(subject);
 }
 
 SceneTree* eng::Actor::GetSceneTree() {

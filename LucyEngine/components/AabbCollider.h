@@ -85,3 +85,19 @@ private:
 REGISTER_COMPONENT(AabbCollider)
 
 } // !eng
+
+
+/*
+
+---- Json Template ----
+
+{
+	"Type": "AabbCollider",
+	"Json": {
+		"Bounds": [0,0,0,0],
+		"Layer": 0,
+		"LayerMask": 0
+	}
+}
+
+*/

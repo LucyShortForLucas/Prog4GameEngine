@@ -33,7 +33,7 @@ std::unique_ptr<TagSetter> TagSetter::Deserialize(Actor& owner, const nlohmann::
 	return std::make_unique<TagSetter>(owner, hashedTags);
 }
 
-void TagSetter::Awake() {
+void TagSetter::Start() {
 	for (auto& tag : m_Tags) {
 		Owner().GetSceneTree()->TagActor(tag.hash, &Owner());
 	}

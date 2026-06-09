@@ -33,7 +33,7 @@ public:
 	void UnTagActor(unsigned int tag, Actor*);										/// Returns the first actor tagged with tag, or nullptr if none found
 	Actor* GetActorWithTag(unsigned int tag);										/// Returns a vector of all actors tagged with tag.
 	const std::vector<Actor*>& GetAllActorsWithTag(unsigned int tag);
-
+	
 	//---- Event Handlers
 	void OnEvent(const event::ActorDestroyed& event) override;
 

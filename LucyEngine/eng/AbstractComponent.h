@@ -31,8 +31,7 @@ public:
 	virtual const std::string& TypeName() = 0;
 
 	//---- Gameloop methods 
-																					/// Called before any other methods when the component is added to an actor. Use for initialization. 
-	virtual void Awake() {};														/// Called once before the first frame of the owning object. This method should be used to initialize the component internally with its Actor.
+																					/// Called once before the first frame of the owning object. This method should be used to initialize the component internally with its Actor.
 	virtual void Start() {};														/// Called when the object becomes enabled from a disabled state, including during Start() (even if the object starts in a disabled state) and when the owning Actor is finished moving across the scenegraph to a new parent. Any initializing that depends on the scenegraph should happen here to ensure a valid state for the component.
 	virtual void OnEnable() {};														/// Called once per frame.
 	virtual void Update() {};														/// Called once per frame, after Update() has been called on every other Actor/Component.

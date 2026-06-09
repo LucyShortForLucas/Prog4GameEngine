@@ -3,6 +3,7 @@
 #include "Texture2D.h"
 #include <SDL3/SDL.h>
 #include <chrono>
+#include <cstdint>
 
 namespace eng {
 

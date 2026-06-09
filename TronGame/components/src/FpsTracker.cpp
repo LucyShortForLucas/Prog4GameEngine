@@ -6,23 +6,23 @@
 #include "Services.h"
 #include "Serialization.h"
 
-namespace eng {
+namespace tron {
 
-std::unique_ptr<FpsTracker> FpsTracker::Deserialize(Actor& owner, const nlohmann::json& json) {
+std::unique_ptr<FpsTracker> FpsTracker::Deserialize(eng::Actor& owner, const nlohmann::json& json) {
 	return std::make_unique<FpsTracker>(owner);
 }
 
 void FpsTracker::OnEnable() {
-	assert(Owner().GetComponent<TextRenderer>() && "An FpsTracker Component requires a Text Renderer");
-	m_TextRendererPtr = Owner().GetComponent<TextRenderer>();
+	assert(Owner().GetComponent<eng::TextRenderer>() && "An FpsTracker Component requires a Text Renderer");
+	m_TextRendererPtr = Owner().GetComponent<eng::TextRenderer>();
 }
 
 void FpsTracker::OnDisable() {
 	m_TextRendererPtr = nullptr;
 }
 
-void eng::FpsTracker::Update() {
-	float deltaTime{ service::gameTime.Get().DeltaTime() };
+void FpsTracker::Update() {
+	float deltaTime{ eng::service::gameTime.Get().DeltaTime() };
 
 	//Only update this component every ~0.5 seconds so our fps is actually readable
 	static double f_timePassed{};
@@ -34,4 +34,4 @@ void eng::FpsTracker::Update() {
 	m_TextRendererPtr->SetText("fps: " + std::to_string(fps));
 }
 
-} // !eng
+} // !tron

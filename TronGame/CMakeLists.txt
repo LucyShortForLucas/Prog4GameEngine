@@ -1,7 +1,13 @@
 project(TronGame)
 set(TARGET_NAME ${PROJECT_NAME})
 
-add_executable(${TARGET_NAME} main.cpp)
+add_executable(${TARGET_NAME} main.cpp
+components/src/FpsTracker.cpp
+ "commands/MovePhysicsBody.h" "commands/src/MovePhysicsBody.cpp" "components/TronGameSetup.h" "components/src/TronGameSetup.cpp")
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+   components commands
+)
 
 target_link_libraries(${TARGET_NAME} PUBLIC LucyEngine)
 

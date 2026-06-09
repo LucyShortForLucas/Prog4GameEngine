@@ -6,8 +6,19 @@
 namespace eng {
 
 std::unique_ptr<PhysicsBody> PhysicsBody::Deserialize(Actor& owner, const nlohmann::json& json) {
-	return std::make_unique<PhysicsBody>(owner, json.value("Velocity", glm::vec2{}), json.value("BounceType", BounceTypes::Stop));
+	return std::make_unique<PhysicsBody>(owner, json.value("Velocity", glm::vec2{}), json.value("BounceType", BounceTypes::Stop), json.value("VelocityMode", VelocityMode::Constant));
 }
+
+nlohmann::ordered_json PhysicsBody::Serialize() {
+	nlohmann::ordered_json j{};
+
+	j["Velocity"] = m_Velocity;
+	j["BounceType"] = m_BounceType;
+	j["VelocityMode"] = m_VelocityMode;
+
+	return j;
+}
+
 
 void PhysicsBody::Start() {
 	m_ColliderPtr = Owner().GetComponent<AabbCollider>();
@@ -34,6 +45,12 @@ void PhysicsBody::FixedUpdate() {
 	m_LastMovement.from = transform.GetGlobal().position;
 	transform.TranslatePosition(m_Velocity * service::gameTime.Get().FixedDeltaTime());
 	m_LastMovement.to = transform.GetGlobal().position;
+
+	switch (m_VelocityMode) {
+	case VelocityMode::Consume:
+		m_Velocity = { 0,0 };
+		break;
+	}
 }
 
 void PhysicsBody::OnEvent(const event::AabbCollisionEnter& context) {

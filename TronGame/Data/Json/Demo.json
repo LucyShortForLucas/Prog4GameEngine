@@ -14,16 +14,16 @@
             "Type": "TextureRenderer",
             "Json": {
                 "TexturePath": "background.png",
-                "Size": [
-                    1024,
-                    576
-                ],
-                "SourceRect": [
-                    0.0,
-                    0.0,
-                    1024.0,
-                    576.0
-                ],
+              "Size": [
+                968,
+                1032
+              ],
+              "SourceRect": [
+                0.0,
+                0.0,
+                242.0,
+                258.0
+              ],
                 "Layer": 0
             }
         }
@@ -73,6 +73,12 @@
                     }
                 },
                 {
+                  "Type": "TextureRenderer",
+                  "Json": {
+                    "Layer":  10
+                  }
+                },
+                {
                     "Type": "TextRenderer",
                     "Json": {
                         "Text": "Text",
@@ -87,66 +93,71 @@
                     }
                 },
                 {
-                    "Type": "FpsTracker",
-                    "Json": null
+                    "Type": "FpsTracker"
                 }
             ]
         },
         {
             "Flags": 0,
-            "Components": [
-                {
-                    "Type": "Transform",
-                    "Json": {
-                        "LocalPosition": [
-                            10.0,
-                            300.0
-                        ]
-                    }
-                },
-                {
-                    "Type": "TextRenderer",
-                    "Json": {
-                        "Text": "# lives: 3 Score: 0",
-                        "FontPath": "Lingua.otf",
-                        "Size": 24,
-                        "Color": [
-                            255,
-                            255,
-                            255,
-                            255
-                        ]
-                    }
-                }
-            ]
+          "Components": [
+            {
+              "Type": "Transform",
+              "Json": {
+                "LocalPosition": [
+                  10.0,
+                  300.0
+                ]
+              }
+            },
+            {
+              "Type": "TextureRenderer"
+            },
+            {
+              "Type": "TextRenderer",
+              "Json": {
+                "Text": "# lives: 3 Score: 0",
+                "FontPath": "Lingua.otf",
+                "Size": 24,
+                "Color": [
+                  255,
+                  255,
+                  255,
+                  255
+                ]
+              }
+            }
+          ]
         },
         {
             "Flags": 0,
-            "Components": [
-                {
-                    "Type": "Transform",
-                    "Json": {
-                        "LocalPosition": [
-                            10.0,
-                            100.0
-                        ]
-                    }
-                },
-                {
-                    "Type": "TextRenderer",
-                    "Json": {
-                        "Text": "Use WASD to move the blue tank, C to inflict damage, Z and X to get score",
-                        "FontPath": "Lingua.otf",
-                        "Size": 24,
-                        "Color": [
-                            255,
-                            255,
-                            255,
-                            255
-                        ]
-                    }
-                }
-            ]
+          "Components": [
+            {
+              "Type": "Transform",
+              "Json": {
+                "LocalPosition": [
+                  10.0,
+                  100.0
+                ]
+              }
+            },
+            {
+              "Type": "TextureRenderer"
+            },
+            {
+              "Type": "TextRenderer",
+              "Json": {
+                "Text": "Use WASD to move the blue tank, C to inflict damage, Z and X to get score",
+                "FontPath": "Lingua.otf",
+                "Size": 24,
+                "Color": [
+                  255,
+                  255,
+                  255,
+                  255
+                ]
+              }
+            }
+          ]
         },
         {
             "Flags": 0,
@@ -165,8 +176,8 @@
                 "Json": {
                   "TexturePath": "tempTanks.png",
                   "Size": [
-                    32,
-                    32
+                    64,
+                    64
                   ],
                   "SourceRect": [
                     0.0,
@@ -183,8 +194,8 @@
                   "Bounds": [
                     0.0,
                     0.0,
-                    32.0,
-                    32.0
+                    64.0,
+                    64.0
                   ]
                 }
               },
@@ -202,59 +213,65 @@
         },
         {
             "Flags": 0,
-            "Components": [
-                {
-                    "Type": "Transform",
-                    "Json": {
-                        "LocalPosition": [
-                            10.0,
-                            400.0
-                        ]
-                    }
-                },
-                {
-                    "Type": "TextRenderer",
-                    "Json": {
-                        "Text": "# lives: 3 Score: 0",
-                        "FontPath": "Lingua.otf",
-                        "Size": 24,
-                        "Color": [
-                            255,
-                            255,
-                            255,
-                            255
-                        ]
-                    }
-                }
-            ]
+          "Components": [
+            {
+              "Type": "Transform",
+              "Json": {
+                "LocalPosition": [
+                  10.0,
+                  400.0
+                ]
+              }
+            },
+            {
+              "Type": "TextureRenderer"
+            },
+            {
+              "Type": "TextRenderer",
+              "Json": {
+                "Text": "# lives: 3 Score: 0",
+                "FontPath": "Lingua.otf",
+                "Size": 24,
+                "Color": [
+                  255,
+                  255,
+                  255,
+                  255
+                ]
+              }
+            }
+          ]
         },
         {
             "Flags": 0,
-            "Components": [
-                {
-                    "Type": "Transform",
-                    "Json": {
-                        "LocalPosition": [
-                            10.0,
-                            150.0
-                        ]
-                    }
-                },
-                {
-                    "Type": "TextRenderer",
-                    "Json": {
-                        "Text": "Use the D-pad to move the blue tank, X to inflict damage, A and B to get score",
-                        "FontPath": "Lingua.otf",
-                        "Size": 24,
-                        "Color": [
-                            255,
-                            255,
-                            255,
-                            255
-                        ]
-                    }
-                }
-            ]
+          "Components": [
+            {
+              "Type": "Transform",
+              "Json": {
+                "LocalPosition": [
+                  10.0,
+                  150.0
+                ]
+              }
+            },
+            {
+              "Type": "TextureRenderer"
+            },
+            {
+              "Type": "TextRenderer",
+              "Json": {
+                "Text": "Use the D-pad to move the blue tank, X to inflict damage, A and B to get score",
+                "FontPath": "Lingua.otf",
+                "Size": 24,
+                "Color": [
+                  255,
+                  255,
+                  255,
+                  255
+                ]
+              }
+            }
+          ]
         },
         {
             "Flags": 0,
@@ -300,8 +317,8 @@
               "Type": "PhysicsBody",
               "Json": {
                 "Velocity": [
-                  -80.0,
-                  12.5
+                  -40.0,
+                  25
                 ],
                 "BounceType": "Reflect"
               }

@@ -10,17 +10,23 @@ namespace eng {
 DECL_COMPONENT(PhysicsBody, public AbstractComponent, public AbstractEventListener<event::AabbCollisionEnter>)
 public:
 	//---- Helper Enums
-	enum class BounceTypes {
-																					/// Velocity drops to [0, 0] when hitting another physics body
+	enum class BounceTypes {														/// Velocity drops to [0, 0] when hitting another physics body
 		Stop,																		/// No change in velocity should occur when hitting another physics body
 		Continue,																	/// Velocity should be reversed when hitting another physics body
 		Bounce,																		/// Velocity should be reflected along the angle of the collision when hitting another physics body
 		Reflect
 	};
+
+	enum class VelocityMode {														/// Velocity is constant, only automatically affected by 'bouncing'.
+		Constant,																	/// Velocity is 'consumed' every frame. After moving the physicsbody, its velocity is set to 0
+		Consume
+	};
 	
 	//---- Ctor
-	PhysicsBody(Actor& owner, glm::vec2 velocity, BounceTypes bounceType) : 
-		AbstractComponent(owner), m_Velocity(velocity), m_BounceType(bounceType) {};
+	PhysicsBody(Actor& owner, glm::vec2 velocity, BounceTypes bounceType, VelocityMode velocityMode) : 
+		AbstractComponent(owner), m_Velocity(velocity), m_BounceType(bounceType), m_VelocityMode(velocityMode) {};
+
+	nlohmann::ordered_json Serialize() override;
 
 	//---- PhysicsBody Methods
 
@@ -42,7 +48,8 @@ private:
 	AabbCollider* m_ColliderPtr{};
 	Line2df m_LastMovement{};
 	glm::vec2 m_Velocity{};
-	BounceTypes m_BounceType{BounceTypes::Stop};
+	BounceTypes m_BounceType{ BounceTypes::Stop };
+	VelocityMode m_VelocityMode{ VelocityMode::Constant};
 };
 REGISTER_COMPONENT(PhysicsBody)
 
@@ -53,4 +60,21 @@ NLOHMANN_JSON_SERIALIZE_ENUM(PhysicsBody::BounceTypes, {
 	{PhysicsBody::BounceTypes::Reflect, "Reflect"},
 	});
 
+NLOHMANN_JSON_SERIALIZE_ENUM(PhysicsBody::VelocityMode, {
+	{PhysicsBody::VelocityMode::Constant, "Constant"},
+	{PhysicsBody::VelocityMode::Consume, "Consume"}
+	});
+
 } // !eng
+
+/*
+
+{
+	"Type": "PhysicsBody"
+	"Json": {
+		"Velocity": [0,0],
+		"BounceType": "Stop"
+	}
+}
+
+*/

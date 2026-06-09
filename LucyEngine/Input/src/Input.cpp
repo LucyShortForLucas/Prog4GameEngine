@@ -75,7 +75,8 @@ bool Input::ProcessInput() {
 }
 
 CommandInputGroup& Input::NewInputgroup(Actor& actor) {
-	m_InputGroups.emplace_back(std::make_unique<CommandInputGroup>( & actor));
+	auto& group{ m_InputGroups.emplace_back(std::make_unique<CommandInputGroup>(&actor)) };
+	group->SubscribeInputSource(CommandInputGroup::KeyEventSources{m_DownEventSource, m_PressedEventSource, m_UpEventSource});
 	return *m_InputGroups.back();
 }
 

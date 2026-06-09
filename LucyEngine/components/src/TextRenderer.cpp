@@ -48,6 +48,12 @@ void eng::TextRenderer::SetText(const std::string& text) {
 	m_NeedsUpdate = true;
 }
 
+void eng::TextRenderer::Start() {
+	m_TextureRendererPtr = Owner().GetComponent<TextureRenderer>();
+	if (m_TextureRendererPtr == nullptr)
+		service::logger.Get().LogError("TextRenderer " + std::to_string((std::uintptr_t)this) + " does not have a TextureRenderer.");
+}
+
 void eng::TextRenderer::Update() {
 	if (m_NeedsUpdate) {
 		const auto f_Surf = TTF_RenderText_Blended(m_FontPtr->GetFont(), m_Text.c_str(), m_Text.size(), m_Color);
@@ -64,17 +70,9 @@ void eng::TextRenderer::Update() {
 
 		SDL_DestroySurface(f_Surf);
 		m_TextTextureUptr = std::make_unique<dae::Texture2D>(texture);
+		m_TextureRendererPtr->SetTexture(m_TextTextureUptr.get());
 		m_NeedsUpdate = false;
 	}
-}
-
-void eng::TextRenderer::Render() {
-	if (m_TextTextureUptr == nullptr) return;
-
-	const glm::vec2 f_Pos{ Owner().GetTransform().GetGlobal().position };
-	const auto f_Size{ m_TextTextureUptr->GetSize() };
-	eng::service::renderer.Get().RenderTexture({ *m_TextTextureUptr, SDL_FRect{ f_Pos.x, f_Pos.y, f_Size.x, f_Size.y }, SDL_FRect{ 0, 0, f_Size.x, f_Size.y } });
-
 }
 
 }

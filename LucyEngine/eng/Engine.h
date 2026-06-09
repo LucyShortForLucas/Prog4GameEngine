@@ -14,7 +14,7 @@ namespace eng {
 class Engine {
 public: //--------------- Constructor/destructor ---------------------------
 
-	explicit Engine(const fs::path& dataPath);
+	explicit Engine(const std::string& title, int width, int height);
 	~Engine();
 
 	Engine(const Engine& other) = delete;

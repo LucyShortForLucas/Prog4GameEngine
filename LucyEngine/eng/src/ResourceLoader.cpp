@@ -28,7 +28,10 @@ dae::Texture2D* eng::SdlResourceLoader::LoadTexture(const std::string& file) {
 	const auto fullPath = std::string(SDL_GetBasePath()) + "Data\\Textures\\" + file;
 	const auto filename = std::filesystem::path(fullPath).filename().string();
 
-	if (m_TextureUptrs.find(filename) == m_TextureUptrs.end()) m_TextureUptrs.insert(std::pair(filename, std::make_unique<dae::Texture2D>(fullPath)));
+	if (m_TextureUptrs.find(filename) == m_TextureUptrs.end()) {
+		const auto& tex{ m_TextureUptrs.insert(std::pair(filename, std::make_unique<dae::Texture2D>(fullPath))) };
+		SDL_SetTextureScaleMode(m_TextureUptrs.at(filename)->GetSDLTexture(), SDL_SCALEMODE_NEAREST);
+	}
 
 	return m_TextureUptrs.at(filename).get();
 }

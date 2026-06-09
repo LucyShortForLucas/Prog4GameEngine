@@ -29,7 +29,7 @@ namespace eng {
 
 #define DECL_COMPONENT(x, ...) class x final : __VA_ARGS__ { \
   public: \
-      static std::unique_ptr<x> Deserialize(Actor& owner, const nlohmann::json& json); \
+      static std::unique_ptr<x> Deserialize(::eng::Actor& owner, const nlohmann::json& json); \
       const std::string& TypeName() override { static const std::string s{#x}; return s; }; \
       x(const x&) = delete; \
       x& operator=(const x&) = delete; \

@@ -15,7 +15,6 @@ add_library(${PROJECT_NAME} STATIC
   eng/src/LucyRenderer.cpp 
   eng/src/ResourceLoader.cpp
   eng/src/GameTime.cpp 
-  components/src/FpsTracker.cpp
   
   Input/src/CommandInputGroup.cpp
   Input/src/AbstractCommand.cpp
@@ -25,7 +24,7 @@ add_library(${PROJECT_NAME} STATIC
   Input/src/KeyboardState.cpp
   Input/src/GamepadState.cpp
   eng/AudioPlayer.h eng/src/AudioPlayer.cpp
- "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp" "eng/src/Serialization.cpp" "eng/src/SceneTree.cpp" "components/src/TagSetter.cpp" "components/AabbCollider.h" "components/src/AabbCollider.cpp" "components/src/PhysicsBody.cpp")
+ "eng/Logger.h" "eng/src/Logger.cpp" "utils/src/States.cpp" "eng/src/Serialization.cpp" "eng/src/SceneTree.cpp" "components/src/TagSetter.cpp" "components/AabbCollider.h" "components/src/AabbCollider.cpp" "components/src/PhysicsBody.cpp" "components/SpriteController.h" "components/src/SpriteController.cpp" "components/SpriteAnimator.h" "components/src/SpriteAnimator.cpp" )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   eng components utils Input Commands ../Minigin

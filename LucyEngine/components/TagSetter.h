@@ -13,7 +13,7 @@ public:
 
 	nlohmann::ordered_json Serialize() override;
 
-	void Awake() override;
+	void Start() override;
 
 private:
 	std::vector<HashedString> m_Tags;
