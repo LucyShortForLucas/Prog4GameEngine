@@ -66,4 +66,11 @@ void TextureRenderer::Render() {
 	else eng::service::renderer.Get().DelayRender(m_Layer, m_Mapping);
 }
 
+glm::vec2 TextureRenderer::GetTextureSize() {
+	if (m_TexturePtr == nullptr)
+		return glm::ivec2{};
+
+	return m_TexturePtr->GetSize();
+}
+
 } // !cpt

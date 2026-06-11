@@ -23,6 +23,8 @@ public: //------------------------ Texture Methods -------------------------
     void SetSourceRect(SDL_FRect rect);
     void SetTexture(dae::Texture2D* texturePtr, glm::ivec2 size = { -1, -1 }, SDL_FRect sourceRect = { -1, -1, -1, -1 }, unsigned int layer = 0);
 
+    glm::vec2 GetTextureSize();
+
 public: //------------------------ Gameloop Methods -------------------------
 
     void Render() override;

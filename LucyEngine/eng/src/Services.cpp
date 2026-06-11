@@ -24,9 +24,10 @@ Service<IRenderer> renderer{ std::make_unique<NullRenderer>() };
 
 class NullResourceLoader final : public IResourceLoader {
 public:
-	virtual dae::Texture2D* LoadTexture(const std::string&) { return nullptr; };
-	virtual dae::Font* LoadFont(const std::string&, uint8_t) { return nullptr; }
-	virtual nlohmann::json* LoadJson(const std::string&) { return nullptr; }
+	virtual dae::Texture2D* const LoadTexture(const std::string&) { return nullptr; };
+	virtual dae::Font* const LoadFont(const std::string&, uint8_t) { return nullptr; }
+	virtual nlohmann::json* const LoadJson(const std::string&) { return nullptr; }
+	virtual ColorMap* const LoadColorMap(const std::string&) { return nullptr; }
 };
 
 Service<IResourceLoader>  resources{ std::make_unique<NullResourceLoader>() };

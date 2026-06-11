@@ -4,7 +4,11 @@
 #include <SceneTree.h>
 #include <Services.h>
 
-#include "MovePhysicsBody.h"
+#include "MoveTank.h"
+#include "MoveTurret.h"
+
+#include <ColorMap.h>
+
 
 namespace tron {
 
@@ -22,10 +26,19 @@ void TronGameSetup::Start() {
 
 	auto& inputGroup{ input.NewInputgroup(*player) };
 
-	inputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_W }, std::make_unique<MovePhysicsBody>(glm::vec2{ 0, -120 }));
-	inputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_A }, std::make_unique<MovePhysicsBody>(glm::vec2{ -120, 0 }));
-	inputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_S }, std::make_unique<MovePhysicsBody>(glm::vec2{ 0, 120 }));
-	inputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_D }, std::make_unique<MovePhysicsBody>(glm::vec2{ 120, 0 }));
+	inputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_W }, std::make_unique<MoveTank>(glm::vec2{ 0, -120 }));
+	inputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_A }, std::make_unique<MoveTank>(glm::vec2{ -120, 0 }));
+	inputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_S }, std::make_unique<MoveTank>(glm::vec2{ 0, 120 }));
+	inputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_D }, std::make_unique<MoveTank>(glm::vec2{ 120, 0 }));
+
+	auto turret{ player->GetChildren().at(0) };
+
+	auto& turretInputGroup{ input.NewInputgroup(*turret) };
+	
+	turretInputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_E }, std::make_unique<MoveTurret>(true));
+	turretInputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_Q }, std::make_unique<MoveTurret>(false));
+
+	eng::BlackWhiteMap<30, 28> bw{ *eng::service::resources.Get().LoadColorMap("Level1CollisonGrid.png") };
 }
 
 } // !tron

@@ -1,49 +1,77 @@
 {
-    "Components": [
-        {
-            "Type": "TextureRenderer",
-            "Json": {
-                "TexturePath": "Tanks.png",
-                "Size": [64, 64],
-                "SourceRect": [0, 0, 32, 32],
-                "Layer": 5
-            }
-        },
-        {
-            "Type": "SpriteController",
-	        "Json": {
-		        "Size": [32, 32],
-		        "Sprites": {
-                    "Right": {
-                        "Texture": "Tanks.png",
-                        "Position": [0,0]
-                    },
-                   "Up": {
-                        "Texture": "Tanks.png",
-                        "Position": [32,0]
-                    },
-                    "Left": {
-                        "Texture": "Tanks.png",
-                        "Position": [64,0]
-                    },
-                    "Down": {
-                        "Texture": "Tanks.png",
-                        "Position": [96,0]
-                    }
-                }
-	        }
-        },
-        {
-	        "Type": "AabbCollider",
-	        "Json": {
-		        "Bounds": [0,0,64,64]
-	        }
-        },
-        {
-          "Type": "PhysicsBody",
-          "Json": {
-            "VelocityMode":  "Consume"
+  "Components": [
+    {
+      "Type": "TextureRenderer",
+      "Json": {
+        "TexturePath": "Tanks.png",
+        "Size": [ 64, 64 ],
+        "SourceRect": [ 0, 32, 32, 32 ],
+        "Layer": 5
+      }
+    },
+    {
+      "Type": "SpriteController",
+      "Json": {
+        "Size": [ 32, 32 ],
+        "Sprites": {
+          "Right": {
+            "Texture": "Tanks.png",
+            "Position": [ 0, 32 ]
+          },
+          "Up": {
+            "Texture": "Tanks.png",
+            "Position": [ 32, 32 ]
+          },
+          "Left": {
+            "Texture": "Tanks.png",
+            "Position": [ 64, 32 ]
+          },
+          "Down": {
+            "Texture": "Tanks.png",
+            "Position": [ 96, 32 ]
           }
         }
-    ]
+      }
+    },
+    {
+      "Type": "AabbCollider",
+      "Json": {
+        "Bounds": [ 0, 0, 64, 64 ]
+      }
+    },
+    {
+      "Type": "PhysicsBody",
+      "Json": {
+        "VelocityMode": "Consume"
+      }
+    }
+  ],
+  "Children": [
+    {
+      "Components": [
+        {
+          "Type": "TextureRenderer",
+          "Json": {
+            "TexturePath": "Turret.png",
+            "Size": [ 64, 64 ],
+            "SourceRect": [ 0, 0, 32, 32 ],
+            "Layer": 6
+          }
+        },
+        {
+          "Type": "SpriteAnimator",
+          "Json": {
+            "FrameSize": [ 32, 32 ],
+            "SecondsPerFrame":  -1.0
+          }
+        },
+        {
+          "Type": "Transform",
+          "Json": {
+            "LocalPosition": [ 16, -16 ]
+          }
+        }
+      ]
+    }
+  ]
 }
