@@ -8,6 +8,7 @@
 #include "MoveTurret.h"
 
 #include <ColorMap.h>
+#include <ActorJsonFactory.h>
 
 
 namespace tron {
@@ -39,6 +40,41 @@ void TronGameSetup::Start() {
 	turretInputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_Q }, std::make_unique<MoveTurret>(false));
 
 	eng::BlackWhiteMap<30, 28> bw{ *eng::service::resources.Get().LoadColorMap("Level1CollisonGrid.png") };
+
+	eng::ActorJsonFactory factory{};
+
+	nlohmann::ordered_json j{
+
+	factory
+		.AddComponent("TextureRenderer")
+			.AddProperty("TexturePath", "Background1.png")
+			.AddProperty("Size", glm::vec2{ 968, 1032 })
+			.Owner()
+		.AddChildActor()
+			.AddComponent("TextureRenderer")
+				.AddProperty("TexturePath", "Tanks.png")
+				.AddProperty("Size", glm::vec2{ 64, 64 })
+				.AddProperty("SourceRect", SDL_FRect{0, 32, 32, 32})
+				.Owner()
+			.AddComponent("AabbCollider")
+				.AddProperty("Bounds", SDL_FRect{0, 0, 64, 64})
+				.Owner()
+			.Parent()
+		.AddChildActor()
+			.AddComponent("Transform")
+				.AddProperty("LocalPosition", glm::vec2{100, 100})
+				.Owner()
+			.AddComponent("TextureRenderer")
+				.AddProperty("TexturePath", "Tanks.png")
+				.AddProperty("Size", glm::vec2{ 64, 64 })
+				.AddProperty("SourceRect", SDL_FRect{ 0, 0, 32, 32 })
+				.Owner()
+			.Parent()
+		.Build()
+
+	};
+	
+	
 }
 
 } // !tron
