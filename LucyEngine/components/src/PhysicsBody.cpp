@@ -6,7 +6,7 @@
 namespace eng {
 
 std::unique_ptr<PhysicsBody> PhysicsBody::Deserialize(Actor& owner, const nlohmann::json& json) {
-	return std::make_unique<PhysicsBody>(owner, json.value("Velocity", glm::vec2{}), json.value("BounceType", BounceTypes::Stop), json.value("VelocityMode", VelocityMode::Constant));
+	return std::make_unique<PhysicsBody>(owner, json.value("Velocity", glm::vec2{}), json.value("BounceType", BounceTypes::Stop), json.value("VelocityMode", VelocityMode::Constant), json.value("Static", false));
 }
 
 nlohmann::ordered_json PhysicsBody::Serialize() {
@@ -15,6 +15,7 @@ nlohmann::ordered_json PhysicsBody::Serialize() {
 	j["Velocity"] = m_Velocity;
 	j["BounceType"] = m_BounceType;
 	j["VelocityMode"] = m_VelocityMode;
+	j["Static"] = m_Static;
 
 	return j;
 }
@@ -54,7 +55,7 @@ void PhysicsBody::FixedUpdate() {
 }
 
 void PhysicsBody::OnEvent(const event::AabbCollisionEnter& context) {
-	if (!context.other.Owner().GetComponent<PhysicsBody>())
+	if (!context.other.Owner().GetComponent<PhysicsBody>() || m_Static)
 		return; // No physics body in collison -> don't care
 
 	// Apply bounce type to velocity
@@ -77,8 +78,9 @@ void PhysicsBody::OnEvent(const event::AabbCollisionEnter& context) {
 	}
 
 	// Move object back to respect collision
-	float moveBackAmount{ LineRectIntersect(m_LastMovement, context.other.GetRect()) };
-	Owner().GetTransform().TranslatePosition((m_LastMovement.from - m_LastMovement.to) * moveBackAmount);
+
+	Owner().GetTransform().TranslatePosition((m_LastMovement.from - m_LastMovement.to));
+	std::cout << ((m_LastMovement.from - m_LastMovement.to)).x << ", " << ((m_LastMovement.from - m_LastMovement.to)).y << "\n";
 }
 
 void PhysicsBody::SetVelocity(glm::vec2 velocity) {

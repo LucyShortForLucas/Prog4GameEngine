@@ -36,8 +36,8 @@ nlohmann::ordered_json eng::TextRenderer::Serialize() {
 
 std::unique_ptr<TextRenderer> TextRenderer::Deserialize(Actor& owner, const nlohmann::json& json) {
 	return std::make_unique<TextRenderer>(owner,
-		json.value("Text", ""),
-		json.value("FontPath", ""),
+		json.value("Text", "Lorem Ipsum"),
+		json.value("FontPath", "Lingua.otf"),
 		json.value("Size", 12u),
 		json.value("Color", SDL_Color{})
 	);

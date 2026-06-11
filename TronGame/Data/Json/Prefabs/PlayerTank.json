@@ -36,7 +36,7 @@
     {
       "Type": "AabbCollider",
       "Json": {
-        "Bounds": [ 0, 0, 64, 64 ]
+        "Bounds": [ 5, 5, 54, 54 ]
       }
     },
     {

@@ -67,8 +67,6 @@ int main(int, char*[]) {
 	eng::service::gameTime.Register(std::make_unique<eng::GameTime>());
 	eng::service::input.Register(std::make_unique<eng::Input>());
 
-	eng::ActorJsonFactory factory{};
-
 	eng::Engine engine{ "Tron - Battle Tanks - Lucas Schonkeren", 968, 1032 };
 	eng::service::audioPlayer.Register(std::make_unique<eng::AudioPlayer>()); // We set up the audo after the engine because it relies on SDL, which is initialized in the engine
 	std::string file{ "TronGameStartup.json" };

@@ -23,8 +23,8 @@ public:
 	};
 	
 	//---- Ctor
-	PhysicsBody(Actor& owner, glm::vec2 velocity, BounceTypes bounceType, VelocityMode velocityMode) : 
-		AbstractComponent(owner), m_Velocity(velocity), m_BounceType(bounceType), m_VelocityMode(velocityMode) {};
+	PhysicsBody(Actor& owner, glm::vec2 velocity, BounceTypes bounceType, VelocityMode velocityMode, bool isStatic) : 
+		AbstractComponent(owner), m_Velocity(velocity), m_BounceType(bounceType), m_VelocityMode(velocityMode), m_Static{isStatic} {};
 
 	nlohmann::ordered_json Serialize() override;
 
@@ -50,6 +50,7 @@ private:
 	glm::vec2 m_Velocity{};
 	BounceTypes m_BounceType{ BounceTypes::Stop };
 	VelocityMode m_VelocityMode{ VelocityMode::Constant};
+	bool m_Static{ false };
 };
 REGISTER_COMPONENT(PhysicsBody)
 

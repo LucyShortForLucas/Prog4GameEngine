@@ -8,9 +8,14 @@ namespace eng {
 class ActorJsonFactory;
 
 class ComponentJsonFactory final {
+	friend ActorJsonFactory;
 public:
 	template <typename T>
-	ComponentJsonFactory& AddProperty(const std::string& key, const T& value);
+	ComponentJsonFactory& AddProperty(const std::string& key, const T& value) {
+		m_ComponentJson["Json"][key] = value;
+
+		return *this;
+	}
 	ActorJsonFactory& Owner();
 
 private:
@@ -33,7 +38,7 @@ public:
 	ActorJsonFactory& AddChildActor();												/// Returns reference to self
 	ActorJsonFactory& SetFlag(Actor::Flags flag);									/// Returns referene to parent
 	ActorJsonFactory& Parent();	
-	nlohmann::ordered_json Build();
+	nlohmann::ordered_json& Build();
 
 private:
 	//---- Data

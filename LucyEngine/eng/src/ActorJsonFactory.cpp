@@ -4,13 +4,6 @@ namespace eng {
 
 //------------ Component Factory
 
-template <typename T>
-ComponentJsonFactory& ComponentJsonFactory::AddProperty(const std::string& key, const T& value) {
-	m_ComponentJsonp["Json"][key] = value;
-
-	return *this;
-}
-
 ActorJsonFactory& ComponentJsonFactory::Owner() {
 	return m_Owner;
 }
@@ -32,7 +25,7 @@ ActorJsonFactory& ActorJsonFactory::AddChildActor() {
 	ActorJsonFactory& childFactory{ m_ChildFactories.emplace_back(ActorJsonFactory{}) };
 	childFactory.m_Parent = this;
 
-	nlohmann::ordered_json& j{ childFactory.m_ComponentJson };
+	nlohmann::ordered_json& j{ childFactory.m_ActorJson };
 	j["Flags"] = 0;
 	j["Components"] = nlohmann::ordered_json::array();
 	j["Children"] = nlohmann::ordered_json::array();
@@ -50,6 +43,18 @@ ActorJsonFactory& ActorJsonFactory::SetFlag(Actor::Flags flag) {
 
 ActorJsonFactory& ActorJsonFactory::Parent() {
 	return *m_Parent;
+}
+
+nlohmann::ordered_json& ActorJsonFactory::Build() {
+	for (auto& factory : m_ComponentFactories) {
+		m_ActorJson["Components"].emplace_back(factory.m_ComponentJson);
+	}
+
+	for (auto& factory : m_ChildFactories) {
+		m_ActorJson["Children"].emplace_back(factory.Build());
+	}
+
+	return m_ActorJson;
 }
 
 } // !eng
