@@ -4,6 +4,9 @@
 #include <unordered_set>
 #include <future>
 
+#include <SDL3/SDL.h>
+#include <Services.h>
+
 namespace eng {
 
 std::unique_ptr<AabbCollider> AabbCollider::Deserialize(Actor& owner, const nlohmann::json& json) {
@@ -72,6 +75,35 @@ void AabbCollider::OnDisable() {
 	Owner().GetTransform().UnsubscribeGlobalPositionChanged(*this);
 }
 
+void AabbCollider::Render() {
+#ifndef NDEBUG 
+	auto& renderer{ *service::renderer.Get().GetSDLRenderer()};
+	SDL_SetRenderDrawColor(&renderer, 255, 0, 0, 255);
+	SDL_FRect rect{ m_Bounds };
+
+	auto& pos{ Owner().GetTransform().GetGlobal().position };
+	rect.x += pos.x;
+	rect.y += pos.y;
+
+	SDL_RenderRect(&renderer, &rect);
+#endif
+}
+
+template<typename T>
+std::tuple<std::vector<T>, std::vector<T>, std::vector<T>>
+Venn(const std::set<T>& foo, const std::set<T>& bar) {
+	std::vector<T> only_foo, only_bar, both;
+	auto a = foo.begin(), b = bar.begin();
+	while (a != foo.end() && b != bar.end()) {
+		if (*a < *b) only_foo.push_back(*a++);
+		else if (*b < *a) only_bar.push_back(*b++);
+		else { both.push_back(*a); ++a; ++b; }
+	}
+	only_foo.insert(only_foo.end(), a, foo.end());
+	only_bar.insert(only_bar.end(), b, bar.end());
+	return { only_foo, only_bar, both };
+}
+
 void AabbCollider::NotifyCollisions() {
 	std::unordered_set<AabbCollider*> openSet{};
 	std::vector<std::future<std::pair<bool, std::pair<AabbCollider*, AabbCollider*>>>> potentialHits{};
@@ -85,21 +117,24 @@ void AabbCollider::NotifyCollisions() {
 			continue;
 		}
 
-		SDL_FRect rect{ bound.collider ->GetRect() };
+		SDL_FRect rect{ bound.collider->GetRect() };
 
 		// Asynchronously check Y collisions for any X collisions
 		for (AabbCollider* other : openSet) {
 			potentialHits.emplace_back(std::async([bound, other, rect]() -> std::pair<bool, std::pair<AabbCollider*, AabbCollider*>> {
-				SDL_FRect otherRect{ other->GetRect() };
-
 				auto result{ std::make_pair(true,
 					bound.collider < other // Make sure the pair is sorted so collider pairs are always the same
 					? std::make_pair(bound.collider, other)
 					: std::make_pair(other, bound.collider)
 				) };
 
+				SDL_FRect otherRect{ other->GetRect() };
+
 				if (rect.y > otherRect.y + otherRect.h || rect.y + rect.h < otherRect.y)
 					result.first = false; // No hit
+				else if ((bound.collider->m_LayerMask & (other->m_Layer)) == 0
+					|| (other->m_LayerMask & (bound.collider->m_Layer)) == 0)
+					result.first = false;
 
 				return result;
 				}));
@@ -122,20 +157,14 @@ void AabbCollider::NotifyCollisions() {
 	std::vector<std::pair<AabbCollider*, AabbCollider*>> collisionContinues{};
 	std::vector<std::pair<AabbCollider*, AabbCollider*>> collisionEnded{};
 
-	auto itCollisions = collisions.begin(), itOldCollisions = s_Collisions.begin();
+	auto collisionVenn{ Venn< std::pair<AabbCollider*, AabbCollider* >>(collisions, s_Collisions) };
 
-	while (itCollisions != collisions.end())
-		collisionStarted.emplace_back(*itCollisions++);
+	collisionStarted = std::get<0>(collisionVenn);
+	collisionEnded = std::get<1>(collisionVenn);
+	collisionContinues = std::get<2>(collisionVenn);
 
-	while (itOldCollisions != s_Collisions.end())
-		collisionEnded.emplace_back(*itOldCollisions++);
 
-	while (itCollisions != collisions.end() && itOldCollisions != s_Collisions.end()) {
-		if (!(*itCollisions < *itOldCollisions) || (*itOldCollisions < *itCollisions)) {
-			collisionContinues.emplace_back(*itCollisions);
-			++itCollisions; ++itOldCollisions;
-		}
-	}
+	s_Collisions = collisions;
 
 	for (auto& collision : collisionStarted) {
 		collision.first->m_AabbCollisionEnterEvent.Invoke(event::AabbCollisionEnter{ *collision.first, *collision.second });

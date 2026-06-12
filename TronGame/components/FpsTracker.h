@@ -7,17 +7,17 @@
 namespace tron {
 
 DECL_COMPONENT(FpsTracker, public eng::AbstractComponent)
-public: //--------------- Constructor/Destructor/copy/move --------------
+public:
+	//---- Ctor
 
 	FpsTracker(eng::Actor& owner) : eng::AbstractComponent(owner) {};
-	~FpsTracker() = default;
 
-//------------------ Gameloop Methods --------------------------
+//---- Gameloop Methods 
 	void OnEnable() override;
 	void OnDisable() override;
 	void Update() override;
 
-private: //--------------------------- Component references ----------------------------
+private:
 
 	eng::TextRenderer* m_TextRendererPtr{};
 

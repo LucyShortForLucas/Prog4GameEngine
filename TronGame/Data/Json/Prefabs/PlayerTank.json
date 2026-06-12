@@ -36,7 +36,8 @@
     {
       "Type": "AabbCollider",
       "Json": {
-        "Bounds": [ 5, 5, 54, 54 ]
+        "Bounds": [ 5, 5, 54, 54 ],
+        "Layer":  1
       }
     },
     {
@@ -70,6 +71,9 @@
           "Json": {
             "LocalPosition": [ 16, -16 ]
           }
+        },
+        {
+          "Type": "Turret"
         }
       ]
     }

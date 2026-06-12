@@ -28,14 +28,16 @@ void PhysicsBody::Start() {
 }
 
 void PhysicsBody::OnEnable() {
-	m_ColliderPtr->SubscribeAabbCollisionEnter(*this);
+	m_ColliderPtr->SubscribeAabbCollision(*this);
 }
 
 void PhysicsBody::OnDisable() {
-	m_ColliderPtr->UnsubscribeAabbCollisionEnter(*this);
+	m_ColliderPtr->UnsubscribeAabbCollision(*this);
 }
 
 void PhysicsBody::FixedUpdate() {
+	m_BouncedThisFrame = false;
+
 	if (m_Velocity == glm::vec2{}) {
 		m_LastMovement.from = m_LastMovement.to;
 		return;
@@ -54,33 +56,41 @@ void PhysicsBody::FixedUpdate() {
 	}
 }
 
-void PhysicsBody::OnEvent(const event::AabbCollisionEnter& context) {
-	if (!context.other.Owner().GetComponent<PhysicsBody>() || m_Static)
+void PhysicsBody::OnEvent(const event::AabbCollision& context) {
+	auto otherBody{ context.other.Owner().GetComponent<PhysicsBody>() };
+	if (!otherBody || m_Static || m_BouncedThisFrame)
 		return; // No physics body in collison -> don't care
+
+	m_BouncedThisFrame = true; // Only bounce once per frame
 
 	// Apply bounce type to velocity
 	switch (m_BounceType) {
-	case eng::PhysicsBody::BounceTypes::Stop:
+	case eng::BounceTypes::Stop:
 		m_Velocity = glm::vec2{};
+		Owner().GetTransform().TranslatePosition((m_LastMovement.from - m_LastMovement.to));
 		break;
-	case eng::PhysicsBody::BounceTypes::Bounce:
+	case eng::BounceTypes::Bounce:
+		if (&context.other == m_LastPhysicsHitCollider)
+			break;
 		m_Velocity *= -1;
 		break;
-	case eng::PhysicsBody::BounceTypes::Reflect:
+	case eng::BounceTypes::Reflect:
 	{
+		if (&context.other == m_LastPhysicsHitCollider) 
+			break;
 		SDL_FRect overlap{ m_ColliderPtr->OverlappingArea(context.other) };
 		glm::vec2 reflectionAxis{ overlap.w < overlap.h ? glm::vec2{1, 0} : glm::vec2{0,1} };
 		m_Velocity = glm::reflect(m_Velocity, reflectionAxis);
 		break;
 	}
 	default:
+		Owner().GetTransform().TranslatePosition((m_LastMovement.from - m_LastMovement.to));
+
 		break;
 	}
 
-	// Move object back to respect collision
-
-	Owner().GetTransform().TranslatePosition((m_LastMovement.from - m_LastMovement.to));
-	std::cout << ((m_LastMovement.from - m_LastMovement.to)).x << ", " << ((m_LastMovement.from - m_LastMovement.to)).y << "\n";
+	m_LastPhysicsHitCollider = &context.other;
+	m_PhysicsBodyBouncedEvent.Invoke({ this, otherBody, m_BounceType});
 }
 
 void PhysicsBody::SetVelocity(glm::vec2 velocity) {
@@ -93,6 +103,10 @@ void PhysicsBody::AddVelocity(glm::vec2 velocity) {
 
 void PhysicsBody::SetBounceType(BounceTypes type) {
 	m_BounceType = type;
+}
+
+glm::vec2 PhysicsBody::GetVelocity() {
+	return m_Velocity;
 }
 
 } // !eng

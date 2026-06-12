@@ -2,11 +2,12 @@
 
 #include <Services.h>
 #include <SpriteAnimator.h>
+#include <numbers>
 
 namespace tron {
 
-MoveTurret::MoveTurret(bool clockwise, float minSecDelay) :
-	m_Clockwise{ clockwise }, m_MinSecDelay{ minSecDelay } {};
+MoveTurret::MoveTurret(bool clockwise, float minSecDelay, float bulletSpeed) :
+	m_Clockwise{ clockwise }, m_MinSecDelay{ minSecDelay }, m_BulletSpeed{ bulletSpeed } {};
 
 MoveTurret::~MoveTurret() {
 			// Whenever a MoveTurret command is destroyed, we must assume pointers have potentially gone stale as well. 
@@ -20,6 +21,14 @@ bool MoveTurret::Execute(eng::Actor& actor) {
 				s_ActorAnimators[&actor] = actor.GetComponent<eng::SpriteAnimator>();
 				if (s_ActorAnimators[&actor] == nullptr) {
 					eng::service::logger.Get().LogError("Actor " + std::to_string((std::uintptr_t)&actor) + " does not have a SpriteAnimator.");
+					return false;
+				}
+			}
+
+			if (!s_ActorTurrets.contains(&actor)) {
+				s_ActorTurrets[&actor] = actor.GetComponent<tron::Turret>();
+				if (s_ActorTurrets[&actor] == nullptr) {
+					eng::service::logger.Get().LogError("Actor " + std::to_string((std::uintptr_t)&actor) + " does not have a Turret.");
 					return false;
 				}
 			}
@@ -51,6 +60,14 @@ bool MoveTurret::Execute(eng::Actor& actor) {
 				actor.GetTransform().SetLocalPosition(16, 16);
 				break;
 			}
+
+			const float _2pi { std::numbers::pi_v<float> * 2 };
+
+			const float rad{ (s_ActorAnimators[&actor]->GetCurrentFrame() * _2pi) / 36 }; // 36 frames in rotation of turret -> one rotation == 1/36 *2pi
+
+			const glm::vec2 bulletDir{ std::cos(-rad), std::sin(-rad)};
+			const glm::vec2 bulletVelocity = { bulletDir * m_BulletSpeed };
+			s_ActorTurrets[&actor]->SetOutgoingBulletVelocity(bulletVelocity);
 
 			return true;
 		}

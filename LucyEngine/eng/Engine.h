@@ -27,6 +27,10 @@ public: //--------------- Run methods ---------------------------
 	void Run(const std::string& initalActorPath);
 	bool RunOneFrame();
 
+public: //--------------- getters -------------------------
+
+	SDL_Window* GetWindowPtr();
+
 private: //----------------- Scene data -------------------
 
 	std::unique_ptr<SceneTree> m_SceneTreeUptr;

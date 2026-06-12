@@ -53,6 +53,7 @@ public:
 
 	void OnEnable() override;
 	void OnDisable() override;
+	void Render() override;
 
 //---- Special Engine Method
 																					/// This special method is called by the engine itself after every physics frame.

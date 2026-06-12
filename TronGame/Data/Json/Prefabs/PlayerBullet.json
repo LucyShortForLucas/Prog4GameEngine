@@ -1,0 +1,37 @@
+{
+  "Components": [
+    {
+      "Type": "Transform",
+      "Json": {
+        "LocalPosition": [ 200, 170 ]
+      }
+    },
+    {
+      "Type": "PhysicsBody",
+      "Json": {
+        "Velocity": [ 180, 180 ],
+        "BounceType": "Reflect"
+      }
+    },
+    {
+      "Type": "AabbCollider",
+      "Json": {
+        "Bounds": [ 0, 0, 16, 14 ],
+        "LayerMask": 4294967293,
+        "<- Comment": "Layermask '0xFFFFFFFD', aka all bits set except the second; i.e. ignore layer 1, the 'player' layer. Unfortunately Json does not have a binary or hex number converter aaik. Or comments, so this'll have to do"
+      }
+    },
+    {
+      "Type": "TextureRenderer",
+      "Json": {
+        "TexturePath": "PlayerBullet.png",
+        "Size": [ 16, 14 ],
+        "SourceRect": [ 0, 0, 8, 7 ],
+        "Layer": 10
+      }
+    },
+    {
+      "Type": "PlayerBulletBounce"
+    }
+  ]
+}

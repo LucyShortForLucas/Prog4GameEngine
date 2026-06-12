@@ -1,0 +1,42 @@
+{
+  "Components": [
+    {
+      "Type": "TextureRenderer",
+      "Json": {
+        "TexturePath": "Spark.png",
+        "SourceRect": [ 8, 8, 28, 28 ],
+        "Size": [ 32, 32 ]
+      }
+    },
+    {
+      "Type": "SpriteController",
+      "Json": {
+        "Sprites": {
+          "1": {
+            "Texture": "Spark.png",
+            "Position": [ 0, 4 ]
+          },
+          "2": {
+            "Texture": "Spark.png",
+            "Position": [ 32, 4 ]
+          }
+        },
+        "Size": [ 24, 24 ]
+      }
+    },
+    {
+      "Type": "SpriteAnimator",
+      "Json": {
+        "Frames": [ "1", "2" ]
+      }
+    },
+
+    {
+      "Type": "RepoolAfterNSeconds",
+      "Json": {
+        "SecondsToLive": 0.5,
+        "Tag": "InactiveSmallSpark" 
+      }
+    }
+  ]
+}

@@ -3,7 +3,7 @@ set(TARGET_NAME ${PROJECT_NAME})
 
 add_executable(${TARGET_NAME} main.cpp
 components/src/FpsTracker.cpp
- "commands/src/MoveTank.cpp" "components/TronGameSetup.h" "components/src/TronGameSetup.cpp" "commands/MoveTurret.h" "commands/src/MoveTurret.cpp" "misc/src/BuildLevel.cpp")
+ "commands/src/MoveTank.cpp" "components/TronGameSetup.h" "components/src/TronGameSetup.cpp" "commands/MoveTurret.h" "commands/src/MoveTurret.cpp" "misc/src/BuildLevel.cpp" "components/Turret.h" "components/src/Turret.cpp" "commands/ShootPlayerBullet.h" "commands/src/ShootPlayerBullet.cpp" "components/PlayerBulletBounce.h" "components/src/PlayerBulletBounce.cpp" "components/src/RepoolAfterNSeconds.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
    components commands misc

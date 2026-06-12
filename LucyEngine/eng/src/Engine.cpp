@@ -123,6 +123,10 @@ eng::Engine::~Engine() {
 	SDL_Quit();
 }
 
+SDL_Window* eng::Engine::GetWindowPtr() {
+	return g_window;
+}
+
 void eng::Engine::Run(const std::string& initialActorPath) {
 	m_SceneTreeUptr = std::make_unique<SceneTree>(initialActorPath);
 #ifndef __EMSCRIPTEN__

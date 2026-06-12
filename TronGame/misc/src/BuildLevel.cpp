@@ -13,24 +13,17 @@ nlohmann::ordered_json BuildLevel(const std::string& levelBackgroundPath, const 
 	// Set up main level object, which has background, pathfind grid, and is tagsetter with tag "LevelHead"
 	factory
 		.AddComponent("TextureRenderer")
-		.AddProperty("TexturePath", levelBackgroundPath)
-		.AddProperty("Size", glm::vec2{ 968, 1032 })
-		.Owner()
+			.AddProperty("TexturePath", levelBackgroundPath)
+			.AddProperty("Size", glm::vec2{ 968, 1032 })
+			.Owner()
 		.AddComponent("TagSetter")
-		.AddProperty("Tags", std::vector<std::string>{"LevelHead"})
-		.Owner()
-		.AddChildActor()
-		.AddComponent("FpsTracker")
-		.Owner()
-		.AddComponent("TextureRenderer")
-		.Owner()
-		.AddComponent("TextRenderer");
+			.AddProperty("Tags", std::vector<std::string>{"LevelHead"});
 
 // Create level colliders
 
 	eng::BlackWhiteMap<30, 28> colliderGrid{ *eng::service::resources.Get().LoadColorMap(levelCollisionPath) };
 
-	glm::vec2 arenaStartPos{ 0, 136 };
+	glm::vec2 arenaStartPos{ 4, 132 };
 
 	// Horizontal pass
 	for (int y{}; y < colliderGrid.ColumnSize(); ++y) {

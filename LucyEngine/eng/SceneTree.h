@@ -26,7 +26,7 @@ public:
 	Actor* LoadActor(const std::string& path);										/// Clears all children of root not tagged with PreserveOnParentClear
 	void ClearActors();																/// Clears all existing children of root not tagged with PreserveOnParentClear, then loads a new actor
 	Actor* ClearAndLoad(const std::string& path);																									
-																					
+
 	//---- Tag methods																
 																					/// 'Tags' an actor aith an id, so it can be retrieved later.
 	void TagActor(unsigned int tag, Actor* actorPtr);								/// Removes tag from actor. Safe to call even when the actor does not have the tag, in which case this is a no-op

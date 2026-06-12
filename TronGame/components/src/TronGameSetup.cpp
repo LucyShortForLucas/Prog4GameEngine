@@ -6,6 +6,7 @@
 
 #include "MoveTank.h"
 #include "MoveTurret.h"
+#include "ShootPlayerBullet.h"
 
 #include <ColorMap.h>
 #include <ActorJsonFactory.h>
@@ -78,9 +79,11 @@ void TronGameSetup::Start() {
 	//	.Build()
 
 	//};
+
+	eng::service::IResourceLoader& resources{ eng::service::resources.Get() };
 	
 	Owner().DeserializeChild(BuildLevel("Background1.png", "Level1CollisonGrid.png"));
-	auto player = Owner().DeserializeChild(*eng::service::resources.Get().LoadJson("Prefabs/PlayerTank.json"));
+	auto player = Owner().DeserializeChild(*resources.LoadJson("Prefabs/PlayerTank.json"));
 	player->GetTransform().SetGlobalPosition(100, 166);
 
 		auto& input{eng::service::input.Get()};
@@ -98,6 +101,7 @@ void TronGameSetup::Start() {
 	
 	turretInputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_E }, std::make_unique<MoveTurret>(true));
 	turretInputGroup.SubscribeKeyPressed(eng::Key{ SDL_SCANCODE_Q }, std::make_unique<MoveTurret>(false));
+	turretInputGroup.SubscribeKeyDown(eng::Key{ SDL_SCANCODE_SPACE }, std::make_unique<ShootPlayerBullet>());
 }
 
 } // !tron
