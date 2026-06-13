@@ -23,6 +23,7 @@
 #include <ColorMap.h>
 #include <ActorJsonFactory.h>
 #include <Turret.h>
+#include <TagSetter.h>
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>

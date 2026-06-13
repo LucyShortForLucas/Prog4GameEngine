@@ -37,7 +37,7 @@ void PlayerBulletBounce::OnEvent(const eng::event::PhysicsBodyBounced& context) 
 
 	++m_Bounces;
 
-	if (m_Bounces <= 5)
+	if (m_Bounces < 5)
 		return;
 
 	m_Bounces = 0;

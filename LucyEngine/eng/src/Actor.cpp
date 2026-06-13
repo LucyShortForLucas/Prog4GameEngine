@@ -15,15 +15,16 @@ Actor::Actor(SceneTree* sceneTreePtr) :
 }
 
 void Actor::Start() {
+    for (auto& compUptr : m_CompUptrs) {
+        if (IsFlagged(Flags::Started)) break;
+        compUptr->Start();
+    }
+
     for (auto& child : m_ChildUptrs) {
         child->Start();
     }
 
     if (IsFlagged(Flags::Started)) return;
-
-    for (auto& compUptr : m_CompUptrs) {
-        compUptr->Start();
-    }
 
     m_Flags[static_cast<int>(Flags::Started)] = true;
 

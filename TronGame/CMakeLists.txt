@@ -3,7 +3,7 @@ set(TARGET_NAME ${PROJECT_NAME})
 
 add_executable(${TARGET_NAME} main.cpp
 components/src/FpsTracker.cpp
- "commands/src/MoveTank.cpp" "components/TronGameSetup.h" "components/src/TronGameSetup.cpp" "commands/MoveTurret.h" "commands/src/MoveTurret.cpp" "misc/src/BuildLevel.cpp" "components/Turret.h" "components/src/Turret.cpp" "commands/ShootPlayerBullet.h" "commands/src/ShootPlayerBullet.cpp" "components/PlayerBulletBounce.h" "components/src/PlayerBulletBounce.cpp" "components/src/RepoolAfterNSeconds.cpp")
+ "commands/src/MoveTank.cpp" "components/TronGameSetup.h" "components/src/TronGameSetup.cpp" "commands/MoveTurret.h" "commands/src/MoveTurret.cpp" "misc/src/BuildLevel.cpp" "components/Turret.h" "components/src/Turret.cpp" "commands/ShootPlayerBullet.h" "commands/src/ShootPlayerBullet.cpp" "components/PlayerBulletBounce.h" "components/src/PlayerBulletBounce.cpp" "components/src/RepoolAfterNSeconds.cpp" "misc/PathfindGraph.h" "misc/src/PathFindGraph.cpp" "components/Pathfinding.h" "components/src/Pathfinding.cpp" "components/TeleportToRand2x2.h" "components/src/TeleportToRand2x2.cpp")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
    components commands misc

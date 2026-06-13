@@ -17,7 +17,20 @@ nlohmann::ordered_json BuildLevel(const std::string& levelBackgroundPath, const 
 			.AddProperty("Size", glm::vec2{ 968, 1032 })
 			.Owner()
 		.AddComponent("TagSetter")
-			.AddProperty("Tags", std::vector<std::string>{"LevelHead"});
+			.AddProperty("Tags", std::vector<std::string>{"LevelHead"})
+			.Owner()
+		.AddComponent("Pathfinding")
+			.AddProperty("LevelPath", levelCollisionPath)
+			.Owner()
+		.AddChildActor()
+			.AddComponent("Transform")
+				.AddProperty("LocalPosition", glm::vec2{450, 550})
+				.Owner()
+			.AddComponent("AabbCollider")
+				.AddProperty("Bounds", SDL_FRect{0, 0, 80, 60})
+				.Owner()
+			.AddComponent("TeleportToRand2x2");
+			
 
 // Create level colliders
 

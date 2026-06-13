@@ -32,14 +32,14 @@ public:
 	void TagActor(unsigned int tag, Actor* actorPtr);								/// Removes tag from actor. Safe to call even when the actor does not have the tag, in which case this is a no-op
 	void UnTagActor(unsigned int tag, Actor*);										/// Returns the first actor tagged with tag, or nullptr if none found
 	Actor* GetActorWithTag(unsigned int tag);										/// Returns a vector of all actors tagged with tag.
-	const std::vector<Actor*>& GetAllActorsWithTag(unsigned int tag);
+	const std::vector<Actor*>& GetAllActorsWithTag(unsigned int tag) const;
 	
 	//---- Event Handlers
 	void OnEvent(const event::ActorDestroyed& event) override;
 
 private:
 	std::unique_ptr<Actor> m_RootUptr{};
-	std::map<unsigned int, std::vector<Actor*>> m_TaggedActors;
+	mutable std::map<unsigned int, std::vector<Actor*>> m_TaggedActors;
 };
 
 }

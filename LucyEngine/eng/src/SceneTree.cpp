@@ -66,7 +66,7 @@ Actor* SceneTree::GetActorWithTag(unsigned int tag) {
 	return *m_TaggedActors[tag].begin();
 }
 
-const std::vector<Actor*>& SceneTree::GetAllActorsWithTag(unsigned int tag) {
+const std::vector<Actor*>& SceneTree::GetAllActorsWithTag(unsigned int tag) const {
 	if (!m_TaggedActors.contains(tag))
 		m_TaggedActors[tag] = std::vector<Actor*>{};
 
