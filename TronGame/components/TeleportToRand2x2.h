@@ -28,7 +28,7 @@ public:
 	void OnEvent(const eng::event::AabbCollisionEnter& context) override;
 
 private:
-	Pathfinding* m_Pathfinding;
+	Pathfinding* m_Pathfinding{nullptr};
 };
 REGISTER_COMPONENT(TeleportToRand2x2)
 
