@@ -85,7 +85,9 @@ public:
     template <std::derived_from<AbstractComponent> CompT, typename... ArgsT>   
     CompT& AddComponent(ArgsT... args);												/// <returns>A pointer to this Actor's component of type CompT. Return value is empty if no such component exists.</returns>															   
     template <std::derived_from<AbstractComponent> CompT>					   
-    CompT* GetComponent();												   
+    CompT* GetComponent();
+    template <std::derived_from<AbstractComponent> CompT>
+    CompT* const GetComponent() const;
     std::vector<AbstractComponent*> GetAbstractComponents();				   
     template <std::derived_from<AbstractComponent> CompT>					   
     void RemoveComponent();													   
@@ -176,7 +178,22 @@ inline CompT* Actor::GetComponent() {
     }																		                                                                      
                                                                                                                                                   
     return f_Result;														                                                                      
-}																			                                                                      
+}		
+
+template<std::derived_from<AbstractComponent> CompT>
+inline CompT* const Actor::GetComponent() const {
+    CompT* f_Result{};
+
+    for (auto& compUptr : m_CompUptrs) {
+        if (CompT* castResult = dynamic_cast<CompT*>(compUptr.get());
+            castResult) {
+            f_Result = castResult;
+            break;
+        }
+    }
+
+    return f_Result;
+}
                                                                                                                                                   
 template<std::derived_from<AbstractComponent> CompT>						                                                                      
 inline void Actor::RemoveComponent() {										                                                                      

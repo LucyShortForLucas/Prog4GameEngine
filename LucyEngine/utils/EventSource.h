@@ -49,6 +49,6 @@ private:
 void Subscribe##x(AbstractEventListener<event::x>& subject) { m_##x##Event.Subscribe(subject); } \
 void Unsubscribe##x(AbstractEventListener<event::x>& subject) { m_##x##Event.Unsubscribe(subject); } \
 private: \
-EventSource<event::x> m_##x##Event{};
+::eng::EventSource<event::x> m_##x##Event{};
 
 }

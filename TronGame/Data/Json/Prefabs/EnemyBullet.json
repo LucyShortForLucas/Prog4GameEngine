@@ -1,0 +1,35 @@
+{
+	"Components": [
+		{
+			"Type": "Transform",
+			"Json": {
+				"LocalPosition": [ 200, 170 ]
+			}
+		},
+		{
+			"Type": "PhysicsBody",
+			"Json": {
+				"Velocity": [ 180, 0 ]
+			}
+		},
+		{
+			"Type": "AabbCollider",
+			"Json": {
+				"Bounds": [ 0, 0, 16, 14 ],
+				"LayerMask": 8589934587
+			}
+		},
+		{
+			"Type": "TextureRenderer",
+			"Json": {
+				"TexturePath": "EnemyBullet.png",
+				"Size": [ 16, 18 ],
+				"SourceRect": [ 0, 0, 8, 9 ],
+				"Layer": 10
+			}
+		},
+		{
+			"Type": "EnemyBulletCollisions"
+		}
+	]
+}

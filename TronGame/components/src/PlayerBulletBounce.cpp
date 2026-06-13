@@ -4,6 +4,9 @@
 #include <SceneTree.h>
 #include <Turret.h>
 
+#include <EnemyController.h>
+#include <Actor.h>
+
 namespace tron {
 
 std::unique_ptr<PlayerBulletBounce> PlayerBulletBounce::Deserialize(eng::Actor& owner, const nlohmann::json& ) {
@@ -37,7 +40,7 @@ void PlayerBulletBounce::OnEvent(const eng::event::PhysicsBodyBounced& context) 
 
 	++m_Bounces;
 
-	if (m_Bounces < 5)
+	if (m_Bounces < 5 && context.otherBody->Owner().GetComponent<EnemyController>() == nullptr)
 		return;
 
 	m_Bounces = 0;

@@ -25,6 +25,9 @@
 #include <Turret.h>
 #include <TagSetter.h>
 #include <EnemyController.h>
+#include <PlayerLives.h>
+#include <GameData.h>
+#include <TextRenderer.h>
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
