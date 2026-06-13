@@ -24,6 +24,7 @@
 #include <ActorJsonFactory.h>
 #include <Turret.h>
 #include <TagSetter.h>
+#include <EnemyController.h>
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>

@@ -22,6 +22,7 @@ bool ShootPlayerBullet::Execute(eng::Actor& actor) {
 	}
 
 	s_ActorTurrets[&actor]->Shoot();
+	return true;
 }
 
 }

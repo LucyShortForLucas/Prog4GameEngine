@@ -40,7 +40,7 @@ namespace eng {
 /// @brief
 /// A macro to handle the registration of the component's 
 #define REGISTER_COMPONENT(x) namespace { \
-	[[maybe_unused]] static inline const bool x##_registered = [] { \
+	[[maybe_unused]] static const bool x##_registered = [] { \
 		eng::RegisterComponentType<x>(#x); \
 		return true; \
     }(); \

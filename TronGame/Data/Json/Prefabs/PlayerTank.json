@@ -45,6 +45,15 @@
       "Json": {
         "VelocityMode": "Consume"
       }
+    },
+    {
+      "Type": "TagSetter",
+      "Json": {
+        "Tags": [
+          "Player",
+          "Tank"
+        ]
+      }
     }
   ],
   "Children": [

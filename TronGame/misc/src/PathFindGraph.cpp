@@ -3,6 +3,7 @@
 #include <services.h>
 #include <ColorMap.h>
 #include <random>
+#include <unordered_set>
 
 namespace tron {
 
@@ -49,7 +50,7 @@ glm::vec2 PathfindGraph::Tile2x2ToPosition(glm::vec2 pos) const {
 }
 
 glm::vec2 PathfindGraph::PositionToTile2x2(glm::vec2 pos) const {
-	return { (pos.x-4) / 32.f, (pos.y- 134) / 32.f };
+	return { static_cast<int>(pos.x-4) / 32, static_cast<int>(pos.y- 134) / 32 };
 }
 
 glm::vec2 PathfindGraph::GetRandomUnoccupied2x2(const eng::SceneTree& tree) const {
@@ -68,5 +69,89 @@ glm::vec2 PathfindGraph::GetRandomUnoccupied2x2(const eng::SceneTree& tree) cons
 	return result;
 }
 
+std::vector<glm::vec2> PathfindGraph::FindPath(glm::vec2 from, glm::vec2 to) {
+	constexpr int width{ 29 };
+	constexpr int height{ 27 };
+
+	auto toIndex = [&](glm::vec2 p) {
+		return static_cast<int>(p.x) + static_cast<int>(p.y) * width;
+		};
+
+	auto isValid = [&](glm::vec2 p) {
+		return p.x >= 0 && p.x < width && p.y >= 0 && p.y < height
+			&& Test2x2Free(p);
+		};
+
+	if (!isValid(from) || !isValid(to))
+		return {};
+
+	auto heuristic = [](glm::vec2 a, glm::vec2 b) {
+		return std::abs(a.x - b.x) + std::abs(a.y - b.y);
+		};
+
+	struct Node {
+		glm::vec2 pos;
+		float priority;
+	};
+
+	struct NodeCompare {
+		bool operator()(const Node& a, const Node& b) const {
+			return a.priority > b.priority;
+		}
+	};
+
+	std::priority_queue<Node, std::vector<Node>, NodeCompare> openSet;
+	std::unordered_set<int> visited;
+	std::unordered_map<int, glm::vec2> cameFrom;
+
+	openSet.push({ from, heuristic(from, to) });
+	visited.insert(toIndex(from));
+
+	const glm::vec2 directions[4]{
+		{  1,  0 }, { -1,  0 }, {  0,  1 }, {  0, -1 }
+	};
+
+	bool found{ false };
+
+	while (!openSet.empty()) {
+		Node current{ openSet.top() };
+		openSet.pop();
+
+		if (current.pos == to) {
+			found = true;
+			break;
+		}
+
+		for (const auto& dir : directions) {
+			glm::vec2 next{ current.pos + dir };
+
+			if (!isValid(next) || visited.count(toIndex(next)))
+				continue;
+
+			visited.insert(toIndex(next));
+			cameFrom[toIndex(next)] = current.pos;
+			openSet.push({ next, heuristic(next, to) });
+		}
+	}
+
+	if (!found)
+		return {};
+
+	std::vector<glm::vec2> positions;
+	glm::vec2 current{ to };
+	while (!(current == from)) {
+		positions.emplace_back(current);
+		current = cameFrom[toIndex(current)];
+	}
+	positions.emplace_back(from);
+	std::reverse(positions.begin(), positions.end());
+
+	std::vector<glm::vec2> directionsResult;
+	for (size_t i{}; i + 1 < positions.size(); ++i) {
+		directionsResult.emplace_back(positions[i + 1] - positions[i]);
+	}
+
+	return directionsResult;
+}
 
 }

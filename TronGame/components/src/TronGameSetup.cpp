@@ -86,6 +86,9 @@ void TronGameSetup::Start() {
 	auto player = Owner().DeserializeChild(*resources.LoadJson("Prefabs/PlayerTank.json"));
 	player->GetTransform().SetGlobalPosition(100, 166);
 
+	auto eney = Owner().DeserializeChild(*resources.LoadJson("Prefabs/EnemyTank.json"));
+	eney->GetTransform().SetGlobalPosition(500, 166);
+
 		auto& input{eng::service::input.Get()};
 
 	auto& inputGroup{ input.NewInputgroup(*player) };

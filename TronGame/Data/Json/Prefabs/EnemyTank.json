@@ -1,0 +1,65 @@
+{
+  "Components": [
+    {
+      "Type": "TextureRenderer",
+      "Json": {
+        "TexturePath": "Tanks.png",
+        "Size": [ 64, 64 ],
+        "SourceRect": [ 0, 0, 32, 32 ],
+        "Layer": 5
+      }
+    },
+    {
+      "Type": "SpriteController",
+      "Json": {
+        "Size": [ 32, 32 ],
+        "Sprites": {
+          "Right": {
+            "Texture": "Tanks.png",
+            "Position": [ 0, 0 ]
+          },
+          "Up": {
+            "Texture": "Tanks.png",
+            "Position": [ 32, 0 ]
+          },
+          "Left": {
+            "Texture": "Tanks.png",
+            "Position": [ 64, 0 ]
+          },
+          "Down": {
+            "Texture": "Tanks.png",
+            "Position": [ 96, 0 ]
+          }
+        }
+      }
+    },
+    {
+      "Type": "AabbCollider",
+      "Json": {
+        "Bounds": [ 5, 5, 54, 54 ],
+        "Layer": 1
+      }
+    },
+    {
+      "Type": "PhysicsBody",
+      "Json": {
+        "BounceType":  "Bounce"
+      }
+      },
+      {
+        "Type": "TagSetter",
+        "Json": {
+          "Tags": [
+            "Enemy",
+            "Tank"
+          ]
+        }
+      },
+      {
+        "Type": "EnemyController",
+        "Json": {
+          "Speed": 70
+        }
+      }
+  ]
+}
